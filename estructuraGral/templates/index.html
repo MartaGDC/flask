@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo a otros dipositivos -->
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <!-- Barra superior -->
+    <header class="top-bar">
+        <button>Home</button>
+        <button>Logout</button>
+    </header>
+
+    <!-- Área central -->
+    <main class="content">
+        <div class="selector">
+            <button id="fileBtn">Select video</button>
+            <p id="fileName">No video selected.</p>
+        </div>
+        <div class="frame-viewer">
+            <div class="video-placeholder"></div>
+            <button id="acceptFrameBtn" disabled>Accept frame</button>
+        </div>
+    </main>
+
+    <!-- Video abajo izquierda -->
+     <video id="video-player" style="display:none;"></video>
+
+    <!-- Menú lateral (oculto hasta aceptar) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="quality" id="qualityButtons">
+            <button id="qualityGreen" class="quality-button" style="background-color: #4CAF50;">Good</button>
+            <button id="qualityYellow" class="quality-button" style="background-color: #FFC107;">Fair</button>
+            <button id="qualityRed" class="quality-button" style="background-color: #E53935;">Bad</button>
+        </div>
+        <h3>Select Zone:</h3>
+        <div class="zones">
+            <label><input type="radio" name="zone" value="heel"> Heel</label>
+            <label><input type="radio" name="zone" value="arc"> Arc</label>
+        </div>
+        <h3>Select Structure:</h3>
+        <div class="structure-item" id="structure1">
+            <span class="structure-name">Example skin</span>
+            <input type="range" id="structure1 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #D81B60;">
+        </div>
+        <div class="structure-item" id="structure2">
+            <span class="structure-name">Example muscle</span>
+            <input type="range" id="structure2 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #8E24AA;">
+        </div>
+        <div class="structure-item" id="structure3">
+            <span class="structure-name">Example tendon</span>
+            <input type="range" id="structure3 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #00ACC1;">
+        </div>
+        <div class="structure-item" id="structure4">
+            <span class="structure-name">Example bone</span>
+            <input type="range" id="structure4 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #FB8C00;">
+        </div>
+    </aside>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
