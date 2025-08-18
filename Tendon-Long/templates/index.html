@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Drawing Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <div id="rightMenu" class="right-menu">
+        <div id="qualityButtons">
+            <button id="qualityGreen" class="quality-button" style="background-color: green;">Good</button>
+            <button id="qualityYellow" class="quality-button" style="background-color: yellow;">Fair</button>
+            <button id="qualityRed" class="quality-button" style="background-color: red;">Bad</button>
+        </div>
+        <div id="zoneSelection" class="zone-selection">
+            <h3 style="color: Beige;">Select Zone</h3>
+            <div class="options">
+                <label><input type="radio" name="zone" value="heel"> Heel</label>
+                <label><input type="radio" name="zone" value="arc"> Arc</label>
+            </div>
+        </div>
+        <details>
+            <summary style="color: Beige; cursor: pointer;">Brush Widths</summary>
+            <div class="slider-container">
+                <label for="cyanWidth" style="color: cyan;">Cyan:</label>
+                <span id="cyanWidthValue" style="color: beige; margin-left: 5px;">10</span>
+                <input type="range" id="cyanWidth" min="1" max="100" value="10" style="accent-color: cyan;">
+            </div>
+            <div class="slider-container">
+                <label for="magentaWidth" style="color: magenta;">Magenta:</label>
+                <span id="magentaWidthValue" style="color: beige; margin-left: 5px;">10</span>
+                <input type="range" id="magentaWidth" min="1" max="100" value="10" style="accent-color: magenta;">
+            </div>
+            <div class="slider-container">
+                <label for="yellowWidth" style="color: yellow;">Yellow:</label>
+                <span id="yellowWidthValue" style="color: beige; margin-left: 5px;">20</span>
+                <input type="range" id="yellowWidth" min="1" max="100" value="20" style="accent-color: yellow;">
+            </div>
+        </details>
+        <h3 style="color: Beige;">Assessement</h3>
+        <form id="questionnaire">
+            <div class="question">
+                <p style="color: cyan;">Tissue quality</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="0"> 0</label>
+                    <label><input type="radio" name="q1" value="1"> 1</label>
+                    <label><input type="radio" name="q1" value="2"> 2</label>
+                    <label><input type="radio" name="q1" value="3"> 3</label>
+                </div>
+            </div>
+            <div class="question">
+                <p style="color: cyan;">Morphology & Size</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="0"> 0</label>
+                    <label><input type="radio" name="q2" value="1"> 1</label>
+                    <label><input type="radio" name="q2" value="2"> 2</label>
+                    <label><input type="radio" name="q2" value="3"> 3</label>
+                </div>
+            </div>
+            <div class="question">
+                <p style="color: magenta;">Upper border</p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="0"> 0</label>
+                    <label><input type="radio" name="q3" value="1"> 1</label>
+                    <label><input type="radio" name="q3" value="2"> 2</label>
+                    <label><input type="radio" name="q3" value="3"> 3</label>
+                </div>
+            </div>
+            <div class="question">
+                <p style="color: magenta;">Lower border</p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="0"> 0</label>
+                    <label><input type="radio" name="q4" value="1"> 1</label>
+                    <label><input type="radio" name="q4" value="2"> 2</label>
+                    <label><input type="radio" name="q4" value="3"> 3</label>
+                </div>
+            </div>
+            <div class="question">
+                <p style="color: yellow;">Bone</p>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="0"> 0</label>
+                    <label><input type="radio" name="q5" value="1"> 1</label>
+                    <label><input type="radio" name="q5" value="2"> 2</label>
+                    <label><input type="radio" name="q5" value="3"> 3</label>
+                </div>
+            </div>
+            <button id="saveDrawing" type="button" disabled>Save</button>
+        </form>
+    </div>
+    <div id="mainContent">
+        <button id="getRandomSample">Get Random Sample (x10)</button>
+        <button id="startLoading" disabled>Start</button>
+        <!--<button id="saveDrawing" disabled>Save</button>-->
+    
+        <canvas id="drawingCanvas"></canvas>
+        <img id="sourceImage" style="display:none;">
+
+        <button id="clearDrawing" disabled>Clear Drawing</button> 
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

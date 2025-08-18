@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Drawing Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <div id="rightMenu" class="right-menu">
+        <div id="qualityButtons">
+            <button id="qualityGreen" class="quality-button" style="background-color: green;">Good</button>
+            <button id="qualityYellow" class="quality-button" style="background-color: yellow;">Fair</button>
+            <button id="qualityRed" class="quality-button" style="background-color: red;">Bad</button>
+        </div>
+        <h3 style="color: Beige;">Brush Widths</h3>
+        <div class="slider-container">
+            <small for="cyanWidth" style="color: cyan;">Tissue quality / morphology and size</small>
+            <span id="cyanWidthValue" style="color: beige; margin-left: 5px;">10</span>
+            <input type="range" id="cyanWidth" min="1" max="100" value="10" style="accent-color: cyan;">
+        </div>
+        <div class="slider-container">
+            <small for="magentaWidth" style="color: magenta;">Upper border / lower border</small>
+            <span id="magentaWidthValue" style="color: beige; margin-left: 5px;">10</span>
+            <input type="range" id="magentaWidth" min="1" max="100" value="10" style="accent-color: magenta;">
+        </div>
+        <div class="slider-container">
+            <small for="yellowWidth" style="color: yellow;"> Bone</small>
+            <span id="yellowWidthValue" style="color: beige; margin-left: 5px;">20</span>
+            <input type="range" id="yellowWidth" min="1" max="100" value="20" style="accent-color: yellow;">
+        </div>
+        <form id="questionnaire">
+            <button id="saveDrawing" type="button" disabled>Save</button>
+        </form>
+    </div>
+    <div id="mainContent">
+        <button id="getRandomSample">Get Random Sample (x10)</button>
+        <button id="startLoading" disabled>Start</button>
+    
+        <canvas id="drawingCanvas"></canvas>
+        <img id="sourceImage" style="display:none;">
+
+        <button id="clearDrawing" disabled>Clear Drawing</button> 
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
