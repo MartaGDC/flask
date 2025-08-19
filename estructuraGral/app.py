@@ -10,11 +10,21 @@ app = Flask(__name__)
 def index(app_name):
     # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
     #                                                return render_template(template_name, title=app_name)
-    data = {
-        "foot": {"video_path": "videos/foot.mp4"}, #Rellenar para el resto de aplicaciones
-    }
-    app_data = data.get(app_name, {})
-    return render_template('index.html', title=app_name, app_data=app_data)
+
+    #Para que las zonas puedan ser definidas dinámicamente para el html
+    if(app_name == "foot"):
+        zones = [
+            {"value": "heel", "label": "Heel"},
+            {"value": "arc", "label": "Arc"},
+            {"value": "toe", "label": "Toe"}
+        ]
+    elif(app_name == "hand"):
+        zones = [
+            {"value": "wrist", "label": "Wrist"},
+            {"value": "palm", "label": "Palm"}
+        ]
+    #...  
+    return render_template('index.html', title=app_name, zones=zones)
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5004)

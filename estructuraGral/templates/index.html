@@ -20,20 +20,34 @@
             <button id="fileBtn">Select video</button>
             <p id="fileName">No video selected.</p>
         </div>
+        <input type="file" id="videoFileInput" accept="video/*" style="display:none;">
+        <div id="evaluator-popup" class="popup hidden">
+            <div class="popup-content">
+                <label for="evaluator">Evaluator: </label>
+                <input type="text" id="evaluator" placeholder="Evaluator Name">
+            </div>
+            <button id="evaluator-submit">Accept</button>
+        </div>
         <div class="frame-viewer">
-            <div class="video-placeholder"></div>
+            <canvas id="frame-placeholder"></canvas>
             <button id="acceptFrameBtn" disabled>Accept frame</button>
         </div>
-        <div class="researcher-info">
-            <label>Evaluator X studied X frames from this video.</label>
+        <div class="researcher-info" id="researcherInfo">
+            <label></label>
         </div>
     </main>
 
     <!-- Video abajo izquierda -->
-     <video id="video-player" style="display:none;"></video>
+    <div id="video-container" style="display:none;">
+        <video id="video-player" controls></video>
+        <div class="frame-controls">
+            <button id="prev-frame">⏮</button>
+            <button id="next-frame">⏭</button>
+        </div>
+    </div>
 
     <!-- Menú lateral (oculto hasta aceptar) -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar hidden" id="sidebar">
         <div class="quality" id="qualityButtons">
             <button id="qualityGreen" class="quality-button" style="background-color: #4CAF50;">Good</button>
             <button id="qualityYellow" class="quality-button" style="background-color: #FFC107;">Fair</button>
@@ -42,16 +56,13 @@
         <div class="block">
             <div>Select Zone:</div>
             <div class="zones">
-                <label>
-                    <input type="radio" name="zone" value="heel">
-                    <span class="check"></span>
-                    Heel
-                </label>
-                <label>
-                    <input type="radio" name="zone" value="arc">
-                    <span class="check"></span>
-                    Arc
-                </label>
+                {% for zone in zones %}
+                    <label>
+                        <input type="radio" name="zone" value="{{ zone.value }}" {% if loop.first %}checked{% endif %}>
+                        <span class="check"></span>
+                        {{ zone.label }}
+                    </label>
+                {% endfor %}
             </div>
         </div>
         <div class="block">
