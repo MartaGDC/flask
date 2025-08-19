@@ -73,7 +73,7 @@ videoFileInput.addEventListener("change", (event) => {
         videoContainer.style.display = "block";
         videoPlayer.load();
         videoPlayer.currentTime = 0; // Reset to the start of the video
-        researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video`; //Modificar cuando tenga como recoger los frames guardados
+        researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
     } else {
         fileName.textContent = "No video selected.";
         videoContainer.style.display = "none";
