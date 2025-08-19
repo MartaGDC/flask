@@ -24,6 +24,9 @@
             <div class="video-placeholder"></div>
             <button id="acceptFrameBtn" disabled>Accept frame</button>
         </div>
+        <div class="researcher-info">
+            <label>Evaluator X studied X frames from this video.</label>
+        </div>
     </main>
 
     <!-- Video abajo izquierda -->
@@ -36,27 +39,39 @@
             <button id="qualityYellow" class="quality-button" style="background-color: #FFC107;">Fair</button>
             <button id="qualityRed" class="quality-button" style="background-color: #E53935;">Bad</button>
         </div>
-        <h3>Select Zone:</h3>
-        <div class="zones">
-            <label><input type="radio" name="zone" value="heel"> Heel</label>
-            <label><input type="radio" name="zone" value="arc"> Arc</label>
+        <div class="block">
+            <div>Select Zone:</div>
+            <div class="zones">
+                <label>
+                    <input type="radio" name="zone" value="heel">
+                    <span class="check"></span>
+                    Heel
+                </label>
+                <label>
+                    <input type="radio" name="zone" value="arc">
+                    <span class="check"></span>
+                    Arc
+                </label>
+            </div>
         </div>
-        <h3>Select Structure:</h3>
-        <div class="structure-item" id="structure1">
-            <span class="structure-name">Example skin</span>
-            <input type="range" id="structure1 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #D81B60;">
-        </div>
-        <div class="structure-item" id="structure2">
-            <span class="structure-name">Example muscle</span>
-            <input type="range" id="structure2 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #8E24AA;">
-        </div>
-        <div class="structure-item" id="structure3">
-            <span class="structure-name">Example tendon</span>
-            <input type="range" id="structure3 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #00ACC1;">
-        </div>
-        <div class="structure-item" id="structure4">
-            <span class="structure-name">Example bone</span>
-            <input type="range" id="structure4 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #FB8C00;">
+        <div class="block">
+            <div>Select Structure:</div>
+            <div class="structure-item" id="structure1">
+                <span class="structure-name" style="color:#D81B60">Skin</span>
+                <input type="range" id="structure1 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #D81B60;">
+            </div>
+            <div class="structure-item" id="structure2">
+                <span class="structure-name" style="color:#8E24AA">Muscle</span>
+                <input type="range" id="structure2 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #8E24AA;">
+            </div>
+            <div class="structure-item" id="structure3">
+                <span class="structure-name" style="color:#00ACC1">Tendon</span>
+                <input type="range" id="structure3 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #00ACC1;">
+            </div>
+            <div class="structure-item" id="structure4">
+                <span class="structure-name" style="color:#FB8C00">Bone...</span>
+                <input type="range" id="structure4 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #FB8C00;">
+            </div>
         </div>
     </aside>
     <script src="{{ url_for('static', filename='script.js') }}"></script>

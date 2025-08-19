@@ -11,6 +11,7 @@ body {
     font-size: 20px;
     font-weight: bold;
     color: #1A1A1A;
+    line-height: 1.5;
 }
 
 /* Barra superior para home y logout */
@@ -55,7 +56,6 @@ body {
 
 .selector {
     text-align: center;
-    margin: 10px 0;
 }
 
 .selector button,
@@ -90,6 +90,12 @@ body {
 .frame-viewer {
     text-align: center;
 }
+
+.researcher-info {
+    margin-top: 20px;
+    text-align: center;
+}
+
 .video-placeholder {
     width: 600px;
     height: 400px;
@@ -105,7 +111,6 @@ body {
     width: 300px;
     height: 200px;
     margin: 15px;
-
 }
 
 /* Sidebar */
@@ -117,7 +122,7 @@ body {
     height: 100%;
     background: #B0B0B0;
     padding: 15px;
-    }
+}
 
 .hidden {
     display: none;
@@ -141,6 +146,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #qualityGreen:hover {
@@ -152,8 +158,65 @@ body {
     background-color: #fad463 !important;
     color: #1A1A1A;
     border: 2px solid #333333;
+
 }#qualityRed:hover {
     background-color: #e46563 !important;
     color: #1A1A1A;
     border: 2px solid #333333;
+}
+
+.block {
+    margin: 50px 0;
+    padding: 0 25px;
+}
+
+.zones{
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+}
+.zones input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+.check {
+    height: 15px;
+    width: 15px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+    margin-top: -5px;
+}
+.zones input:checked ~ .check {
+  background-color: #333333;
+}
+.check:after {
+  content: "";
+  position: relative;
+  left: 5px;
+  top: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #FFFFFF;
+}
+.zones input:checked ~ .check:after {
+  display: block;
+}
+
+.structure-item {
+    background-color: #FFFFFF;
+    margin: 5px 0;
+    display: flex;
+    padding: 0 10px;
+}
+
+.structure-name {
+    width: 180px;
+}
+
+.brush-slider {
+    width: 180px;
 }
