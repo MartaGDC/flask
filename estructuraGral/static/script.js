@@ -1,3 +1,5 @@
+const content = document.querySelector(".content");
+
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 const videoFileInput = document.getElementById("videoFileInput");
@@ -22,20 +24,17 @@ let subbitted = false; //formulario del frame aceptado
 
 const sidebar = document.getElementById("sidebar");
 
-const qualityButtons = document.getElementById("qualityButtons");
+const qualityButtons = document.querySelectorAll(".quality-button");
 const qualityGreen = document.getElementById("qualityGreen");
 const qualityYellow = document.getElementById("qualityYellow");
 const qualityRed = document.getElementById("qualityRed");
+let selectedQuality = "";
 
-const structure1 = document.getElementById("structure1");
-const structure1Brush = document.getElementById("structure1 brush");
-const structure2 = document.getElementById("structure2");
-const structure2Brush = document.getElementById("structure2 brush");
-const structure3 = document.getElementById("structure3");
-const structure3Brush = document.getElementById("structure3 brush");
-const structure4 = document.getElementById("structure4");
-const structure4Brush = document.getElementById("structure4 brush");
+const zones = document.querySelectorAll('input[name="zone"]');
+let selectedZone = zones[0].value;;
 
+const structures = document.querySelectorAll(".structure-item");
+let selectedStructure = null;
 
 /*Seleccion del video:
 - Se abre un diálogo para seleccionar un archivo de video.
@@ -49,21 +48,32 @@ const structure4Brush = document.getElementById("structure4 brush");
 fileBtn.addEventListener("click", () => {
     if (!evaluatorName || evaluatorName.trim() === "") {
         popup.classList.remove("hidden");
+        evaluatorInput.focus();
+        content.classList.add("disabled");
     }
     else {
         videoFileInput.click();
     }
 });
-evaluatorSubmit.addEventListener("click", () => {
+
+evaluatorInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        submitEvaluator();
+    }
+});
+evaluatorSubmit.addEventListener("click", submitEvaluator);
+function submitEvaluator() {
     evaluatorName = evaluatorInput.value.trim();
     if (evaluatorName !== "") {
         popup.classList.add("hidden");
         videoFileInput.click();
+        content.classList.remove("disabled");
     }
     else {
-        alert("Please enter a valid evaluator name.");
+        alert("Evaluator name is required to proceed.");
     }
-});
+}
+
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 videoFileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
@@ -125,9 +135,8 @@ function drawFrame() {
 - No se puede modificar la seleccion del frame al mover el video:
     - a menos que se complete el formulario del sidebar y
     - se haya enviado el formulario
-- Se pueden seleccionar las estructuras y la calidad del frame.
+- Se activa el sidebar hasta que se envíe el formulario.
 - Se guarda el frame y la información del investigador.
-- El sidebar permanece visible hasta que se envíe el formulario.
 */
 /*-------------------------ACEPTAR EL FRAME-------------------------*/
 acceptFrameBtn.addEventListener("click", () => {
@@ -137,7 +146,70 @@ acceptFrameBtn.addEventListener("click", () => {
     sidebar.classList.remove("hidden");
     acceptFrameBtn.textContent = "Submit";
     fileBtn.disabled = true;
+    fileBtn.classList.add("disabled");
+    acceptFrameBtn.classList.add("disabled");
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     
     //Funciones para guardar el frame y la información del investigador:
 });
+
+
+/*Realización del formulario:
+- Al seleccionar una zona, se muestran las estructuras correspondientes.
+- Al seleccionar una estructura, se activa el brush correspondiente.
+- El tamaño del brush se puede ajustar con un slider.
+- Cada estructura tiene un botón para borrar el trazo correspondiente.
+- Cuando se ha completado el formulario, se puede enviar.
+*/
+/*-------------------------SIDEBAR-------------------------*/
+qualityButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        selectedQuality = button.innerText.toLowerCase();
+        qualityButtons.forEach(btn => btn.classList.add('transparent'));
+        button.classList.remove('transparent');
+    })
+});
+
+//Al seleccionar una zona, se muestran las estructuras correspondientes. Si no hay una zona seleccionada, se selecciona la primera por defecto.
+function showStructures(selectedZone){
+    activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
+    activeStructures.forEach(structure => {
+        structure.classList.remove("hidden");
+        structure.classList.add("transparent");
+
+    });
+    selectedStructure = activeStructures[0];
+    selectedStructure.classList.remove("transparent");
+    activeStructures.forEach(structure => {
+        structure.addEventListener('click', (event) => {
+            structures.forEach(structure => {
+                structure.classList.add("transparent");
+            });
+            selectedStructure = event.currentTarget;
+            selectedStructure.classList.remove("transparent");
+        });
+    });
+}
+showStructures(selectedZone);
+zones.forEach(zone => {
+    zone.addEventListener('change', (event) => {
+        structures.forEach(structure => {
+            structure.classList.add("hidden");
+        });
+        selectedZone = event.target.value;
+        showStructures(selectedZone);
+    });
+});
+
+//Al seleccionar una estructura, se activa la misma y se accede al brush correspondiente.
+
+
+framePlaceholder.addEventListener('mousedown', startDrawing);
+framePlaceholder.addEventListener('mousemove', draw);
+framePlaceholder.addEventListener('mouseup', stopDrawing);
+framePlaceholder.addEventListener('mouseleave', stopDrawing);
+framePlaceholder.addEventListener('touchstart', startDrawing);
+framePlaceholder.addEventListener('touchmove', draw);
+framePlaceholder.addEventListener('touchend', stopDrawing);
+framePlaceholder.addEventListener('touchcancel', stopDrawing);
+

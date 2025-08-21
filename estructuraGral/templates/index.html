@@ -21,21 +21,21 @@
             <p id="fileName">No video selected.</p>
         </div>
         <input type="file" id="videoFileInput" accept="video/*" style="display:none;">
-        <div id="evaluator-popup" class="popup hidden">
-            <div class="popup-content">
-                <label for="evaluator">Evaluator: </label>
-                <input type="text" id="evaluator" placeholder="Evaluator Name">
-            </div>
-            <button id="evaluator-submit">Accept</button>
-        </div>
         <div class="frame-viewer">
             <canvas id="frame-placeholder"></canvas>
             <button id="acceptFrameBtn" disabled>Accept frame</button>
         </div>
         <div class="researcher-info" id="researcherInfo">
-            <label></label>
+            <span></span>
         </div>
     </main>
+    <div id="evaluator-popup" class="popup hidden">
+        <div class="popup-content">
+            <label for="evaluator">Evaluator: </label>
+            <input type="text" id="evaluator" placeholder="Evaluator Name">
+        </div>
+        <button id="evaluator-submit">Accept</button>
+    </div>
 
     <!-- Video abajo izquierda -->
     <div id="video-container" style="display:none;">
@@ -48,7 +48,7 @@
 
     <!-- Menú lateral (oculto hasta aceptar) -->
     <aside class="sidebar hidden" id="sidebar">
-        <div class="quality" id="qualityButtons">
+        <div class="quality">
             <button id="qualityGreen" class="quality-button" style="background-color: #4CAF50;">Good</button>
             <button id="qualityYellow" class="quality-button" style="background-color: #FFC107;">Fair</button>
             <button id="qualityRed" class="quality-button" style="background-color: #E53935;">Bad</button>
@@ -56,7 +56,7 @@
         <div class="block">
             <div>Select Zone:</div>
             <div class="zones">
-                {% for zone in zones %}
+                {% for zone in data.zones %}
                     <label>
                         <input type="radio" name="zone" value="{{ zone.value }}" {% if loop.first %}checked{% endif %}>
                         <span class="check"></span>
@@ -67,27 +67,16 @@
         </div>
         <div class="block">
             <div>Select Structure:</div>
-            <div class="structure-item" id="structure1">
-                <span class="structure-name" style="color:#D81B60">Skin</span>
-                <input type="range" id="structure1 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #D81B60;">
-                <button class="text-btn" id="delete-btn">✖</button>
+            {% for zone, structures in data.structures.items() %}
+                {% for structure in structures %}
+                    <div class=" structure-item {{ zone }}-structure-item hidden transparent">
+                        <span class="structure-name" style="color: {{ structure.color }}">{{ structure.name }}</span>
+                        <input type="range" min="1" max="100" value="10" class="brush-slider" style="accent-color: {{ structure.color }};">
+                        <button id="delete{{ loop.index }}" class="delete">✖</button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
 
-            </div>
-            <div class="structure-item" id="structure2">
-                <span class="structure-name" style="color:#8E24AA">Muscle</span>
-                <input type="range" id="structure2 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #8E24AA;">
-                <button id="deleteStructure1" class="delete">🗑️</button>
-            </div>
-            <div class="structure-item" id="structure3">
-                <span class="structure-name" style="color:#00ACC1">Tendon</span>
-                <input type="range" id="structure3 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #00ACC1;">
-                <button id="deleteStructure1" class="delete">🗑️</button>
-            </div>
-            <div class="structure-item" id="structure4">
-                <span class="structure-name" style="color:#FB8C00">Bone...</span>
-                <input type="range" id="structure4 brush" min="1" max="100" value="10" class="brush-slider" style="accent-color: #FB8C00;">
-                <button id="deleteStructure1" class="delete">🗑️</button>
-            </div>
         </div>
     </aside>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
