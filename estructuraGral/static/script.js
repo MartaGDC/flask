@@ -12,12 +12,13 @@ const prevFrameBtn = document.getElementById("prev-frame");
 const nextFrameBtn = document.getElementById("next-frame");
 const framePlaceholder = document.getElementById("frame-placeholder");
 const ctx = framePlaceholder.getContext("2d");
-let pausado = false;
+let pausado = false; //mostrar el frame solo si está pausado
 
 const researcherInfo = document.getElementById("researcherInfo");
 
 const acceptFrameBtn = document.getElementById("acceptFrameBtn");
-let aceptado = false;
+let aceptado = false; //frame aceptado, para no modificarlo hasta terminar el formulario
+let subbitted = false; //formulario del frame aceptado
 
 const sidebar = document.getElementById("sidebar");
 
@@ -74,6 +75,8 @@ videoFileInput.addEventListener("change", (event) => {
         videoPlayer.load();
         videoPlayer.currentTime = 0; // Reset to the start of the video
         researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
+        pausado = true;
+        drawFrame();
     } else {
         fileName.textContent = "No video selected.";
         videoContainer.style.display = "none";
@@ -120,21 +123,21 @@ function drawFrame() {
 /*Aceptar frame:
 - Al hacer click en "Accept frame", se muestra el sidebar.
 - No se puede modificar la seleccion del frame al mover el video:
-    - a menos que se complete el formulario del sidebar o
-    - se haga click de nuevo en "Accept frame".
+    - a menos que se complete el formulario del sidebar y
+    - se haya enviado el formulario
 - Se pueden seleccionar las estructuras y la calidad del frame.
 - Se guarda el frame y la información del investigador.
-- El sidebar permanece visible hasta que se complete el formulario.
+- El sidebar permanece visible hasta que se envíe el formulario.
 */
 /*-------------------------ACEPTAR EL FRAME-------------------------*/
 acceptFrameBtn.addEventListener("click", () => {
     aceptado = true;
     videoPlayer.style.controls = false;
     videoPlayer.pause();
-    videoContainer.style.display = "none";
     sidebar.classList.remove("hidden");
     acceptFrameBtn.textContent = "Submit";
-    //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside o in hacer click en aceptar frame
+    fileBtn.disabled = true;
+    //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     
     //Funciones para guardar el frame y la información del investigador:
 });

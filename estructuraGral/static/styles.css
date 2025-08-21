@@ -22,7 +22,7 @@ body {
 
 .top-bar button {
     display: inline-block;
-    padding: 25px 0;
+    padding: 20px 0;
     width: 200px;
     font-family: 'Arial', sans-serif;
     font-size: 20px;
@@ -50,7 +50,8 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
+    padding-bottom:20px;
     position: relative;
 }
 
@@ -280,11 +281,9 @@ body {
     display: flex;
     padding: 0 10px;
 }
-
 .structure-name {
     width: 180px;
 }
-
 .brush-slider {
     width: 180px;
 }
