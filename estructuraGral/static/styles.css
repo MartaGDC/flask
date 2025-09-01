@@ -118,6 +118,7 @@ body {
     font-size: 15px;
     font-weight: bold;
     border: 1px solid #1A1A1A;
+    outline-color: #1A1A1A;
 }
 .popup button {
     padding: 5px 10px;
@@ -187,7 +188,8 @@ body {
     top: 0;
     right: 0;
     width: 400px;
-    height: 100%;
+    height: 100vh;
+    overflow-y: auto;
     background: #B0B0B0;
     padding: 15px;
 }
@@ -257,7 +259,7 @@ body {
 .zones input:checked ~ .check {
   background-color: #333333;
 }
-.check:after {
+.check::after {
   content: "";
   position: relative;
   left: 5px;
@@ -267,24 +269,24 @@ body {
   border-radius: 50%;
   background: #FFFFFF;
 }
-.zones input:checked ~ .check:after {
+.zones input:checked ~ .check::after {
   display: block;
 }
 
 .structure-item {
-    background-color: #FFFFFF;
+    background-color: #1A1A1A;
     margin: 5px 0;
     display: flex;
     padding-left: 10px;
 }
 .structure-name {
-    width: 120px;
+    width: 170px;
 }
 .structure-item:hover .structure-name{
     text-decoration: underline;
 }
 .brush-slider {
-    width: 170px;
+    width: 120px;
     margin-left: 10px;
     justify-content: start;
 }
