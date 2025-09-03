@@ -52,6 +52,7 @@
             <button id="qualityGreen" class="quality-button transparent" style="background-color: #4CAF50;">Good</button>
             <button id="qualityYellow" class="quality-button transparent" style="background-color: #FFC107;">Fair</button>
             <button id="qualityRed" class="quality-button transparent" style="background-color: #E53935;">Bad</button>
+            <button id="qualityBlack" class="quality-button transparent" style="background-color: #333333;"></button>
         </div>
         <div class="block">
             <div>Select Zone:</div>
@@ -73,8 +74,7 @@
             {% for zone, structures in data.structures.items() %}
                 {% for structure in structures %}
                     <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
-                        {% set color_parts = structure.color[5:-1].split(',') %}
-                        <span class="structure-name" style="color: rgba({{ color_parts[0] }}, {{ color_parts[1] }}, {{ color_parts[2] }}, 1)">{{ structure.name }}</span>
+                        <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
                         <input type="range" min="1" max="40" value="20" class="brush-slider" style="accent-color: {{ structure.color }};">
                         <button id="delete{{ loop.index }}" class="delete">✖</button>
                     </div>

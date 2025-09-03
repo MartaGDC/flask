@@ -23,20 +23,20 @@ def index(app_name):
             "structures": {
                 "heel": [
                     {"name": "Skin and SCT", "color": "rgba(255, 150, 255, 0.25)"},
-                    {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.10)"},                    
+                    {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.1)"},                    
                     {"name": "Muscle", "color": "rgba(255, 50, 0, 0.5)"},
                     {"name": "Tendon", "color": "rgba(170, 170, 200, 0.5)"},
-                    {"name": "Ligament-Capsule", "color": "rgba(150, 200, 155, 0.5)"},
-                    {"name": "Synovial fluid", "color": "rgba(255, 255, 75, 0.25)"},
-                    {"name": "Artery", "color": "rgba(255, 0, 0, 0.5)"},
-                    {"name": "Vein", "color": "rgba(0, 0, 255, 0.5)"},
-                    {"name": "Nerve", "color": "rgba(255, 255, 0, 0.5)"},
-                    {"name": "Bone", "color": "rgba(255, 255, 150)"},
-                    {"name": "Cartilage", "color": "rgba(125, 200, 255, 0.75)"},
-                    {"name": "Fibrocartilage", "color": "rgba(150, 255, 150, 0.5)"},
-                    {"name": "Fatty tissue", "color": "rgba(255, 255, 175, 0.5)"},
-                    {"name": "Synovial membrane", "color": "rgba(255, 175, 255, 0.5)"},
-                    {"name": "Synovial sheath", "color": "rgba(175, 255, 175, 0.25)"},
+                    # {"name": "Ligament-Capsule", "color": "rgba(150, 200, 155, 0.5)"},
+                    # {"name": "Synovial fluid", "color": "rgba(255, 255, 75, 0.25)"},
+                    # {"name": "Artery", "color": "rgba(255, 0, 0, 0.5)"},
+                    # {"name": "Vein", "color": "rgba(0, 0, 255, 0.5)"},
+                    # {"name": "Nerve", "color": "rgba(255, 255, 0, 0.5)"},
+                    # {"name": "Bone", "color": "rgba(255, 255, 150)"},
+                    # {"name": "Cartilage", "color": "rgba(125, 200, 255, 0.75)"},
+                    # {"name": "Fibrocartilage", "color": "rgba(150, 255, 150, 0.5)"},
+                    # {"name": "Fatty tissue", "color": "rgba(255, 255, 175, 0.5)"},
+                    # {"name": "Synovial membrane", "color": "rgba(255, 175, 255, 0.5)"},
+                    # {"name": "Synovial sheath", "color": "rgba(175, 255, 175, 0.25)"},
                 ],
                 "arc": [
                     {"name": "Skin", "color": "#D81B60"},
@@ -74,6 +74,47 @@ def index(app_name):
         }
     #...  
     return render_template('index.html', title=app_name, data=data)
+
+@app.route('/save', methods=['POST'])
+def save():
+    #Cargar la respuesta
+    data = request.json
+    video = data['video']
+    frame = data["frame"]
+    originalImage = data['originalImage'].split(",")[1]
+    originalImage = base64.b64decode(originalImage)
+    imageEdited = data['imageEdited'].split(",")[1]
+    imageEdited = base64.b64decode(imageEdited)
+    filesaved = data['filesaved']
+    quality = data['quality']
+    zone = data['zone']
+    evaluator = data['evaluator']
+
+    #Cargar el json donde guardar la info
+    os.makedirs("static/DATA", exist_ok=True)
+    with open(f'static/DATA/{filesaved}', 'wb') as f:
+        f.write(imageEdited)
+    metadata_file = 'static/DATA/file_info.json'
+    if os.path.exists(metadata_file):
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
+    else:
+        metadata = []
+
+    #Añadir la nueva informacion al json
+    metadata.append({
+        "video": video,
+        "frame": frame,
+        "filesaved": filesaved,
+        "quality": quality,
+        "zone": zone,
+        "evaluator": evaluator
+    })
+    with open(metadata_file, 'w') as f:
+        json.dump(metadata, f, indent=4)
+
+    return jsonify({"status": "success"})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5004)

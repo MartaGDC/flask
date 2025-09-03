@@ -14,6 +14,7 @@ const prevFrameBtn = document.getElementById("prev-frame");
 const nextFrameBtn = document.getElementById("next-frame");
 const framePlaceholder = document.getElementById("frame-placeholder");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
+let frame = null;
 let savedFrame = null;
 let pausado = false; //mostrar el frame solo si está pausado
 
@@ -160,12 +161,7 @@ acceptFrameBtn.addEventListener("click", () => {
     fileBtn.classList.add("disabled");
     acceptFrameBtn.classList.add("disabled");
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
-    
-    //Funciones para guardar el frame y la información del investigador:
-
-
-
-
+    frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
 });
 
 
@@ -342,13 +338,15 @@ function clearDrawing() {
 //Formulario completado, validar y enviar (video, frame original, frame editado, filename, quality, zone, evaluator)
 function validar() {
     activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
-    const activeColors = Array.from(activeStructures).map(s => s.querySelector('.structure-name').style.color);
-    const allColorsDrawn = activeColors.every(color => 
-        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
+    const activeColors = Array.from(activeStructures).map(s => s.querySelector('.brush-slider').style.accentColor);
+    const allColorsDrawn = activeColors.every(color =>
+        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0
+        )
     );
     if (allColorsDrawn) {
         acceptFrameBtn.disabled = false;
         acceptFrameBtn.classList.remove("disabled");
+        submitted = true;
     }
     else{
         acceptFrameBtn.disabled = true;
@@ -358,8 +356,73 @@ function validar() {
 }
 
 acceptFrameBtn.addEventListener("click", () => {
-    if (aceptado && !submitted) {
+    if (aceptado && submitted) {
+    if (selectedQuality === "") {
+            alert('Please select a quality (Good, Fair, or Bad) before saving.');
+            acceptFrameBtn.classList.remove("disabled");
+
+            return;
+        }
         saveDrawing();
     }
 });
 
+function saveDrawing(){
+    const maskEditedCanvas = document.createElement('canvas');
+    const maskEditedCtx = maskEditedCanvas.getContext('2d');
+    maskEditedCanvas.width = framePlaceholder.width;
+    maskEditedCanvas.height = framePlaceholder.height;
+    maskEditedCtx.drawImage(framePlaceholder, 0, 0);
+    const imageEditedURL = maskEditedCanvas.toDataURL();
+
+    const maskOriginalCanvas = document.createElement("canvas");
+    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
+    maskOriginalCanvas.width = savedFrame.width;
+    maskOriginalCanvas.height = savedFrame.height;
+    maskOriginalCtx.putImageData(savedFrame, 0, 0);
+    const imageURL = maskOriginalCanvas.toDataURL();
+
+    const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
+
+    console.log('Data being sent:', {
+        video: fileName.textContent,
+        frame: frame,
+        originalImage: imageURL,
+        imageEdited: imageEditedURL,
+        filesaved: `${timestamp}.png`,
+        quaity: selectedQuality,
+        zone: selectedZone,
+        evaluator: evaluatorName,
+        });
+
+    fetch('/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            video: fileName.textContent, 
+            frame: frame,
+            originalImage: imageURL,
+            imageEdited: imageEditedURL,
+            filesaved: `${timestamp}.png`,
+            quality: selectedQuality,
+            zone: selectedZone,
+            evaluator: evaluatorName
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Drawing saved successfully:', data);
+        //location.reload()
+    })
+    .catch(error => {
+        console.error('Error saving drawing:', error);
+        alert('An error occurred while saving. Please try again.');
+    });
+}
