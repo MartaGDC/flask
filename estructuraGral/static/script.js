@@ -1,5 +1,8 @@
 const content = document.querySelector(".content");
 
+const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
+
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 const videoFileInput = document.getElementById("videoFileInput");
@@ -27,9 +30,8 @@ let submitted = false; //formulario del frame aceptado
 const sidebar = document.getElementById("sidebar");
 
 const qualityButtons = document.querySelectorAll(".quality-button");
-const qualityGreen = document.getElementById("qualityGreen");
-const qualityYellow = document.getElementById("qualityYellow");
 const qualityRed = document.getElementById("qualityRed");
+const qualityBlack = document.getElementById("qualityBlack");
 let selectedQuality = "";
 
 const zones = document.querySelectorAll('input[name="zone"]');
@@ -37,7 +39,7 @@ let selectedZone = zones[0].value;;
 
 const structures = document.querySelectorAll(".structure-item");
 let selectedStructure = null;
-let currentIndex = 0;
+let currentIndex = null;
 const sliders = document.querySelectorAll('.brush-slider');
 const  widths = Array.from(document.querySelectorAll(".brush-slider")).map(slider => parseInt(slider.value));
 const colors = Array.from(document.querySelectorAll(".structure-item")).map(div => div.dataset.color);
@@ -45,6 +47,25 @@ const deleteDrawings = document.querySelectorAll(".delete");
 let drawing = false;
 let trazos = [];
 let trazoActual = null;
+
+
+/*Botones logout y home:
+
+*/
+/*-------------------------BOTONES LOGOUT Y HOME-------------------------*/
+homeBtn.addEventListener("click", () => {
+    location.reload();
+})
+
+logoutBtn.addEventListener("click", () => {
+    fetch("http://127.0.0.1:5004/logout", { method: "POST" })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "http://127.0.0.1/index.php";
+            }
+        });
+});
+
 
 /*Seleccion del video:
 - Se abre un diálogo para seleccionar un archivo de video.
@@ -166,12 +187,12 @@ acceptFrameBtn.addEventListener("click", () => {
 
 
 /*Sidebar:
-- Selección de calidad (verde, amarillo, rojo).
+- Selección de calidad (verde, amarillo, rojo, negro). 
 - Al seleccionar una zona, se muestran las estructuras correspondientes.
 - Al seleccionar una estructura, se activa el brush correspondiente, permitiendo dibujar.
 - El tamaño del brush se puede ajustar con un slider.
 - Cada estructura tiene un botón para borrar el trazo correspondiente.
-- Cuando se ha completado el formulario, se puede enviar.
+- Cuando se ha completado el formulario, se puede enviar. Si rojo o negro, no necesita info, formulario finalizado
 */
 /*-------------------------SIDEBAR-------------------------*/
 qualityButtons.forEach(button => {
@@ -181,6 +202,7 @@ qualityButtons.forEach(button => {
         button.classList.remove('transparent');
     })
 });
+
 
 //Al seleccionar una zona, se muestran las estructuras correspondientes. Si no hay una zona seleccionada, se selecciona la primera por defecto.
 function showStructures(selectedZone){
@@ -247,43 +269,48 @@ framePlaceholder.addEventListener('touchend', stopDrawing);
 framePlaceholder.addEventListener('touchcancel', stopDrawing);
 
 function startDrawing(e) {
-    drawing = true;
-    trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
-    draw(e);
+    if(aceptado){
+        drawing = true;
+        trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
+        draw(e);
+    }
 }
 function stopDrawing() {
-    if(trazoActual) {
-        trazos.push(trazoActual);
-        trazoActual = null;
-    }
     if (aceptado){
-        validar();
+        if(trazoActual) {
+            trazos.push(trazoActual);
+            trazoActual = null;
+        }
+            validar();
+        drawing = false;
+        ctx.beginPath();
     }
-    drawing = false;
-    ctx.beginPath();
 }
 
 function draw(e) {
-    if (!drawing) return;
-    e.preventDefault();
+    if (aceptado){
 
-    const color = colors[currentIndex];
-    const width = widths[currentIndex];
-    let pos;
-    if (e.type.includes('mouse')) {
-        pos = getMousePos(framePlaceholder, e);
-    } else {
-        pos = getTouchPos(framePlaceholder, e);
+        if (!drawing) return;
+        e.preventDefault();
+
+        const color = colors[currentIndex];
+        const width = widths[currentIndex];
+        let pos;
+        if (e.type.includes('mouse')) {
+            pos = getMousePos(framePlaceholder, e);
+        } else {
+            pos = getTouchPos(framePlaceholder, e);
+        }
+        trazoActual.puntos.push(pos);
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = color;
+
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
     }
-    trazoActual.puntos.push(pos);
-    ctx.lineWidth = width;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = color;
-
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
 }
 
 function getMousePos(canvas, evt) {
@@ -336,6 +363,26 @@ function clearDrawing() {
 }
 
 //Formulario completado, validar y enviar (video, frame original, frame editado, filename, quality, zone, evaluator)
+qualityRed.addEventListener('click', redBlackQuality);
+qualityBlack.addEventListener('click',redBlackQuality);
+
+function redBlackQuality(){
+    zones.forEach(zone => {
+        zone.parentElement.classList.add("disabled");
+        zone.disabled = true;
+    });
+
+    structures.forEach(structure => {
+        structure.disabled = true;
+        structure.classList.add("disabled");
+    });
+    selectedZone= "";
+    clearDrawing();
+    aceptado=false;
+}
+
+
+
 function validar() {
     activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
     const activeColors = Array.from(activeStructures).map(s => s.querySelector('.brush-slider').style.accentColor);
@@ -343,7 +390,7 @@ function validar() {
         trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0
         )
     );
-    if (allColorsDrawn) {
+    if (allColorsDrawn || selectedQuality==="None" || selectedQuality === "Bad") {
         acceptFrameBtn.disabled = false;
         acceptFrameBtn.classList.remove("disabled");
         submitted = true;
@@ -419,7 +466,8 @@ function saveDrawing(){
     })
     .then(data => {
         console.log('Drawing saved successfully:', data);
-        //location.reload()
+        alert('Drawing saved successfully.');
+        location.reload()
     })
     .catch(error => {
         console.error('Error saving drawing:', error);

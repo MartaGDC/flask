@@ -1,10 +1,13 @@
 import json
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
+#from flask_cors import CORS
 import base64
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = "secret_key"
+# CORS(app)
 
 @app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
 def index(app_name):
@@ -115,6 +118,10 @@ def save():
 
     return jsonify({"status": "success"})
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return '', 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5004)
