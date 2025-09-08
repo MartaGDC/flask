@@ -8,7 +8,7 @@ body {
     display: flex;
     flex-direction: column;
     background: #F5F5F5;
-    font-size: 20px;
+    font-size: 1.2vw;
     font-weight: bold;
     color: #1A1A1A;
     line-height: 1.5;
@@ -22,10 +22,10 @@ body {
 
 .top-bar button {
     display: inline-block;
-    padding: 20px 0;
-    width: 200px;
+    padding: 1vw 0;
+    width: 10vw;
     font-family: 'Arial', sans-serif;
-    font-size: 20px;
+    font-size: 1.2vw;
     font-weight: bold;
     line-height: 1.5;
     color: #F5F5F5;
@@ -50,8 +50,8 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 10px;
-    padding-bottom:20px;
+    padding: 0.5vw;
+    padding-bottom:1vw;
     position: relative;
 }
 
@@ -62,11 +62,10 @@ body {
 .selector button,
 .frame-viewer button {
     display: inline-block;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    width: 270px;
+    padding: 0.75vw 0;
+    width: 15vw;
     font-family: 'Arial', sans-serif;
-    font-size: 20px;
+    font-size: 1.2vw;
     font-weight: bold;
     line-height: 1.5;
     color: #F5F5F5;
@@ -89,13 +88,13 @@ body {
 }
 
 .popup {
-    padding: 20px;
+    padding: 2vw;
     position: fixed;
     top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
-    height: 100px;
+    width: 20vw;
+    height: 5vw;
     background-color: #B0B0B0;
     border: 1px solid #1A1A1A;
     display: flex;
@@ -103,7 +102,7 @@ body {
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
-    font-size: 15px;
+    font-size: 1vw;
     font-weight: bold;
 }
 .popup-content {
@@ -113,17 +112,17 @@ body {
     width: 100%;
 }
 #evaluator {
-    width: 200px;
-    padding: 5px;
-    font-size: 15px;
+    width: 13vw;
+    padding: 0.4vw;
+    font-size: 1vw;
     font-weight: bold;
     border: 1px solid #1A1A1A;
     outline-color: #1A1A1A;
 }
 .popup button {
-    padding: 5px 10px;
-    margin-top: 20px;
-    font-size: 15px;
+    padding: 0.4vw 0.8vw;
+    margin-top: 1.5vw;
+    font-size: 1vw;
     font-weight: bold;
     background-color: #1A1A1A;
     color: #F5F5F5;
@@ -139,17 +138,18 @@ body {
 }
 
 .researcher-info {
-    margin-top: 20px;
+    margin-top: 1vw;
+    margin-bottom: 9.5vw;
     text-align: center;
 }
 
 #frame-placeholder {
-    width: 700px;
-    height: 400px;
+    width:auto;
+    height: 70vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 1vw;
     border: 1px solid #1a1a1a;
 }
 
@@ -158,11 +158,11 @@ body {
     position: fixed;
     bottom: 0;
     left: 0;
-    margin: 15px;
+    margin: 1vw;
 }
 #video-player {
-    width: 300px;
-    height: 200px;
+    width: 25vw;
+    height: auto;
 }
 .frame-controls {
     background-color: #1a1a1a;
@@ -174,9 +174,9 @@ body {
 .frame-controls button {
     background-color: #1a1a1a;
     color: #f5f5f5;
-    padding: 10px 10px;
-    margin: 0 30px;
-    font-size: 15px;
+    padding: 0.5vw 0.5vw;
+    margin: 0 1.5vw;
+    font-size: 1vw;
     font-weight: bold;
     border: none;
     cursor: pointer;
@@ -187,25 +187,25 @@ body {
     position: fixed;
     top: 0;
     right: 0;
-    width: 400px;
+    width: 20vw;
     height: 100vh;
     overflow-y: auto;
     background: #B0B0B0;
-    padding: 15px;
+    padding: 0.5vw;
 }
 
 .quality {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin: 50px 25px;
+    margin: 2.5vw 1.5vw;
 }
 .quality-button {
-    width: 80px;
-    height: 80px;
+    width: 4vw;
+    height: 4vw;
     border-radius: 50%;
     font-family: Arial, sans-serif;
-    font-size: 20px;
+    font-size: 1.2vw;
     font-weight: bold;
     border: 2px solid #333333;
     cursor: pointer;
@@ -238,15 +238,15 @@ body {
 
 
 .block {
-    margin: 25px 0;
-    padding: 0 25px;
+    margin: 1.5vw 0;
+    padding: 0 1.5vw;
 }
 
 .zones{
-    padding: 0 10px;
+    padding: 0 1vw;
     display: flex;
     flex-direction: column;
-    font-size: 18px;
+    font-size: 1.1vw;
 }
 .zones input[type="radio"] {
   position: absolute;
@@ -281,25 +281,25 @@ body {
 
 .structure-item {
     background-color: #FFFFFF;
-    font-size: 18px;
-    margin: 5px 0;
+    font-size: 1.1vw;
+    margin: 0.2vw 0;
     display: flex;
-    padding-left: 10px;
+    padding-left: 0.5vw;
     align-items: center;
 }
 .structure-name {
-    width: 170px;
+    width: 8.5vw;
 }
 .structure-item:hover .structure-name{
     text-decoration: underline;
 }
 .brush-slider {
-    width: 120px;
-    margin-left: 10px;
+    width: 5.5vw;
+    margin-left: 0.5vw;
     justify-content: start;
 }
 .delete {
-    margin-left:10px;
+    margin-left:0.5vw;
     background-color: #E53935;
     color: #1A1A1A;
     border: #1A1A1A 1px solid;
@@ -307,7 +307,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 1.2vw;
 }
 
 

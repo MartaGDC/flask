@@ -14,7 +14,7 @@ def index(app_name):
     # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
     #                                                return render_template(template_name, title=app_name)
 
-    #Para que las zonas puedan ser definidas dinámicamente para el html
+    #Para que las zonas y las estructuras puedan ser definidas dinámicamente para el html:
     data = {}
     if(app_name == "foot"):
         data = {

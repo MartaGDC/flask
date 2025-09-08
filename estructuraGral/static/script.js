@@ -181,6 +181,8 @@ acceptFrameBtn.addEventListener("click", () => {
     fileBtn.disabled = true;
     fileBtn.classList.add("disabled");
     acceptFrameBtn.classList.add("disabled");
+    content.style.marginRight = "21vw";
+
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
 });
