@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 </head>
-<body>
+<body data-appname="{{title}}">
     <!-- Barra superior -->
     <header class="top-bar">
         <button id ="homeBtn">Home</button>
@@ -20,7 +20,10 @@
             <button id="fileBtn">Select video</button>
             <p id="fileName">No video selected.</p>
         </div>
-        <input type="file" id="videoFileInput" accept="video/*" style="display:none;">
+        <!-- <input type="file" id="videoFileInput" accept="video/*" style="display:none;"> -->
+        <div id="videoWindow" class="window hidden">
+            <ul id="videoList" class="videoList"></ul>
+        </div>
         <div class="frame-viewer">
             <canvas id="frame-placeholder"></canvas>
             <button id="acceptFrameBtn" disabled>Accept frame</button>

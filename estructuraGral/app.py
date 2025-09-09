@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, send_from_directory, abort
 #from flask_cors import CORS
 import base64
 from datetime import datetime
@@ -8,6 +8,12 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "secret_key"
 # CORS(app)
+BASE_DIR = "/srv/data" #cambiar acceso del usuario ubuntu para que sea como admin (chown y chmod 755)
+APP_DIRS = {
+    "foot": "1.1"
+}
+
+
 
 @app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
 def index(app_name):
@@ -77,6 +83,24 @@ def index(app_name):
         }
     #...  
     return render_template('index.html', title=app_name, data=data)
+
+#Acceso a carpetas de videos según la app_name
+@app.route("/select/<app_name>", methods=["GET"])
+def list_files(app_name):
+    if app_name not in APP_DIRS:
+        return abort(404, description=f"{app_name} doens't have a folder")
+    dir_path = os.path.join(BASE_DIR, APP_DIRS[app_name])
+    if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
+        return abort(404, description=f"Folder {APP_DIRS[APP_NAME]} not found")
+    videos = [file for file in os.listdir(dir_path) if file.lower().endswith((".mp4"))]
+    return jsonify(videos)
+#Acceso al video de la carpeta
+@app.route("/media/<app_name>/<filename>", methods=["GET"])
+def play_video(app_name, filename):
+    dir_path = os.path.join(BASE_DIR, APP_DIRS[app_name])
+    return send_from_directory(directory=dir_path, path=filename)
+
+
 
 @app.route('/save', methods=['POST'])
 def save():

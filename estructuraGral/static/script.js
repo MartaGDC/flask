@@ -1,3 +1,4 @@
+const body = document.body;
 const content = document.querySelector(".content");
 
 const logoutBtn = document.getElementById("logoutBtn");
@@ -5,7 +6,10 @@ const homeBtn = document.getElementById("homeBtn");
 
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
-const videoFileInput = document.getElementById("videoFileInput");
+//const videoFileInput = document.getElementById("videoFileInput");
+let appName = "";
+const videoWindow = document.getElementById("videoWindow");
+const videoList = document.getElementById("videoList");
 const popup = document.getElementById("evaluator-popup");
 const evaluatorInput = document.getElementById("evaluator");
 const evaluatorSubmit = document.getElementById("evaluator-submit");
@@ -76,6 +80,10 @@ logoutBtn.addEventListener("click", () => {
 */
 /*-------------------------SELECCION DEL VIDEO-------------------------*/
 //Se abre el díalogo al hacer click sobre select video
+document.addEventListener("DOMContentLoaded", () =>{
+    appName = body.dataset.appname;
+});
+
 fileBtn.addEventListener("click", () => {
     if (!evaluatorName || evaluatorName.trim() === "") {
         popup.classList.remove("hidden");
@@ -83,7 +91,8 @@ fileBtn.addEventListener("click", () => {
         content.classList.add("disabled");
     }
     else {
-        videoFileInput.click();
+        //videoFileInput.click();
+        getVideos();
     }
 });
 
@@ -97,7 +106,8 @@ function submitEvaluator() {
     evaluatorName = evaluatorInput.value.trim();
     if (evaluatorName !== "") {
         popup.classList.add("hidden");
-        videoFileInput.click();
+        //videoFileInput.click();
+        getVideos();
         content.classList.remove("disabled");
     }
     else {
@@ -105,6 +115,44 @@ function submitEvaluator() {
     }
 }
 
+async function getVideos(){
+    const res = await fetch(`/select/${appName}`);
+    if (!res.ok) {
+        alert("Error loading list of videos");
+        return;
+    }
+    const videos = await res.json();
+    videoList.innerHTML = "";
+    videoWindow.classList.remove("hidden");
+    videos.forEach(video => {
+        const li = document.createElement("li");
+        li.textContent = video;
+        li.addEventListener("click", () => selectVideo(appName, video));
+        videoList.appendChild(li);
+    });
+}
+
+function selectVideo(appName, filename){
+    if (filename) {
+        videoWindow.classList.add("hidden");
+        const videoURL = `/media/${appName}/${filename}`;
+        console.log(videoURL);
+        fileName.textContent = filename;
+        videoPlayer.src = videoURL;
+        videoContainer.style.display = "block";
+        videoPlayer.load();
+        videoPlayer.currentTime = 0; // Reset to the start of the video
+        researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
+        pausado = true;
+        drawFrame();
+    } else {
+        fileName.textContent = "No video selected.";
+        videoContainer.style.display = "none";
+        acceptFrameBtn.disabled = true;
+    }
+}
+
+/*
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 videoFileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
@@ -124,7 +172,7 @@ videoFileInput.addEventListener("change", (event) => {
         acceptFrameBtn.disabled = true;
     }
 });
-
+*/
 videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
     framePlaceholder.width = videoPlayer.videoWidth;
     framePlaceholder.height = videoPlayer.videoHeight;
@@ -180,6 +228,7 @@ acceptFrameBtn.addEventListener("click", () => {
     acceptFrameBtn.textContent = "Submit";
     fileBtn.disabled = true;
     fileBtn.classList.add("disabled");
+    videoWindow.classList.add("hidden");
     acceptFrameBtn.classList.add("disabled");
     content.style.marginRight = "21vw";
 

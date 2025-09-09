@@ -87,6 +87,43 @@ body {
     border: 1px solid #FFFFFF;
 }
 
+.window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    max-height: 70%;
+    background-color: #F5F5F5;
+    border: 1px solid #1A1A1A;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: auto;
+    z-index: 1000;
+}
+.videoList {
+    max-height: 300px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+}
+.videoList li {
+    padding: 8px;
+    border-bottom: 1px solid #F5F5F5;
+    cursor: pointer;
+}
+.videoList li:hover,
+.videoList li:active {
+    background-color: #FFFFFF;
+}
+.videoList li button {
+    background-color: #F5F5F5;
+    color: #1A1A1A;
+    border: 0px;
+    cursor: pointer;
+} 
+
 .popup {
     padding: 2vw;
     position: fixed;
