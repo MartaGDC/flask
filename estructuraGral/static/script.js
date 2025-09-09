@@ -115,6 +115,7 @@ function submitEvaluator() {
     }
 }
 
+// Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 async function getVideos(){
     const res = await fetch(`/select/${appName}`);
     if (!res.ok) {
@@ -131,7 +132,6 @@ async function getVideos(){
         videoList.appendChild(li);
     });
 }
-
 function selectVideo(appName, filename){
     if (filename) {
         videoWindow.classList.add("hidden");
@@ -153,7 +153,6 @@ function selectVideo(appName, filename){
 }
 
 /*
-// Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 videoFileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (file) {
