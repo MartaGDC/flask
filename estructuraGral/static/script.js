@@ -28,6 +28,8 @@ let pausado = false; //mostrar el frame solo si está pausado
 const researcherInfo = document.getElementById("researcherInfo");
 
 const acceptFrameBtn = document.getElementById("acceptFrameBtn");
+const acceptFramesBtn = document.getElementById("acceptFramesBtn");
+const submitBtn = document.getElementById("submitBtn");
 let aceptado = false; //frame aceptado, para no modificarlo hasta terminar el formulario
 let submitted = false; //formulario del frame aceptado
 
@@ -108,7 +110,6 @@ function submitEvaluator() {
         popup.classList.add("hidden");
         //videoFileInput.click();
         getVideos();
-        content.classList.remove("disabled");
     }
     else {
         alert("Evaluator name is required to proceed.");
@@ -135,6 +136,7 @@ async function getVideos(){
 function selectVideo(appName, filename){
     if (filename) {
         videoWindow.classList.add("hidden");
+        content.classList.remove("disabled");
         const videoURL = `/media/${appName}/${filename}`;
         console.log(videoURL);
         fileName.textContent = filename;
@@ -211,7 +213,7 @@ function drawFrame() {
 
 
 /*Aceptar frame:
-- Al hacer click en "Accept frame", se muestra el sidebar.
+- Al hacer click en "Select frame", se muestra el sidebar.
 - No se puede modificar la seleccion del frame al mover el video:
     - a menos que se complete el formulario del sidebar y
     - se haya enviado el formulario
@@ -220,20 +222,32 @@ function drawFrame() {
 */
 /*-------------------------ACEPTAR EL FRAME-------------------------*/
 acceptFrameBtn.addEventListener("click", () => {
+    acceptFrameBtn.classList.add("hidden");
+    acceptFramesBtn.classList.add("hidden");
+    submitBtn.classList.remove("hidden");
+    submitBtn.classList.add("disabled");
     aceptado = true;
     videoPlayer.style.controls = false;
     videoPlayer.pause();
     sidebar.classList.remove("hidden");
-    acceptFrameBtn.textContent = "Submit";
     fileBtn.disabled = true;
     fileBtn.classList.add("disabled");
-    videoWindow.classList.add("hidden");
-    acceptFrameBtn.classList.add("disabled");
     content.style.marginRight = "21vw";
 
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
 });
+
+/*Aceptar conjunto de frames
+- Al hacer click en "Select group of frames", se muestra el sidebar.
+- No se puede modificar la seleccion del frame al mover el video:
+    - a menos que se complete el formulario del sidebar y
+    - se haya enviado el formulario
+- Se activa el sidebar hasta que se envíe el formulario.
+- Se guarda el frame y la información del investigador.
+*/
+/*-------------------------ACEPTAR CONJUNTO DE FRAMES-------------------------*/
+
 
 
 /*Sidebar:
@@ -441,22 +455,22 @@ function validar() {
         )
     );
     if (allColorsDrawn || selectedQuality==="None" || selectedQuality === "Bad") {
-        acceptFrameBtn.disabled = false;
-        acceptFrameBtn.classList.remove("disabled");
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("disabled");
         submitted = true;
     }
     else{
-        acceptFrameBtn.disabled = true;
-        acceptFrameBtn.classList.add("disabled");
+        submitBtn.disabled = true;
+        submitBtn.classList.add("disabled");
         submitted = false;
     }
 }
 
-acceptFrameBtn.addEventListener("click", () => {
+submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
     if (selectedQuality === "") {
             alert('Please select a quality (Good, Fair, or Bad) before saving.');
-            acceptFrameBtn.classList.remove("disabled");
+            submitBtn.classList.remove("disabled");
 
             return;
         }

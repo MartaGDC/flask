@@ -15,23 +15,25 @@
     </header>
 
     <!-- Área central -->
-    <main class="content">
+<main class="content">
         <div class="selector">
             <button id="fileBtn">Select video</button>
             <p id="fileName">No video selected.</p>
+            <p class="researcher-info" id="researcherInfo"></p>
         </div>
         <!-- <input type="file" id="videoFileInput" accept="video/*" style="display:none;"> -->
-        <div id="videoWindow" class="window hidden">
-            <ul id="videoList" class="videoList"></ul>
-        </div>
         <div class="frame-viewer">
             <canvas id="frame-placeholder"></canvas>
-            <button id="acceptFrameBtn" disabled>Accept frame</button>
-        </div>
-        <div class="researcher-info" id="researcherInfo">
-            <span></span>
+            <div class="botones_frame">
+                <button id="acceptFrameBtn" disabled>Select frame</button>
+                <button id="acceptFramesBtn" disabled>Select group of frames</button>
+            </div>
+            <button id="submitBtn" class="hidden" disabled>Submit</button>
         </div>
     </main>
+    <div id="videoWindow" class="window hidden">
+        <ul id="videoList" class="videoList"></ul>
+    </div>
     <div id="evaluator-popup" class="popup hidden">
         <div class="popup-content">
             <label for="evaluator">Evaluator: </label>
