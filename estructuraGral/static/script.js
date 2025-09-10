@@ -16,11 +16,21 @@ const evaluatorSubmit = document.getElementById("evaluator-submit");
 let evaluatorName = "";
 
 const videoContainer = document.getElementById("video-container");
-const videoPlayer = document.getElementById("video-player")
+const videoPlayer = document.getElementById("video-player");
+const progress = document.getElementById("progress");
+const markers = document.getElementById("markers");
 const prevFrameBtn = document.getElementById("prev-frame");
 const nextFrameBtn = document.getElementById("next-frame");
+const playBtn = document.getElementById("play");
+const pauseBtn = document.getElementById("pause");
+const startFrame = document.getElementById("mark-start");
+const endFrame = document.getElementById("mark-end");
 const framePlaceholder = document.getElementById("frame-placeholder");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
+let firstFrame = null;
+let lastFrame = null;
+let startTime = null;
+let endTime = null;
 let frame = null;
 let savedFrame = null;
 let pausado = false; //mostrar el frame solo si está pausado
@@ -77,8 +87,6 @@ logoutBtn.addEventListener("click", () => {
 - Se abre un diálogo para seleccionar un archivo de video.
 - Se muestra el nombre del archivo seleccionado.
 - Se carga e inicia el video.
-- Se muestra el frame del video en un canvas cuando el video está pausado.
-- Se habilita el botón para aceptar el frame del video.
 */
 /*-------------------------SELECCION DEL VIDEO-------------------------*/
 //Se abre el díalogo al hacer click sobre select video
@@ -177,29 +185,40 @@ videoFileInput.addEventListener("change", (event) => {
 videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
     framePlaceholder.width = videoPlayer.videoWidth;
     framePlaceholder.height = videoPlayer.videoHeight;
+    progress.min = 0;
+    progress.max = 100;
+    progress.value = 0;
 });
-
-videoPlayer.addEventListener("pause", () => {
+videoPlayer.addEventListener("timeupdate", () => {
+    progress.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+});
+progress.addEventListener("input", () => {
+    videoPlayer.currentTime = (progress.value / 100) * videoPlayer.duration;
+});
+playBtn.addEventListener("click", reproducir);
+pauseBtn.addEventListener("click", () =>{
+    pausar();
+    drawFrame();
+});
+function reproducir(){
+    videoPlayer.play();
+    pausado = false;
+    playBtn.classList.add("hidden");
+    pauseBtn.classList.remove("hidden")
+}
+function pausar(){
+    videoPlayer.pause();
+    pausado = true;
+    pauseBtn.classList.add("hidden");
+    playBtn.classList.remove("hidden")
+}
+/*videoPlayer.addEventListener("pause", () => {
     pausado = true;
     drawFrame();
 });
-
 videoPlayer.addEventListener("play", () => {
     pausado = false;
-});
-
-prevFrameBtn.addEventListener("click", () => {
-    videoPlayer.pause();
-    pausado = true;
-    videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - (1/30)); //Si 30 fps
-});
-
-nextFrameBtn.addEventListener("click", () => {
-    videoPlayer.pause();
-    pausado = true;
-    videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + (1/30));
-});
-
+});*/
 function drawFrame() {
     if (pausado && !aceptado) {
         ctx.drawImage(videoPlayer, 0, 0);
@@ -212,22 +231,98 @@ function drawFrame() {
 
 
 
-/*Aceptar frame:
+/*Seleccionar un solo frame:
+- Se muestra el frame del video en un canvas cuando el video está pausado.
+- Se habilita el botón para aceptar el frame del video.
+*/
+/*-------------------------SELECCIONAR UN SOLO FRAME-------------------------*/
+prevFrameBtn.addEventListener("click", () => {
+    pausar();
+    videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - (1/30)); //Si 30 fps
+});
+
+nextFrameBtn.addEventListener("click", () => {
+    pausar();
+    videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + (1/30));
+});
+
+
+
+/*Seleccionar un grupo de frames:
+- Se muestra el frame del video en un canvas cuando el video está pausado.
+- Se habilitan los botones para seleccionar el grupo de frames.
+- Una vez seleeccionado el frame incial y el frame final, se habilita el sidebar
+*/
+/*-------------------------SELECCIONAR UN GRUPO DE FRAMES-------------------------*/
+acceptFramesBtn.addEventListener("click", () => {
+    acceptFrameBtn.classList.add("hidden");
+    acceptFramesBtn.classList.add("hidden");
+    submitBtn.classList.remove("hidden");
+    submitBtn.classList.add("disabled");
+    prevFrameBtn.disabled=true;
+    prevFrameBtn.classList.add("hidden");
+    nextFrameBtn.disabled=true;
+    nextFrameBtn.classList.add("hidden");
+    startFrame.classList.remove("hidden");
+    startFrame.disabled = false;
+    endFrame.classList.remove("hidden");
+    endFrame.disabled = false;
+})
+startFrame.addEventListener("click", () => {
+    startTime = videoPlayer.currentTime;
+    if (endTime !== null && endTime <= startTime){
+        startTime = endTime;
+        endTime = null;
+    }
+    else {
+        savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+        firstFrame = Math.floor(startTime * 30); //Si 30 fps por segundo.
+        ctx.drawImage(videoPlayer, 0, 0);
+    }
+    checkFrames();
+
+});
+endFrame.addEventListener("click", () => {
+    endTime = videoPlayer.currentTime;
+    if (startFrame !== null && startFrame >= endTime){
+        startFrame = endTime;
+        endTime = null;
+    }
+    else {
+        lastFrame = Math.floor(endTime * 30); //Si 30 fps por segundo.
+        videoPlayer.pause();
+    }
+    ctx.drawImage(videoPlayer, 0, 0);
+    checkFrames();
+});
+function checkFrames(){
+    console.log(startTime, endTime);
+    if(startTime !== null && endTime !== null){
+        ctx.drawImage(savedFrame, 0, 0);
+        
+    }
+}
+
+
+
+
+
+
+/*Aceptar seleccion:
 - Al hacer click en "Select frame", se muestra el sidebar.
-- No se puede modificar la seleccion del frame al mover el video:
+- No se puede modificar la seleccion del frame o grupo de frames, al mover el video:
     - a menos que se complete el formulario del sidebar y
     - se haya enviado el formulario
 - Se activa el sidebar hasta que se envíe el formulario.
-- Se guarda el frame y la información del investigador.
+- Se guarda el frame o frames y la información del investigador.
 */
-/*-------------------------ACEPTAR EL FRAME-------------------------*/
+/*-------------------------ACEPTAR SELECCION DE UN FRAME-------------------------*/
 acceptFrameBtn.addEventListener("click", () => {
     acceptFrameBtn.classList.add("hidden");
     acceptFramesBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
     aceptado = true;
-    videoPlayer.style.controls = false;
     videoPlayer.pause();
     sidebar.classList.remove("hidden");
     fileBtn.disabled = true;
@@ -237,16 +332,6 @@ acceptFrameBtn.addEventListener("click", () => {
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
 });
-
-/*Aceptar conjunto de frames
-- Al hacer click en "Select group of frames", se muestra el sidebar.
-- No se puede modificar la seleccion del frame al mover el video:
-    - a menos que se complete el formulario del sidebar y
-    - se haya enviado el formulario
-- Se activa el sidebar hasta que se envíe el formulario.
-- Se guarda el frame y la información del investigador.
-*/
-/*-------------------------ACEPTAR CONJUNTO DE FRAMES-------------------------*/
 
 
 
