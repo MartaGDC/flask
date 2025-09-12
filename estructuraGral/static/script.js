@@ -18,7 +18,7 @@ let evaluatorName = "";
 const videoContainer = document.getElementById("video-container");
 const videoPlayer = document.getElementById("video-player");
 const progress = document.getElementById("progress");
-const markers = document.getElementById("markers");
+const range = document.getElementById("range");
 const prevFrameBtn = document.getElementById("prev-frame");
 const nextFrameBtn = document.getElementById("next-frame");
 const playBtn = document.getElementById("play");
@@ -27,25 +27,34 @@ const startFrame = document.getElementById("mark-start");
 const endFrame = document.getElementById("mark-end");
 const framePlaceholder = document.getElementById("frame-placeholder");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
+let firstValue = null;
 let firstFrame = null;
+let lastValue = null;
 let lastFrame = null;
 let startTime = null;
 let endTime = null;
 let frame = null;
 let savedFrame = null;
+let savedFrames = [];
 let pausado = false; //mostrar el frame solo si está pausado
 
 const researcherInfo = document.getElementById("researcherInfo");
 
 const acceptFrameBtn = document.getElementById("acceptFrameBtn");
 const acceptFramesBtn = document.getElementById("acceptFramesBtn");
+const acceptGroupBtn = document.getElementById("acceptGroup");
+const frames = [];
 const submitBtn = document.getElementById("submitBtn");
 let aceptado = false; //frame aceptado, para no modificarlo hasta terminar el formulario
+let good = true;
 let submitted = false; //formulario del frame aceptado
 
 const sidebar = document.getElementById("sidebar");
+const blocks = document.querySelectorAll(".block");
 
 const qualityButtons = document.querySelectorAll(".quality-button");
+const qualityGreen = document.getElementById("qualityGreen");
+const qualityYellow = document.getElementById("qualityYellow");
 const qualityRed = document.getElementById("qualityRed");
 const qualityBlack = document.getElementById("qualityBlack");
 let selectedQuality = "";
@@ -146,7 +155,6 @@ function selectVideo(appName, filename){
         videoWindow.classList.add("hidden");
         content.classList.remove("disabled");
         const videoURL = `/media/${appName}/${filename}`;
-        console.log(videoURL);
         fileName.textContent = filename;
         videoPlayer.src = videoURL;
         videoContainer.style.display = "block";
@@ -155,10 +163,13 @@ function selectVideo(appName, filename){
         researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
         pausado = true;
         drawFrame();
+        acceptFrameBtn.classList.remove("hidden");
+        acceptFramesBtn.classList.remove("hidden");
     } else {
         fileName.textContent = "No video selected.";
         videoContainer.style.display = "none";
         acceptFrameBtn.disabled = true;
+        acceptFramesBtn.disabled = true;
     }
 }
 
@@ -185,14 +196,52 @@ videoFileInput.addEventListener("change", (event) => {
 videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
     framePlaceholder.width = videoPlayer.videoWidth;
     framePlaceholder.height = videoPlayer.videoHeight;
+    
     progress.min = 0;
     progress.max = 100;
     progress.value = 0;
 });
+
+
+/*
+videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
+    framePlaceholder.width = videoPlayer.videoWidth;
+    framePlaceholder.height = videoPlayer.videoHeight;
+    noUiSlider.create(range, {
+        start: [ 0, 10 ],
+        step: 1,
+        margin: 2,
+        connect: true,
+        range: {
+            'min': 0,
+            'max': 100
+        }
+    });
+});
+range.noUiSlider.on('update', function( values, handle ) {
+    if ( handle ) {
+        valueInput.value = values[handle];
+    } else {
+        valueSpan.innerHTML = values[handle];
+    }
+});
+valueInput.addEventListener('change', function(){
+    range.noUiSlider.set([null, this.value]);
+}); */
+
+
 videoPlayer.addEventListener("timeupdate", () => {
     progress.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+    if (lastValue !== null && firstValue !== null) {
+        ctx.drawImage(videoPlayer, 0, 0);
+        if (videoPlayer.currentTime >= lastValue) {
+            videoPlayer.currentTime = firstValue;
+            pausar();
+        }
+    }
 });
 progress.addEventListener("input", () => {
+    drawFrame();
     videoPlayer.currentTime = (progress.value / 100) * videoPlayer.duration;
 });
 playBtn.addEventListener("click", reproducir);
@@ -223,9 +272,8 @@ function drawFrame() {
     if (pausado && !aceptado) {
         ctx.drawImage(videoPlayer, 0, 0);
         savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
-
+        acceptFrameBtn.disabled = false; //Habilita el botón de aceptar frame solo si ya hay uno mostrandose
     }
-    acceptFrameBtn.disabled = false; //Habilita el botón de aceptar frame solo si ya hay uno mostrandose
     requestAnimationFrame(drawFrame); //Hace un loop mientras pausado siga siendo true, permite que se actualice el frame
 }
 
@@ -257,53 +305,57 @@ nextFrameBtn.addEventListener("click", () => {
 acceptFramesBtn.addEventListener("click", () => {
     acceptFrameBtn.classList.add("hidden");
     acceptFramesBtn.classList.add("hidden");
+    acceptGroupBtn.classList.remove("hidden");
+    progress.classList.add("hidden");
+    range.classList.remove("hidden");
+    noUiSlider.create(range, {
+        start: [ 0, 10 ],
+        step: 1,
+        margin: 2,
+        connect: true,
+        range: {
+            'min': 0,
+            'max': 100
+        }
+    });
+    lastValue = (10 / 100) * videoPlayer.duration;
+    lastFrame = Math.floor(lastValue * 30); //Si 30 fps por segundo.
+    firstValue = 0;
+    firstFrame = Math.floor(firstValue * 30); //Si 30 fps por segundo.
+    range.noUiSlider.on('update', function( values, handle ) {
+        if ( handle ) {
+            lastValue = (values[handle] / 100) * videoPlayer.duration;
+            videoPlayer.currentTime = lastValue;
+            lastFrame = Math.floor(lastValue * 30); //Si 30 fps por segundo.
+        } else {
+            firstValue = (values[handle] / 100) * videoPlayer.duration;
+            videoPlayer.currentTime = firstValue;
+            firstFrame = Math.floor(firstValue * 30); //Si 30 fps por segundo.
+        }
+    });
+});
+
+acceptGroupBtn.addEventListener("click", ()=> {
+    acceptGroupBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
-    prevFrameBtn.disabled=true;
-    prevFrameBtn.classList.add("hidden");
-    nextFrameBtn.disabled=true;
-    nextFrameBtn.classList.add("hidden");
-    startFrame.classList.remove("hidden");
-    startFrame.disabled = false;
-    endFrame.classList.remove("hidden");
-    endFrame.disabled = false;
-})
-startFrame.addEventListener("click", () => {
-    startTime = videoPlayer.currentTime;
-    if (endTime !== null && endTime <= startTime){
-        startTime = endTime;
-        endTime = null;
+    sidebar.classList.remove("hidden");
+    qualityGreen.classList.add("hidden");
+    qualityYellow.classList.add("hidden");
+    blocks.forEach(block => {
+        block.classList.add("hidden");
+    });
+    aceptado=true;
+    for (let i = firstFrame; i <= lastFrame; i++) {
+        frames.push(i);
     }
-    else {
-        savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
-        firstFrame = Math.floor(startTime * 30); //Si 30 fps por segundo.
+    for (let i = firstFrame; i <= lastFrame; i++) {
+        videoPlayer.currentTime = i/30;
         ctx.drawImage(videoPlayer, 0, 0);
+        savedFrames.push(ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height));
     }
-    checkFrames();
-
+    console.log(frames.length, savedFrames.length);
 });
-endFrame.addEventListener("click", () => {
-    endTime = videoPlayer.currentTime;
-    if (startFrame !== null && startFrame >= endTime){
-        startFrame = endTime;
-        endTime = null;
-    }
-    else {
-        lastFrame = Math.floor(endTime * 30); //Si 30 fps por segundo.
-        videoPlayer.pause();
-    }
-    ctx.drawImage(videoPlayer, 0, 0);
-    checkFrames();
-});
-function checkFrames(){
-    console.log(startTime, endTime);
-    if(startTime !== null && endTime !== null){
-        ctx.drawImage(savedFrame, 0, 0);
-        
-    }
-}
-
-
 
 
 
@@ -418,14 +470,14 @@ framePlaceholder.addEventListener('touchend', stopDrawing);
 framePlaceholder.addEventListener('touchcancel', stopDrawing);
 
 function startDrawing(e) {
-    if(aceptado){
+    if(aceptado && good){
         drawing = true;
         trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
         draw(e);
     }
 }
 function stopDrawing() {
-    if (aceptado){
+    if (aceptado && good){
         if(trazoActual) {
             trazos.push(trazoActual);
             trazoActual = null;
@@ -437,7 +489,7 @@ function stopDrawing() {
 }
 
 function draw(e) {
-    if (aceptado){
+    if (aceptado && good){
 
         if (!drawing) return;
         e.preventDefault();
@@ -512,6 +564,8 @@ function clearDrawing() {
 }
 
 //Formulario completado, validar y enviar (video, frame original, frame editado, filename, quality, zone, evaluator)
+qualityGreen.addEventListener("click", greenYellowQuality);
+qualityYellow.addEventListener("click", greenYellowQuality);
 qualityRed.addEventListener('click', redBlackQuality);
 qualityBlack.addEventListener('click',redBlackQuality);
 
@@ -527,7 +581,18 @@ function redBlackQuality(){
     });
     selectedZone= "";
     clearDrawing();
-    aceptado=false;
+    good = false;
+}
+function greenYellowQuality() {
+    zones.forEach(zone => {
+        zone.parentElement.classList.remove("disabled");
+        zone.disabled = false;
+    });
+    structures.forEach(structure => {
+        structure.disabled = false;
+        structure.classList.remove("disabled");
+    });
+    good = true;
 }
 
 
@@ -553,50 +618,58 @@ function validar() {
 
 submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
-    if (selectedQuality === "") {
-            alert('Please select a quality (Good, Fair, or Bad) before saving.');
-            submitBtn.classList.remove("disabled");
+        if (selectedQuality === "") {
+                alert('Please select a quality (Good, Fair, or Bad) before saving.');
+                submitBtn.classList.remove("disabled");
 
-            return;
-        }
-        saveDrawing();
+                return;
+            }
+            saveDrawing();
     }
 });
 
 function saveDrawing(){
-    const maskEditedCanvas = document.createElement('canvas');
-    const maskEditedCtx = maskEditedCanvas.getContext('2d');
-    maskEditedCanvas.width = framePlaceholder.width;
-    maskEditedCanvas.height = framePlaceholder.height;
-    maskEditedCtx.drawImage(framePlaceholder, 0, 0);
-    const imageEditedURL = maskEditedCanvas.toDataURL();
-
-    const maskOriginalCanvas = document.createElement("canvas");
-    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
-    maskOriginalCanvas.width = savedFrame.width;
-    maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(savedFrame, 0, 0);
-    const imageURL = maskOriginalCanvas.toDataURL();
-
+    let objectJS = [];
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
 
-    console.log('Data being sent:', {
-        video: fileName.textContent,
-        frame: frame,
-        originalImage: imageURL,
-        imageEdited: imageEditedURL,
-        filesaved: `${timestamp}.png`,
-        quaity: selectedQuality,
-        zone: selectedZone,
-        evaluator: evaluatorName,
-        });
+    if (frames.length > 0) {
+        frames.forEach((numframe, index) => {
+            //imagenes de cada frame para guardarlas en png. Tendrán el mismo timestamp, así que añadimos el frame al final
+            const maskOriginalCanvas = document.createElement("canvas");
+            const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
+            maskOriginalCanvas.width = savedFrames[index].width;
+            maskOriginalCanvas.height = savedFrames[index].height;
+            maskOriginalCtx.putImageData(savedFrames[index], 0, 0);
+            const imageURL = maskOriginalCanvas.toDataURL();
+            const imageEditedURL = maskOriginalCanvas.toDataURL();
 
-    fetch('/save', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
+            objectJS.push({
+                video: fileName.textContent, 
+                frame: numframe,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                filesaved: `${timestamp}_${index}.png`,
+                quality: selectedQuality,
+                zone: selectedZone,
+                evaluator: evaluatorName
+            });
+        });
+    } else {
+        const maskEditedCanvas = document.createElement('canvas');
+        const maskEditedCtx = maskEditedCanvas.getContext('2d');
+        maskEditedCanvas.width = framePlaceholder.width;
+        maskEditedCanvas.height = framePlaceholder.height;
+        maskEditedCtx.drawImage(framePlaceholder, 0, 0);
+        const imageEditedURL = maskEditedCanvas.toDataURL();
+
+        const maskOriginalCanvas = document.createElement("canvas");
+        const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
+        maskOriginalCanvas.width = savedFrame.width;
+        maskOriginalCanvas.height = savedFrame.height;
+        maskOriginalCtx.putImageData(savedFrame, 0, 0);
+        const imageURL = maskOriginalCanvas.toDataURL();
+
+        objectJS = {
             video: fileName.textContent, 
             frame: frame,
             originalImage: imageURL,
@@ -605,7 +678,16 @@ function saveDrawing(){
             quality: selectedQuality,
             zone: selectedZone,
             evaluator: evaluatorName
-        })
+        };
+    }
+
+
+    fetch('/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(objectJS)
     })
     .then(response => {
         if (!response.ok) {

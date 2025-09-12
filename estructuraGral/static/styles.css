@@ -223,6 +223,31 @@ body {
     left: 0;
 }
 
+#range {
+    width: 100%;
+    height: 0.5vw;
+    bottom: 1vw;
+}
+#range .noUi-connect {
+    background: rgb(0,0,0,0.5);
+}
+#range .noUi-handle,
+#range .noUi-touch-area {
+    position: absolute;
+    top: -0.3vw;
+    left: -0.5vw;
+    right: -0.5vw;
+    bottom: -0.3vw;
+
+    height: 1vw;
+    width: 1vw;
+    border-radius: 50%;
+}
+#range .noUi-handle::before,
+#range .noUi-handle::after {
+    display: none;
+}
+
 .frame-controls {
     background-color: #1a1a1a;
     display: flex;
