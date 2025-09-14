@@ -401,6 +401,7 @@ qualityButtons.forEach(button => {
         selectedQuality = button.innerText.toLowerCase();
         qualityButtons.forEach(btn => btn.classList.add('transparent'));
         button.classList.remove('transparent');
+        validar();
     })
 });
 
@@ -450,7 +451,6 @@ structures.forEach((structure, index) => {
 sliders.forEach((slider, index) => {
     slider.addEventListener('input', () => {
         widths[index] = parseInt(slider.value);
-        clearColorDrawing(colors[index]);
     });
 });
 deleteDrawings.forEach((deleteButton, index) => {
@@ -564,8 +564,8 @@ function clearDrawing() {
 }
 
 //Formulario completado, validar y enviar (video, frame original, frame editado, filename, quality, zone, evaluator)
-qualityGreen.addEventListener("click", greenYellowQuality);
-qualityYellow.addEventListener("click", greenYellowQuality);
+qualityGreen.addEventListener('click', greenYellowQuality);
+qualityYellow.addEventListener('click', greenYellowQuality);
 qualityRed.addEventListener('click', redBlackQuality);
 qualityBlack.addEventListener('click',redBlackQuality);
 
@@ -579,7 +579,6 @@ function redBlackQuality(){
         structure.disabled = true;
         structure.classList.add("disabled");
     });
-    selectedZone= "";
     clearDrawing();
     good = false;
 }
@@ -601,10 +600,9 @@ function validar() {
     activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
     const activeColors = Array.from(activeStructures).map(s => s.querySelector('.brush-slider').style.accentColor);
     const allColorsDrawn = activeColors.every(color =>
-        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0
-        )
+        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
     );
-    if (allColorsDrawn || selectedQuality==="None" || selectedQuality === "Bad") {
+    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad") {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
         submitted = true;
@@ -676,7 +674,7 @@ function saveDrawing(){
             imageEdited: imageEditedURL,
             filesaved: `${timestamp}.png`,
             quality: selectedQuality,
-            zone: selectedZone,
+            zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
             evaluator: evaluatorName
         };
     }
