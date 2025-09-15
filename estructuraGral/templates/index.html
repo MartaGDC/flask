@@ -69,7 +69,7 @@
             <button id="qualityBlack" class="quality-button transparent" style="background-color: #333333;">None</button>
         </div>
         <div class="block">
-            <div>Select Zone:</div>
+            <div class="hidden" id="selectZone">Select Zone:</div>
             <div class="zones">
                 {% for zone in data.zones %}
                     <label>
@@ -85,14 +85,12 @@
         </div>
         <div class="block">
             <div>Select Structure:</div>
-            {% for zone, structures in data.structures.items() %}
-                {% for structure in structures %}
-                    <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
-                        <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
-                        <input type="range" min="1" max="40" value="20" class="brush-slider" style="accent-color: {{ structure.color }};">
-                        <button id="delete{{ loop.index }}" class="delete">✖</button>
-                    </div>
-                {% endfor %}
+            {% for structure in data.structures %}
+                <div class=" structure-item transparent" data-color="{{structure.color}}">
+                    <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
+                    <input type="range" min="1" max="40" value="20" class="brush-slider" style="accent-color: {{ structure.color }};">
+                    <button id="delete{{ loop.index }}" class="delete">✖</button>
+                </div>
             {% endfor %}
 
         </div>

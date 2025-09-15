@@ -60,7 +60,8 @@ const qualityBlack = document.getElementById("qualityBlack");
 let selectedQuality = "";
 
 const zones = document.querySelectorAll('input[name="zone"]');
-let selectedZone = zones[0].value;;
+const selectZone = document.getElementById('selectZone');
+let selectedZone = null;
 
 const structures = document.querySelectorAll(".structure-item");
 let selectedStructure = null;
@@ -354,7 +355,6 @@ acceptGroupBtn.addEventListener("click", ()=> {
         ctx.drawImage(videoPlayer, 0, 0);
         savedFrames.push(ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height));
     }
-    console.log(frames.length, savedFrames.length);
 });
 
 
@@ -407,37 +407,28 @@ qualityButtons.forEach(button => {
 
 
 //Al seleccionar una zona, se muestran las estructuras correspondientes. Si no hay una zona seleccionada, se selecciona la primera por defecto.
-function showStructures(selectedZone){
-    activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
-    activeStructures.forEach(structure => {
-        structure.classList.remove("hidden");
-        structure.classList.add("transparent");
-
-    });
-    selectedStructure = activeStructures[0];
-    const firstIndex = selectedStructure.querySelector('.brush-slider');
-    currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
-    selectedStructure.classList.remove("transparent");
-    activeStructures.forEach(structure => {
-        structure.addEventListener('click', (event) => {
-            structures.forEach(structure => {
-                structure.classList.add("transparent");
-            });
-            selectedStructure = event.currentTarget;
-
-            selectedStructure.classList.remove("transparent");
+selectedStructure = structures[0];
+const firstIndex = selectedStructure.querySelector('.brush-slider');
+currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
+selectedStructure.classList.remove("transparent");
+structures.forEach(structure => {
+    structure.addEventListener('click', (event) => {
+        structures.forEach(structure => {
+            structure.classList.add("transparent");
         });
+        selectedStructure = event.currentTarget;
+
+        selectedStructure.classList.remove("transparent");
     });
+});
+
+if (zones.length > 0) {
+    selectZone.classList.remove(hidden);
+    selectedZone = zones[0].value;
 }
-showStructures(selectedZone);
 zones.forEach(zone => {
     zone.addEventListener('change', (event) => {
-        structures.forEach((structure) => {
-            structure.classList.add("hidden");
-            clearDrawing();
-        });
         selectedZone = event.target.value;
-        showStructures(selectedZone);
     });
 });
 
@@ -597,8 +588,7 @@ function greenYellowQuality() {
 
 
 function validar() {
-    activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
-    const activeColors = Array.from(activeStructures).map(s => s.querySelector('.brush-slider').style.accentColor);
+    const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
     const allColorsDrawn = activeColors.every(color =>
         trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
     );
@@ -630,7 +620,7 @@ function saveDrawing(){
     let objectJS = [];
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
 
-    if (frames.length > 0) {
+    if (frames.length > 0) { //Existe un listado de frames
         frames.forEach((numframe, index) => {
             //imagenes de cada frame para guardarlas en png. Tendrán el mismo timestamp, así que añadimos el frame al final
             const maskOriginalCanvas = document.createElement("canvas");
@@ -652,7 +642,7 @@ function saveDrawing(){
                 evaluator: evaluatorName
             });
         });
-    } else {
+    } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
         const maskEditedCtx = maskEditedCanvas.getContext('2d');
         maskEditedCanvas.width = framePlaceholder.width;

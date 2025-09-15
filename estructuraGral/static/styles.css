@@ -206,7 +206,7 @@ body {
 .progress-bar {
     position: absolute;
     width: 100%;
-    bottom: 2.5vw;
+    bottom: 2vw;
 }
 #progress {
     width: 100%;

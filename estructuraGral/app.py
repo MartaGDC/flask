@@ -9,8 +9,12 @@ app = Flask(__name__)
 app.secret_key = "secret_key"
 # CORS(app)
 BASE_DIR = "/srv/data" #cambiar acceso del usuario ubuntu para que sea como admin (chown y chmod 755)
-APP_DIRS = {
-    "foot": "1.1"
+APP_VIDEOS = {
+    "knee_anterior_longitudinal": "2_1_",
+    "knee_anterior_transversal": "2_2_",
+    "knee_anterior_transverse_trochlea": "2_3_",
+    "knee_anterior_longitudinal_trochlea": "2_4_",
+    "knee_anterior_parasagittal": "2_5_"
 }
 
 
@@ -22,19 +26,105 @@ def index(app_name):
 
     #Para que las zonas y las estructuras puedan ser definidas dinámicamente para el html:
     data = {}
-    if(app_name == "foot"):
+    if(app_name == "knee_anterior_longitudinal"):
         data = {
-            "zones" : [
-                {"value": "heel", "label": "Heel"},
-                {"value": "arc", "label": "Arc"},
-                {"value": "ejemplo", "label": "..."}
+            'zones': [],
+            'structures': [
+                {'name': "Recto femoral", 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Vasto', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Rotuliano superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Rotuliano prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Grasa prefemoral', 'color': "rgba(255, 255, 175, 0.5)"},
+                {'name': 'Grasa suprapatelar', 'color': "rgba(255, 255, 175, 0.5)"},
+                {'name': 'Grasa retrorrotuliana', 'color': "rgba(255, 255, 175, 0.5)"},
+                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Bursa infrarrotuliana prof', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Bursa infrarrotuliana superf', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Bursa prerrotuliana', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula base', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula centro', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula ápex', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ] 
+        }
+
+    elif(app_name == "knee_anterior_transversal"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': "Recto femoral", 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Vasto', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Rotuliano superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Rotuliano prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Grasa prefemoral', 'color': "rgba(255, 255, 175, 0.5)"},
+                {'name': 'Grasa suprapatelar', 'color': "rgba(255, 255, 175, 0.5)"},
+                {'name': 'Grasa retrorrotuliana', 'color': "rgba(255, 255, 175, 0.5)"},
+                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Bursa infrarrotuliana prof', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Bursa infrarrotuliana superf', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Bursa prerrotuliana', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula base', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula centro', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula ápex', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_anterior_transverse_trochlea"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+        
+    elif(app_name == "knee_anterior_longitudinal_trochlea"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+            ]
+        }
+    
+    elif(app_name == "knee_anterior_parasagittal"):
+        data = {
+            'zones': [
+                {"value": "medial", "label": "Medial"},
+                {"value": "lateral", "label": "Lateral"}
             ],
-            "structures": {
-                "heel": [
-                    {"name": "Skin and SCT", "color": "rgba(255, 150, 255, 0.25)"},
-                    {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.1)"},                    
-                    {"name": "Muscle", "color": "rgba(255, 50, 0, 0.5)"},
-                    {"name": "Tendon", "color": "rgba(170, 170, 200, 0.5)"},
+            'structures': [
+                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur cóndilo', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Rótula', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
+                {"name": "Retináculo superf", "color": "rgba(150, 200, 155, 0.5)"},
+                {"name": "Retináculo prof", "color": "rgba(150, 200, 155, 0.5)"}
+            ]
+        }
+    
+                    # {"name": "Skin and SCT", "color": "rgba(255, 150, 255, 0.25)"},
+                    # {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.1)"},                    
+                    # {"name": "Muscle", "color": "rgba(255, 50, 0, 0.5)"},
+                    # {"name": "Tendon", "color": "rgba(170, 170, 200, 0.5)"},
                     # {"name": "Ligament-Capsule", "color": "rgba(150, 200, 155, 0.5)"},
                     # {"name": "Synovial fluid", "color": "rgba(255, 255, 75, 0.25)"},
                     # {"name": "Artery", "color": "rgba(255, 0, 0, 0.5)"},
@@ -46,81 +136,29 @@ def index(app_name):
                     # {"name": "Fatty tissue", "color": "rgba(255, 255, 175, 0.5)"},
                     # {"name": "Synovial membrane", "color": "rgba(255, 175, 255, 0.5)"},
                     # {"name": "Synovial sheath", "color": "rgba(175, 255, 175, 0.25)"},
-                ],
-                "arc": [
-                    {"name": "Skin", "color": "#D81B60"},
-                    {"name": "Muscle", "color": "#8E24AA"},
-                    {"name": "Tendon...", "color": "#00ACC1"}
-                ],
-                "ejemplo":[
-                    {"name": "...", "color": "#D81B60"},
-                ]
-            }
-        }
-    elif(app_name == "hand"):
-        data = {
-            "zones" : [
-                {"value": "wrist", "label": "Wrist"},
-                {"value": "palm", "label": "Palm"},
-                {"value": "ejemplo", "label": "..."}
-            ],
-            "structures": {
-                "wrist": [
-                    {"name": "Skin", "color": "#D81B60"},
-                    {"name": "Muscle", "color": "#8E24AA"},
-                    {"name": "Tendon", "color": "#00ACC1"},
-                    {"name": "Bone...", "color": "#FB8C00"},
-                ],
-                "palm": [
-                    {"name": "Skin", "color": "#D81B60"},
-                    {"name": "Muscle", "color": "#8E24AA"},
-                    {"name": "Tendon...", "color": "#00ACC1"}
-                ],
-                "ejemplo":[
-                    {"name": "...", "color": "#D81B60"},
-                ]
-            }
-        }
-    #...  
+
+
     return render_template('index.html', title=app_name, data=data)
 
 #Acceso a carpetas de videos según la app_name
 @app.route("/select/<app_name>", methods=["GET"])
 def list_files(app_name):
-    if app_name not in APP_DIRS:
-        return abort(404, description=f"{app_name} doens't have a folder")
-    dir_path = os.path.join(BASE_DIR, APP_DIRS[app_name])
-    if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
-        return abort(404, description=f"Folder {APP_DIRS[APP_NAME]} not found")
-    videos = [file for file in os.listdir(dir_path) if file.lower().endswith((".mp4"))]
+    app = APP_VIDEOS[app_name]
+    dir_path = BASE_DIR
+    videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
     return jsonify(videos)
 #Acceso al video de la carpeta
 @app.route("/media/<app_name>/<filename>", methods=["GET"])
 def play_video(app_name, filename):
-    dir_path = os.path.join(BASE_DIR, APP_DIRS[app_name])
+    dir_path = BASE_DIR
     return send_from_directory(directory=dir_path, path=filename)
 
 
 
 @app.route('/save', methods=['POST'])
 def save():
-    #Cargar la respuesta
-    data = request.json
-    video = data['video']
-    frame = data["frame"]
-    originalImage = data['originalImage'].split(",")[1]
-    originalImage = base64.b64decode(originalImage)
-    imageEdited = data['imageEdited'].split(",")[1]
-    imageEdited = base64.b64decode(imageEdited)
-    filesaved = data['filesaved']
-    quality = data['quality']
-    zone = data['zone']
-    evaluator = data['evaluator']
-
     #Cargar el json donde guardar la info
     os.makedirs("static/DATA", exist_ok=True)
-    with open(f'static/DATA/{filesaved}', 'wb') as f:
-        f.write(imageEdited)
     metadata_file = 'static/DATA/file_info.json'
     if os.path.exists(metadata_file):
         with open(metadata_file, 'r') as f:
@@ -128,15 +166,56 @@ def save():
     else:
         metadata = []
 
-    #Añadir la nueva informacion al json
-    metadata.append({
-        "video": video,
-        "frame": frame,
-        "filesaved": filesaved,
-        "quality": quality,
-        "zone": zone,
-        "evaluator": evaluator
-    })
+    #Cargar la respuesta
+    data = request.json
+    if isinstance(data, dict): #guardado de un solo frame
+        video = data['video']
+        frame = data["frame"]
+        originalImage = data['originalImage'].split(",")[1]
+        originalImage = base64.b64decode(originalImage)
+        imageEdited = data['imageEdited'].split(",")[1]
+        imageEdited = base64.b64decode(imageEdited)
+        filesaved = data['filesaved']
+        quality = data['quality']
+        zone = data['zone']
+        evaluator = data['evaluator']
+        
+        with open(f'static/DATA/{filesaved}', 'wb') as f:
+            f.write(imageEdited)
+        #Añadir la nueva informacion al json
+        metadata.append({
+            "video": video,
+            "frame": frame,
+            "filesaved": filesaved,
+            "quality": quality,
+            "zone": zone,
+            "evaluator": evaluator
+        })
+    elif isinstance(data, list): #guardado de multiples frames
+        for i in range(len(data)):
+            video = data[i]['video']
+            frame = data[i]["frame"]
+            originalImage = data[i]['originalImage'].split(",")[1]
+            originalImage = base64.b64decode(originalImage)
+            imageEdited = data[i]['imageEdited'].split(",")[1]
+            imageEdited = base64.b64decode(imageEdited)
+            filesaved = data[i]['filesaved']
+            quality = data[i]['quality']
+            zone = data[i]['zone']
+            evaluator = data[i]['evaluator']
+
+            with open(f'static/DATA/{filesaved}', 'wb') as f:
+                f.write(imageEdited)
+            #Añadir la nueva informacion al json
+            metadata.append({
+                "video": video,
+                "frame": frame,
+                "filesaved": filesaved,
+                "quality": quality,
+                "zone": zone,
+                "evaluator": evaluator
+            })
+
     with open(metadata_file, 'w') as f:
         json.dump(metadata, f, indent=4)
 
