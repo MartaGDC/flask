@@ -14,7 +14,20 @@ APP_VIDEOS = {
     "knee_anterior_transversal": "2_2_",
     "knee_anterior_transverse_trochlea": "2_3_",
     "knee_anterior_longitudinal_trochlea": "2_4_",
-    "knee_anterior_parasagittal": "2_5_"
+    "knee_anterior_parasagittal": "2_5_",
+    "knee_medial_LLI": '2_6_',
+    'knee_medial_meniscal_transversal': '2_7_',
+    'knee_medial_meniscal_longitudinal': '2_8_',
+    'knee_lateral_cintilla': '2_9_',
+    'knee_lateral_LLE': '2_10_',
+    'knee_lateral_biceps': '2_11_',
+    'knee_lateral_menisco_transversal': '2_12_',
+    'knee_lateral_menisco_longitudinal': '2_13_',
+    'knee_posterior_transversal_medial': '2_14_',
+    'knee_posterior_transversal_central': '2_15_',
+    'knee_posterior_transversal_lateral': '2_16_',
+    'knee_posterior_logitudinal_medial': '2_17_',
+    'knee_posterior_longitudinal_lateral': '2_18_'
 }
 
 
