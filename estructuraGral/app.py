@@ -98,7 +98,7 @@ def index(app_name):
                 {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
                 {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
                 {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"}
             ]
         }
     
@@ -121,21 +121,211 @@ def index(app_name):
             ]
         }
     
-                    # {"name": "Skin and SCT", "color": "rgba(255, 150, 255, 0.25)"},
-                    # {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.1)"},                    
-                    # {"name": "Muscle", "color": "rgba(255, 50, 0, 0.5)"},
-                    # {"name": "Tendon", "color": "rgba(170, 170, 200, 0.5)"},
-                    # {"name": "Ligament-Capsule", "color": "rgba(150, 200, 155, 0.5)"},
-                    # {"name": "Synovial fluid", "color": "rgba(255, 255, 75, 0.25)"},
-                    # {"name": "Artery", "color": "rgba(255, 0, 0, 0.5)"},
-                    # {"name": "Vein", "color": "rgba(0, 0, 255, 0.5)"},
-                    # {"name": "Nerve", "color": "rgba(255, 255, 0, 0.5)"},
-                    # {"name": "Bone", "color": "rgba(255, 255, 150)"},
-                    # {"name": "Cartilage", "color": "rgba(125, 200, 255, 0.75)"},
-                    # {"name": "Fibrocartilage", "color": "rgba(150, 255, 150, 0.5)"},
-                    # {"name": "Fatty tissue", "color": "rgba(255, 255, 175, 0.5)"},
-                    # {"name": "Synovial membrane", "color": "rgba(255, 175, 255, 0.5)"},
-                    # {"name": "Synovial sheath", "color": "rgba(175, 255, 175, 0.25)"},
+    elif(app_name == "knee_medial_LLI"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'LLI superf', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'LLI prof', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Menisco int', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Pata de ganso', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Arteria meniscal', "color": "rgba(255, 0, 0, 0.5)"},                
+                {'name': 'PVN geniculado inf', "color": "rgba(255, 0, 0, 0.5)"}
+            ]
+        }
+    
+    elif(app_name == "knee_medial_meniscal_transversal"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'LLI', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Menisco int', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+    
+    elif(app_name == "knee_medial_meniscal_longitudinal"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'LLI', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Menisco int', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_lateral_cintilla"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Vasto ext', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cintilla iliotibial', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Cápsula articular', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Bursa', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_lateral_LLE"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Ligamento lat ext', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Bursa', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Peroné', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_lateral_biceps"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Tendón bicipital', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Bíceps', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Peroné', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_lateral_menisco_transversal"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_lateral_menisco_longitudinal"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
+                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_posterior_transversal_medial"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Nervio CPI', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Nervio sural medial', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Arteria poplítea', 'color': "rgba(255, 0, 0, 0.5)"},
+                {'name': 'Vena poplítea', 'color': "rgba(0, 0, 255, 0.5)"},
+                {'name': 'Músculo semimembranoso', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo semitendinoso', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_posterior_transversal_central"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Nervio CPI', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Nervio sural medial', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Nervio sural lateral', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Arteria poplítea', 'color': "rgba(255, 0, 0, 0.5)"},
+                {'name': 'Vena poplítea', 'color': "rgba(0, 0, 255, 0.5)"},
+                {'name': 'Músculos isquisurales', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo gastrocnemio medial', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo gastrocnemio lateral', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo plantar', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Cartílago cóndilo lateral', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_posterior_transversal_lateral"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Nervio CPE', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Nervio sural lateral', 'color': "rgba(255, 255, 0, 0.5)"},
+                {'name': 'Arteria poplítea', 'color': "rgba(255, 0, 0, 0.5)"},
+                {'name': 'Vena poplítea', 'color': "rgba(0, 0, 255, 0.5)"},
+                {'name': 'Músculo bíceps femoral', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo gastrocnemio lateral', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo plantar', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_posterior_logitudinal_medial"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Músculo isquiosural', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo gastrocnemio', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Fabela', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+    elif(app_name == "knee_posterior_longitudinal_lateral"):
+        data = {
+            'zones': [],
+            'structures': [
+                {'name': 'Músculo isquiosural', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo gastrocnemio', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
+                {'name': 'Cartílago cóndilo lateral', 'color': 'rgba(125, 200, 255, 0.75)'},
+                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"},
+                {'name': 'Fabela', 'color': "rgba(255, 255, 150)"}
+            ]
+        }
+
+
+    
+        # {"name": "Skin and SCT", "color": "rgba(255, 150, 255, 0.25)"},
+        # {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.1)"},                    
+        # {"name": "Muscle", "color": "rgba(255, 50, 0, 0.5)"},
+        # {"name": "Tendon", "color": "rgba(170, 170, 200, 0.5)"},
+        # {"name": "Ligament-Capsule", "color": "rgba(150, 200, 155, 0.5)"},
+        # {"name": "Synovial fluid", "color": "rgba(255, 255, 75, 0.25)"},
+        # {"name": "Artery", "color": "rgba(255, 0, 0, 0.5)"},
+        # {"name": "Vein", "color": "rgba(0, 0, 255, 0.5)"},
+        # {"name": "Nerve", "color": "rgba(255, 255, 0, 0.5)"},
+        # {"name": "Bone", "color": "rgba(255, 255, 150)"},
+        # {"name": "Cartilage", "color": "rgba(125, 200, 255, 0.75)"},
+        # {"name": "Fibrocartilage", "color": "rgba(150, 255, 150, 0.5)"},
+        # {"name": "Fatty tissue", "color": "rgba(255, 255, 175, 0.5)"},
+        # {"name": "Synovial membrane", "color": "rgba(255, 175, 255, 0.5)"},
+        # {"name": "Synovial sheath", "color": "rgba(175, 255, 175, 0.25)"},
 
 
     return render_template('index.html', title=app_name, data=data)
