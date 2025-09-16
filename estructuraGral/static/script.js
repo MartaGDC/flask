@@ -39,6 +39,7 @@ let savedFrames = [];
 let pausado = false; //mostrar el frame solo si está pausado
 
 const researcherInfo = document.getElementById("researcherInfo");
+let numFramesEval = null;
 
 const acceptFrameBtn = document.getElementById("acceptFrameBtn");
 const acceptFramesBtn = document.getElementById("acceptFramesBtn");
@@ -142,7 +143,6 @@ async function getVideos(){
         return;
     }
     const videos = await res.json();
-    videoList.innerHTML = "";
     videoWindow.classList.remove("hidden");
     videos.forEach(video => {
         const li = document.createElement("li");
@@ -151,7 +151,7 @@ async function getVideos(){
         videoList.appendChild(li);
     });
 }
-function selectVideo(appName, filename){
+async function selectVideo(appName, filename){
     if (filename) {
         videoWindow.classList.add("hidden");
         content.classList.remove("disabled");
@@ -161,7 +161,8 @@ function selectVideo(appName, filename){
         videoContainer.style.display = "block";
         videoPlayer.load();
         videoPlayer.currentTime = 0; // Reset to the start of the video
-        researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
+        await countFramesPerEval(evaluatorName);
+        researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
         pausado = true;
         drawFrame();
         acceptFrameBtn.classList.remove("hidden");
@@ -171,6 +172,21 @@ function selectVideo(appName, filename){
         videoContainer.style.display = "none";
         acceptFrameBtn.disabled = true;
         acceptFramesBtn.disabled = true;
+    }
+}
+
+async function countFramesPerEval(evaluatorName) {
+    try {
+        const response = await fetch('static/DATA/file_info.json');
+        if (!response.ok) {
+            numFramesEval = 0;
+            return;
+        }
+        const data = await response.json();
+        numFramesEval = data.filter(item => item.evaluator === evaluatorName).length;
+    } catch (err) {
+        console.error("JSON doesn't exist:", err);
+        numFramesEval = 0;
     }
 }
 
