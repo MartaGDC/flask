@@ -43,25 +43,25 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': "Recto femoral", 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Vasto', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Rotuliano superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Rotuliano prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Grasa prefemoral', 'color': "rgba(255, 255, 175, 0.5)"},
-                {'name': 'Grasa suprapatelar', 'color': "rgba(255, 255, 175, 0.5)"},
-                {'name': 'Grasa retrorrotuliana', 'color': "rgba(255, 255, 175, 0.5)"},
-                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Bursa infrarrotuliana prof', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Bursa infrarrotuliana superf', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Bursa prerrotuliana', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula base', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula centro', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula ápex', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': "Recto femoral", 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Vasto', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Cuadricipital superf', 'color': "rgba(140, 190, 200)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(140, 180, 200)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(140, 170, 200)"},
+                {'name': 'Rotuliano superf', 'color': "rgba(140, 160, 200)"},
+                {'name': 'Rotuliano prof', 'color': "rgba(140, 150, 200)"},
+                {'name': 'Grasa prefemoral', 'color': "rgba(252, 255, 170)"},
+                {'name': 'Grasa suprapatelar', 'color': "rgba(252, 255, 160)"},
+                {'name': 'Grasa retrorrotuliana', 'color': "rgba(252, 255, 150)"},
+                {'name': 'Receso articular', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Bursa infrarrotuliana prof', 'color': "rgba(250, 255, 80)"},
+                {'name': 'Bursa infrarrotuliana superf', 'color': "rgba(250, 255, 70)"},
+                {'name': 'Bursa prerrotuliana', 'color': "rgba(250, 255, 60)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Rótula base', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Rótula centro', 'color': "rgba(225, 255, 180)"},
+                {'name': 'Rótula ápex', 'color': "rgba(225, 255, 170)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 160)"}
             ] 
         }
 
@@ -69,37 +69,37 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': "Recto femoral", 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Vasto', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Rotuliano superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Rotuliano prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Grasa prefemoral', 'color': "rgba(255, 255, 175, 0.5)"},
-                {'name': 'Grasa suprapatelar', 'color': "rgba(255, 255, 175, 0.5)"},
-                {'name': 'Grasa retrorrotuliana', 'color': "rgba(255, 255, 175, 0.5)"},
-                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Bursa infrarrotuliana prof', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Bursa infrarrotuliana superf', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Bursa prerrotuliana', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula base', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula centro', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula ápex', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
-            ]
+                {'name': "Recto femoral", 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Vasto', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Cuadricipital superf', 'color': "rgba(140, 190, 200)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(140, 180, 200)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(140, 170, 200)"},
+                {'name': 'Rotuliano superf', 'color': "rgba(140, 160, 200)"},
+                {'name': 'Rotuliano prof', 'color': "rgba(140, 150, 200)"},
+                {'name': 'Grasa prefemoral', 'color': "rgba(252, 255, 170)"},
+                {'name': 'Grasa suprapatelar', 'color': "rgba(252, 255, 160)"},
+                {'name': 'Grasa retrorrotuliana', 'color': "rgba(252, 255, 150)"},
+                {'name': 'Receso articular', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Bursa infrarrotuliana prof', 'color': "rgba(250, 255, 80)"},
+                {'name': 'Bursa infrarrotuliana superf', 'color': "rgba(250, 255, 70)"},
+                {'name': 'Bursa prerrotuliana', 'color': "rgba(250, 255, 60)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Rótula base', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Rótula centro', 'color': "rgba(225, 255, 180)"},
+                {'name': 'Rótula ápex', 'color': "rgba(225, 255, 170)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 160)"}
+            ] 
         }
 
     elif(app_name == "knee_anterior_transverse_trochlea"):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Cuadricipital superf', 'color': "rgba(140, 190, 200)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(140, 180, 200)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(140, 170, 200)"},
+                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"}
             ]
         }
         
@@ -107,11 +107,11 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Cuadricipital superf', 'color': "rgba(140, 190, 200)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(140, 180, 200)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(140, 170, 200)"},
+                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"}
             ]
         }
     
@@ -122,15 +122,15 @@ def index(app_name):
                 {"value": "lateral", "label": "Lateral"}
             ],
             'structures': [
-                {'name': 'Cuadricipital superf', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital interm', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cuadricipital prof', 'color': "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur cóndilo', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Rótula', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
-                {"name": "Retináculo superf", "color": "rgba(150, 200, 155, 0.5)"},
-                {"name": "Retináculo prof", "color": "rgba(150, 200, 155, 0.5)"}
+                {'name': 'Cuadricipital superf', 'color': "rgba(140, 190, 200)"},
+                {'name': 'Cuadricipital interm', 'color': "rgba(140, 180, 200)"},
+                {'name': 'Cuadricipital prof', 'color': "rgba(140, 170, 200)"},
+                {'name': 'Cartílago Trólea femoral', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Fémur cóndilo', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Rótula', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Receso articular', 'color': "rgba(250, 255, 90)"},
+                {"name": "Retináculo superf", "color": "rgba(170, 230, 155)"},
+                {"name": "Retináculo prof", "color": "rgba(170, 220, 155)"}
             ]
         }
     
@@ -138,14 +138,14 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'LLI superf', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'LLI prof', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Menisco int', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Pata de ganso', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Arteria meniscal', "color": "rgba(255, 0, 0, 0.5)"},                
-                {'name': 'PVN geniculado inf', "color": "rgba(255, 0, 0, 0.5)"}
+                {'name': 'LLI superf', 'color': "rgba(170, 230, 155)"},
+                {'name': 'LLI prof', 'color': "rgba(170, 220, 155)"},
+                {'name': 'Menisco int', "color": "rgba(150, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Pata de ganso', "color": "rgba(140, 190, 200)"},
+                {'name': 'Arteria meniscal', "color": "rgba(230, 30, 0)"},                
+                {'name': 'PVN geniculado inf', "color": "rgba(230, 20, 0)"}
             ]
         }
     
@@ -153,12 +153,12 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'LLI', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Menisco int', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Cápsula', 'color': "rgba(170, 230, 155)"},
+                {'name': 'LLI', 'color': "rgba(170, 220, 155)"},
+                {'name': 'Receso articular', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Menisco int', "color": "rgba(150, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
     
@@ -166,11 +166,11 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'LLI', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Menisco int', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Cápsula', 'color': "rgba(170, 230, 155)"},
+                {'name': 'LLI', 'color': "rgba(170, 220, 155)"},
+                {'name': 'Menisco int', "color": "rgba(150, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -178,14 +178,14 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Vasto ext', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cintilla iliotibial', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Cápsula articular', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Bursa', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Vasto ext', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Cintilla iliotibial', "color": "rgba(140, 190, 200)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(140, 180, 200)"},
+                {'name': 'Cápsula articular', 'color': "rgba(170, 230, 155)"},
+                {'name': 'Bursa', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -193,13 +193,13 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Ligamento lat ext', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Bursa', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Peroné', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Ligamento lat ext', 'color': "rgba(170, 230, 155)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(140, 190, 200)"},
+                {'name': 'Bursa', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 200)"},
+                {'name': 'Peroné', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 180)"}
             ]
         }
 
@@ -207,10 +207,10 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Tendón bicipital', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Bíceps', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Peroné', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Tendón bicipital', "color": "rgba(140, 190, 200)"},
+                {'name': 'Bíceps', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Peroné', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -218,12 +218,12 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Cápsula', 'color': "rgba(170, 230, 155)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(140, 190, 200)"},
+                {'name': 'Receso articular', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -231,12 +231,12 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Cápsula', 'color': "rgba(150, 200, 155, 0.5)"},
-                {'name': 'Tendón poplíteo', "color": "rgba(170, 170, 200, 0.5)"},
-                {'name': 'Receso articular', 'color': "rgba(175, 255, 175, 0.25)"},
-                {'name': 'Menisco ext', "color": "rgba(150, 255, 150, 0.5)"},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Cápsula', 'color': "rgba(170, 230, 155)"},
+                {'name': 'Tendón poplíteo', "color": "rgba(140, 190, 200)"},
+                {'name': 'Receso articular', 'color': "rgba(250, 255, 90)"},
+                {'name': 'Menisco ext', "color": "rgba(150, 255, 200)"},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -244,15 +244,15 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Nervio CPI', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Nervio sural medial', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Arteria poplítea', 'color': "rgba(255, 0, 0, 0.5)"},
-                {'name': 'Vena poplítea', 'color': "rgba(0, 0, 255, 0.5)"},
-                {'name': 'Músculo semimembranoso', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo semitendinoso', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Nervio CPI', 'color': "rgba(255, 255, 50)"},
+                {'name': 'Nervio sural medial', 'color': "rgba(255, 255, 40)"},
+                {'name': 'Arteria poplítea', 'color': "rgba(230, 30, 0)"},
+                {'name': 'Vena poplítea', 'color': "rgba(0, 30, 255)"},
+                {'name': 'Músculo semimembranoso', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Músculo semitendinoso', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -260,20 +260,20 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Nervio CPI', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Nervio sural medial', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Nervio sural lateral', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Arteria poplítea', 'color': "rgba(255, 0, 0, 0.5)"},
-                {'name': 'Vena poplítea', 'color': "rgba(0, 0, 255, 0.5)"},
-                {'name': 'Músculos isquisurales', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo gastrocnemio medial', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo gastrocnemio lateral', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo plantar', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Cartílago cóndilo lateral', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Nervio CPI', 'color': "rgba(255, 255, 50)"},
+                {'name': 'Nervio sural medial', 'color': "rgba(255, 255, 40)"},
+                {'name': 'Nervio sural lateral', 'color': "rgba(255, 255, 30)"},
+                {'name': 'Arteria poplítea', 'color': "rgba(230, 30, 0)"},
+                {'name': 'Vena poplítea', 'color': "rgba(0, 30, 255)"},
+                {'name': 'Músculos isquisurales', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Músculo gastrocnemio medial', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Músculo gastrocnemio lateral', 'color': 'rgba(240, 50, 0)'},
+                {'name': 'Músculo plantar', 'color': 'rgba(240, 40, 0)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(240, 30, 0)'},
+                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Cartílago cóndilo lateral', 'color': 'rgba(125, 240, 255)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -281,16 +281,16 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Nervio CPE', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Nervio sural lateral', 'color': "rgba(255, 255, 0, 0.5)"},
-                {'name': 'Arteria poplítea', 'color': "rgba(255, 0, 0, 0.5)"},
-                {'name': 'Vena poplítea', 'color': "rgba(0, 0, 255, 0.5)"},
-                {'name': 'Músculo bíceps femoral', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo gastrocnemio lateral', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo plantar', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Nervio CPE', 'color': "rgba(255, 255, 50)"},
+                {'name': 'Nervio sural lateral', 'color': "rgba(255, 255, 40)"},
+                {'name': 'Arteria poplítea', 'color': "rgba(230, 30, 0)"},
+                {'name': 'Vena poplítea', 'color': "rgba(0, 30, 255)"},
+                {'name': 'Músculo bíceps femoral', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Músculo gastrocnemio lateral', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Músculo plantar', 'color': 'rgba(240, 50, 0)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(240, 40, 0)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"}
             ]
         }
 
@@ -298,13 +298,13 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Músculo isquiosural', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo gastrocnemio', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Fabela', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Músculo isquiosural', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Músculo gastrocnemio', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(240, 50, 0)'},
+                {'name': 'Cartílago cóndilo medial', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Fabela', 'color': "rgba(225, 255, 180)"}
             ]
         }
 
@@ -312,34 +312,15 @@ def index(app_name):
         data = {
             'zones': [],
             'structures': [
-                {'name': 'Músculo isquiosural', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo gastrocnemio', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Músculo poplíteo', 'color': 'rgba(255, 50, 0, 0.5)'},
-                {'name': 'Cartílago cóndilo lateral', 'color': 'rgba(125, 200, 255, 0.75)'},
-                {'name': 'Fémur', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Tibia', 'color': "rgba(255, 255, 150)"},
-                {'name': 'Fabela', 'color': "rgba(255, 255, 150)"}
+                {'name': 'Músculo isquiosural', 'color': 'rgba(240, 70, 0)'},
+                {'name': 'Músculo gastrocnemio', 'color': 'rgba(240, 60, 0)'},
+                {'name': 'Músculo poplíteo', 'color': 'rgba(240, 50, 0)'},
+                {'name': 'Cartílago cóndilo lateral', 'color': 'rgba(125, 250, 255)'},
+                {'name': 'Fémur', 'color': "rgba(225, 255, 200)"},
+                {'name': 'Tibia', 'color': "rgba(225, 255, 190)"},
+                {'name': 'Fabela', 'color': "rgba(225, 255, 180)"}
             ]
         }
-
-
-    
-        # {"name": "Skin and SCT", "color": "rgba(255, 150, 255, 0.25)"},
-        # {"name": "Connective tissue", "color": "rgba(255, 255, 200, 0.1)"},                    
-        # {"name": "Muscle", "color": "rgba(255, 50, 0, 0.5)"},
-        # {"name": "Tendon", "color": "rgba(170, 170, 200, 0.5)"},
-        # {"name": "Ligament-Capsule", "color": "rgba(150, 200, 155, 0.5)"},
-        # {"name": "Synovial fluid", "color": "rgba(255, 255, 75, 0.25)"},
-        # {"name": "Artery", "color": "rgba(255, 0, 0, 0.5)"},
-        # {"name": "Vein", "color": "rgba(0, 0, 255, 0.5)"},
-        # {"name": "Nerve", "color": "rgba(255, 255, 0, 0.5)"},
-        # {"name": "Bone", "color": "rgba(255, 255, 150)"},
-        # {"name": "Cartilage", "color": "rgba(125, 200, 255, 0.75)"},
-        # {"name": "Fibrocartilage", "color": "rgba(150, 255, 150, 0.5)"},
-        # {"name": "Fatty tissue", "color": "rgba(255, 255, 175, 0.5)"},
-        # {"name": "Synovial membrane", "color": "rgba(255, 175, 255, 0.5)"},
-        # {"name": "Synovial sheath", "color": "rgba(175, 255, 175, 0.25)"},
-
 
     return render_template('index.html', title=app_name, data=data)
 
@@ -362,6 +343,7 @@ def play_video(app_name, filename):
 def save():
     #Cargar el json donde guardar la info
     os.makedirs("static/DATA", exist_ok=True)
+    os.makedirs("static/frames", exist_ok=True)
     metadata_file = 'static/DATA/file_info.json'
     if os.path.exists(metadata_file):
         with open(metadata_file, 'r') as f:
@@ -378,17 +360,21 @@ def save():
         originalImage = base64.b64decode(originalImage)
         imageEdited = data['imageEdited'].split(",")[1]
         imageEdited = base64.b64decode(imageEdited)
+        frameoriginal = data['frameoriginal']
         filesaved = data['filesaved']
         quality = data['quality']
         zone = data['zone']
         evaluator = data['evaluator']
         
+        with open(f'static/frames/{frameoriginal}', 'wb') as f:
+            f.write(originalImage)
         with open(f'static/DATA/{filesaved}', 'wb') as f:
             f.write(imageEdited)
         #Añadir la nueva informacion al json
         metadata.append({
             "video": video,
             "frame": frame,
+            "frameoriginal": frameoriginal,
             "filesaved": filesaved,
             "quality": quality,
             "zone": zone,
@@ -402,17 +388,20 @@ def save():
             originalImage = base64.b64decode(originalImage)
             imageEdited = data[i]['imageEdited'].split(",")[1]
             imageEdited = base64.b64decode(imageEdited)
+            frameoriginal = data[i]['frameoriginal']
             filesaved = data[i]['filesaved']
             quality = data[i]['quality']
             zone = data[i]['zone']
             evaluator = data[i]['evaluator']
-
+            with open(f'static/frames/{frameoriginal}', 'wb') as f:
+                f.write(originalImage)
             with open(f'static/DATA/{filesaved}', 'wb') as f:
                 f.write(imageEdited)
             #Añadir la nueva informacion al json
             metadata.append({
                 "video": video,
                 "frame": frame,
+                "frameoriginal": frameoriginal,
                 "filesaved": filesaved,
                 "quality": quality,
                 "zone": zone,

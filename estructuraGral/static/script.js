@@ -588,10 +588,11 @@ function greenYellowQuality() {
 
 
 function validar() {
-    const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
+    /*const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
     const allColorsDrawn = activeColors.every(color =>
         trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
-    );
+    );*/
+    allColorsDrawn=true; //Se han definido muchas estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
     if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad") {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
@@ -636,6 +637,7 @@ function saveDrawing(){
                 frame: numframe,
                 originalImage: imageURL,
                 imageEdited: imageEditedURL,
+                frameoriginal: `${fileName.textContent}_${timestamp}_${frame}.png`, 
                 filesaved: `${timestamp}_${index}.png`,
                 quality: selectedQuality,
                 zone: selectedZone,
@@ -662,6 +664,7 @@ function saveDrawing(){
             frame: frame,
             originalImage: imageURL,
             imageEdited: imageEditedURL,
+            frameoriginal: `${fileName.textContent}_${timestamp}_${frame}.png`, 
             filesaved: `${timestamp}.png`,
             quality: selectedQuality,
             zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,

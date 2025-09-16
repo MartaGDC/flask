@@ -405,3 +405,70 @@ body {
 .transparent {
     opacity: 0.7;
 }
+
+.coloresAnatomia{
+    color: rgba(235, 150, 255); /*Skin and SCT*/
+
+    color: rgba(245, 255, 200); /*Connective tissue*/
+    
+    color: rgb(240, 70, 0); /*Muscle1*/
+    color: rgba(240, 60, 0); /*Muscle2*/
+    color: rgba(240, 50, 0); /*Muscle3*/
+    color: rgba(240, 40, 0); /*Muscle4*/
+    color: rgba(240, 30, 0); /*Muscle5*/
+    color: rgba(240, 20, 0); /*Muscle6*/
+
+    color: rgb(140, 190, 200); /*Tendon1*/
+    color: rgba(140, 180, 200); /*Tendon2*/
+    color: rgba(140, 170, 200); /*Tendon3*/
+    color: rgba(140, 160, 200); /*Tendon4*/
+    color: rgba(140, 150, 200); /*Tendon5*/
+    color: rgba(140, 140, 200); /*Tendon6*/
+
+    color: rgb(170, 230, 155); /*Ligament-Capsule1*/
+    color: rgba(170, 220, 155); /*Ligament-Capsule2*/
+    color: rgba(170, 210, 155); /*Ligament-Capsule3*/
+
+    color: rgb(250, 255, 90); /*Synovial fluid1*/
+    color: rgba(250, 255, 80); /*Synovial fluid2*/
+    color: rgba(250, 255, 70); /*Synovial fluid3*/
+    color: rgba(250, 255, 60); /*Synovial fluid4*/
+    color: rgba(250, 255, 50); /*Synovial fluid5*/
+
+    color: rgba(230, 30, 0); /*Artery1*/
+    color: rgba(230, 20, 0); /*Artery2*/
+    color: rgba(230, 10, 0); /*Artery3*/
+
+    color: rgba(0, 30, 255); /*Vein1*/
+    color: rgba(0, 20, 255); /*Vein2*/
+    color: rgba(0, 10, 255); /*Vein3*/
+
+    color: rgba(255, 255, 50); /*Nerve1*/
+    color: rgba(255, 255, 40); /*Nerve2*/
+    color: rgba(255, 255, 30); /*Nerve3*/
+    color: rgba(255, 255, 20); /*Nerve4*/
+    color: rgba(255, 255, 10); /*Nerve5*/
+
+    color: rgba(225, 255, 200); /*Bone1*/
+    color: rgba(225, 255, 190); /*Bone2*/
+    color: rgba(225, 255, 180); /*Bone3*/
+    color: rgba(225, 255, 170); /*Bone4*/
+    color: rgba(225, 255, 160); /*Bone5*/
+    color: rgba(225, 255, 150); /*Bone6*/
+
+    color: rgba(125, 250, 255); /*Cartilage1*/
+    color: rgba(125, 240, 255); /*Cartilage2*/
+    color: rgba(125, 230, 255); /*Cartilage3*/
+
+    color: rgba(150, 255, 200); /*Fibrocartilage1*/
+    color: rgba(150, 255, 190); /*Fibrocartilage2*/
+
+    color: rgba(252, 255, 170); /*Fatty tissue1*/
+    color: rgba(252, 255, 160); /*Fatty tissue2*/
+    color: rgba(252, 255, 150); /*Fatty tissue3*/
+    color: rgba(252, 255, 140); /*Fatty tissue4*/
+
+    color: rgba(255, 175, 255); /*Synovial membrane*/
+
+    color: rgba(175, 255, 175); /*Synovial sheath*/
+}
