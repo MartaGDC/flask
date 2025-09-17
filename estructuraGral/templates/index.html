@@ -21,7 +21,7 @@
         <div class="selector">
             <button id="fileBtn">Select video</button>
             <p id="fileName">No video selected.</p>
-            <p class="researcher-info" id="researcherInfo"></p>
+            <p class="researcher-info" id="researcherInfo" data-user="{{user}}"></p>
         </div>
         <!-- <input type="file" id="videoFileInput" accept="video/*" style="display:none;"> -->
         <div class="frame-viewer">
@@ -37,13 +37,13 @@
     <div id="videoWindow" class="window hidden">
         <ul id="videoList" class="videoList"></ul>
     </div>
-    <div id="evaluator-popup" class="popup hidden">
+    <!--<div id="evaluator-popup" class="popup hidden">
         <div class="popup-content">
             <label for="evaluator">Evaluator: </label>
             <input type="text" id="evaluator" placeholder="Evaluator Name">
         </div>
         <button id="evaluator-submit">Accept</button>
-    </div>
+    </div>-->
 
     <!-- Video abajo izquierda -->
     <div id="video-container" style="display:none;">

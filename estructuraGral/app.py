@@ -7,6 +7,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "secret_key"
+
 # CORS(app)
 BASE_DIR = "/srv/data" #cambiar acceso del usuario ubuntu para que sea como admin (chown y chmod 755)
 APP_VIDEOS = {
@@ -31,9 +32,9 @@ APP_VIDEOS = {
 }
 
 
-
 @app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
 def index(app_name):
+    user = request.args.get('user')
     # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
     #                                                return render_template(template_name, title=app_name)
 

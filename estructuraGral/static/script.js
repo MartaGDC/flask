@@ -10,9 +10,6 @@ const fileName = document.getElementById("fileName");
 let appName = "";
 const videoWindow = document.getElementById("videoWindow");
 const videoList = document.getElementById("videoList");
-const popup = document.getElementById("evaluator-popup");
-const evaluatorInput = document.getElementById("evaluator");
-const evaluatorSubmit = document.getElementById("evaluator-submit");
 let evaluatorName = "";
 
 const videoContainer = document.getElementById("video-container");
@@ -85,10 +82,10 @@ homeBtn.addEventListener("click", () => {
 })
 
 logoutBtn.addEventListener("click", () => {
-    fetch("http://127.0.0.1:5004/logout", { method: "POST" })
+    fetch("http://127.0.0.1:5004/logout", { method: "POST" }) //Cambiar para servidor
         .then(response => {
             if (response.ok) {
-                window.location.href = "http://127.0.0.1/index.php";
+                window.location.href = "http://127.0.0.1/index.php"; //Cambiar para servidor
             }
         });
 });
@@ -103,37 +100,12 @@ logoutBtn.addEventListener("click", () => {
 //Se abre el díalogo al hacer click sobre select video
 document.addEventListener("DOMContentLoaded", () =>{
     appName = body.dataset.appname;
+    evaluatorName = researcherInfo.dataset.user;
 });
 
 fileBtn.addEventListener("click", () => {
-    if (!evaluatorName || evaluatorName.trim() === "") {
-        popup.classList.remove("hidden");
-        evaluatorInput.focus();
-        content.classList.add("disabled");
-    }
-    else {
-        //videoFileInput.click();
-        getVideos();
-    }
+    getVideos();
 });
-
-evaluatorInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        submitEvaluator();
-    }
-});
-evaluatorSubmit.addEventListener("click", submitEvaluator);
-function submitEvaluator() {
-    evaluatorName = evaluatorInput.value.trim();
-    if (evaluatorName !== "") {
-        popup.classList.add("hidden");
-        //videoFileInput.click();
-        getVideos();
-    }
-    else {
-        alert("Evaluator name is required to proceed.");
-    }
-}
 
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 async function getVideos(){
