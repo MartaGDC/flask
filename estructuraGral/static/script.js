@@ -1,13 +1,14 @@
 const body = document.body;
 const content = document.querySelector(".content");
 
-const logoutBtn = document.getElementById("logoutBtn");
+const reloadBtn = document.getElementById("reloadBtn");
 const homeBtn = document.getElementById("homeBtn");
 
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 //const videoFileInput = document.getElementById("videoFileInput");
 let appName = "";
+let nbFile = "";
 const videoWindow = document.getElementById("videoWindow");
 const videoList = document.getElementById("videoList");
 let evaluatorName = "";
@@ -73,7 +74,7 @@ let trazos = [];
 let trazoActual = null;
 
 
-/*Botones logout y home:
+/*Botones reload y home:
 
 */
 /*-------------------------BOTONES LOGOUT Y HOME-------------------------*/
@@ -81,13 +82,11 @@ homeBtn.addEventListener("click", () => {
     location.reload();
 })
 
-logoutBtn.addEventListener("click", () => {
-    fetch("http://127.0.0.1:5004/logout", { method: "POST" }) //Cambiar para servidor
-        .then(response => {
-            if (response.ok) {
-                window.location.href = "http://127.0.0.1/index.php"; //Cambiar para servidor
-            }
-        });
+reloadBtn.addEventListener("click", () => {
+    console.log(fileName.textContent);
+    if (!fileName.textContent.startsWith("No")){
+        recargarVideo(appName, fileName.textContent);
+    }
 });
 
 
@@ -103,9 +102,19 @@ document.addEventListener("DOMContentLoaded", () =>{
     evaluatorName = researcherInfo.dataset.user;
 });
 
-fileBtn.addEventListener("click", () => {
+if(sessionStorage.getItem('reloadAfterSave') === 'true'){
+    appName = sessionStorage.getItem('selectedApp');
+    nbFile = sessionStorage.getItem('selectedFile');
+    console.log(nbFile);
+    sessionStorage.removeItem('reloadAfterSave');
+    sessionStorage.removeItem('selectedApp');
+    sessionStorage.removeItem('selectedFile');
+    selectVideo(appName, nbFile);
+} else {
+    fileBtn.addEventListener("click", () => {
     getVideos();
 });
+}
 
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 async function getVideos(){
@@ -121,8 +130,9 @@ async function getVideos(){
         li.textContent = video;
         li.addEventListener("click", () => selectVideo(appName, video));
         videoList.appendChild(li);
-    });
+    }); 
 }
+
 async function selectVideo(appName, filename){
     if (filename) {
         videoWindow.classList.add("hidden");
@@ -292,6 +302,7 @@ nextFrameBtn.addEventListener("click", () => {
 */
 /*-------------------------SELECCIONAR UN GRUPO DE FRAMES-------------------------*/
 acceptFramesBtn.addEventListener("click", () => {
+    good = false;
     acceptFrameBtn.classList.add("hidden");
     acceptFramesBtn.classList.add("hidden");
     acceptGroupBtn.classList.remove("hidden");
@@ -358,12 +369,13 @@ acceptGroupBtn.addEventListener("click", ()=> {
 */
 /*-------------------------ACEPTAR SELECCION DE UN FRAME-------------------------*/
 acceptFrameBtn.addEventListener("click", () => {
+    pausar();
     acceptFrameBtn.classList.add("hidden");
     acceptFramesBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
     aceptado = true;
-    videoPlayer.pause();
+
     sidebar.classList.remove("hidden");
     fileBtn.disabled = true;
     fileBtn.classList.add("disabled");
@@ -677,10 +689,18 @@ function saveDrawing(){
     .then(data => {
         console.log('Drawing saved successfully:', data);
         alert('Drawing saved successfully.');
-        location.reload()
+        recargarVideo(appName, fileName.textContent);
     })
     .catch(error => {
         console.error('Error saving drawing:', error);
         alert('An error occurred while saving. Please try again.');
     });
+}
+
+function recargarVideo(appName, filename){
+    // Guardamos datos para usar después de la recarga
+    sessionStorage.setItem('reloadAfterSave', 'true');
+    sessionStorage.setItem('selectedApp', appName);
+    sessionStorage.setItem('selectedFile', filename);
+    location.reload();
 }
