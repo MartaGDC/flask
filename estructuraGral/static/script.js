@@ -112,8 +112,8 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     selectVideo(appName, nbFile);
 } else {
     fileBtn.addEventListener("click", () => {
-    getVideos();
-});
+        getVideos();
+    });
 }
 
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
@@ -375,7 +375,6 @@ acceptFrameBtn.addEventListener("click", () => {
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
     aceptado = true;
-
     sidebar.classList.remove("hidden");
     fileBtn.disabled = true;
     fileBtn.classList.add("disabled");
@@ -698,7 +697,7 @@ function saveDrawing(){
 }
 
 function recargarVideo(appName, filename){
-    // Guardamos datos para usar después de la recarga
+    // Guardar datos para usar después de la recarga
     sessionStorage.setItem('reloadAfterSave', 'true');
     sessionStorage.setItem('selectedApp', appName);
     sessionStorage.setItem('selectedFile', filename);

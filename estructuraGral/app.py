@@ -325,6 +325,15 @@ def index(app_name):
 
     return render_template('index.html', title=app_name, data=data)
 
+
+@app.after_request
+def add_header(response): #Con los cambios en el html, había problemas de cache al usar el boton Reload
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
 #Acceso a carpetas de videos según la app_name
 @app.route("/select/<app_name>", methods=["GET"])
 def list_files(app_name):
