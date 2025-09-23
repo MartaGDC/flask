@@ -59,8 +59,8 @@ const qualityBlack = document.getElementById("qualityBlack");
 let selectedQuality = "";
 
 const zones = document.querySelectorAll('input[name="zone"]');
-const selectZone = document.getElementById('selectZone');
-let selectedZone = null;
+//const selectZone = document.getElementById('selectZone');
+let selectedZone = zones[0].value;
 
 const structures = document.querySelectorAll(".structure-item");
 let selectedStructure = null;
@@ -406,30 +406,38 @@ qualityButtons.forEach(button => {
 
 
 //Al seleccionar una zona, se muestran las estructuras correspondientes. Si no hay una zona seleccionada, se selecciona la primera por defecto.
-selectedStructure = structures[0];
-const firstIndex = selectedStructure.querySelector('.brush-slider');
-currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
-selectedStructure.classList.remove("transparent");
-structures.forEach(structure => {
-    structure.addEventListener('click', (event) => {
-        structures.forEach(structure => {
-            structure.classList.add("transparent");
-        });
-        selectedStructure = event.currentTarget;
-
-        selectedStructure.classList.remove("transparent");
+function showStructures(selectedZone){
+    activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
+    activeStructures.forEach(structure => {
+        structure.classList.remove("hidden");
+        structure.classList.add("transparent");
     });
-});
-
-if (zones.length > 0) {
-    selectZone.classList.remove(hidden);
-    selectedZone = zones[0].value;
+    selectedStructure = activeStructures[0];
+    const firstIndex = selectedStructure.querySelector('.brush-slider');
+    currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
+    selectedStructure.classList.remove("transparent");
+    activeStructures.forEach(structure => {
+        structure.addEventListener('click', (event) => {
+            structures.forEach(structure => {
+                structure.classList.add("transparent");
+            });
+            selectedStructure = event.currentTarget;
+            selectedStructure.classList.remove("transparent");
+        });
+    });
 }
+showStructures(selectedZone);
 zones.forEach(zone => {
     zone.addEventListener('change', (event) => {
+        structures.forEach((structure) => {
+            structure.classList.add("hidden");
+            clearDrawing();
+        });
         selectedZone = event.target.value;
+        showStructures(selectedZone);
     });
 });
+
 
 //Al seleccionar una estructura, se activa la misma y se accede al brush correspondiente.
 structures.forEach((structure, index) => {
