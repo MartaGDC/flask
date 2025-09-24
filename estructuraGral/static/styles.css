@@ -471,4 +471,10 @@ body {
     color: rgba(255, 175, 255); /*Synovial membrane*/
 
     color: rgba(175, 255, 175); /*Synovial sheath*/
+
+    color: rgba(160, 90, 200); /*Organs1*/
+    color: rgba(160, 90, 190); /*Organs2*/
+    color: rgba(160, 90, 180); /*Organs3*/
+    color: rgba(160, 90, 170); /*Organs4*/
+    color: rgba(160, 90, 160); /*Organs5*/
 }
