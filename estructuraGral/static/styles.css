@@ -409,7 +409,9 @@ body {
 .coloresAnatomia{
     color: rgba(235, 150, 255); /*Skin and SCT*/
 
-    color: rgba(245, 255, 200); /*Connective tissue*/
+    color: rgba(245, 255, 200); /*Connective tissue1*/
+    color: rgba(245, 255, 190); /*Connective tissue2*/
+    color: rgba(245, 255, 180); /*Connective tissue3*/
     
     color: rgb(240, 70, 0); /*Muscle1*/
     color: rgba(240, 60, 0); /*Muscle2*/
