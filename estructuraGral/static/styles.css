@@ -407,7 +407,7 @@ body {
 }
 
 .coloresAnatomia{
-    color: rgba(235, 150, 255); /*Skin and SCT*/
+    color: rgba(215, 150, 255); /*Skin and SCT*/
 
     color: rgba(245, 255, 200); /*Connective tissue1*/
     color: rgba(245, 255, 190); /*Connective tissue2*/
@@ -470,7 +470,11 @@ body {
     color: rgba(252, 255, 150); /*Fatty tissue3*/
     color: rgba(252, 255, 140); /*Fatty tissue4*/
 
-    color: rgba(255, 175, 255); /*Synovial membrane*/
+    color: rgba(235, 175, 255); /*Synovial membrane1*/
+    color: rgba(235, 185, 255); /*Synovial membrane2*/
+    color: rgba(235, 195, 255); /*Synovial membrane3*/
+    color: rgba(235, 205, 255); /*Synovial membrane4*/
+    color: rgba(235, 215, 255); /*Synovial membrane5*/
 
     color: rgba(175, 255, 175); /*Synovial sheath*/
 

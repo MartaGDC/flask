@@ -63,7 +63,7 @@ def index(app_name):
 
     #Para que las zonas y las estructuras puedan ser definidas dinámicamente para el html:
     data = STRUCTURES.get(app_name)
-    return render_template('index.html', title=app_name, data=data)
+    return render_template('index.html', user = user, title=app_name, data=data)
 
 
 @app.after_request

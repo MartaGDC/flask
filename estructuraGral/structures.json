@@ -73,16 +73,16 @@
                 {"name": "Calcáneo", "color": "rgba(225, 255, 190)"},
                 {"name": "Astrágalo", "color": "rgba(225, 255, 180)"},
                 {"name": "Paquete de Kager", "color": "rgba(252, 255, 170)"},
-                {"name": "Bursa prof", "color": "rgba(250, 255, 90)"},
-                {"name": "Bursa superf", "color": "rgba(250, 255, 80)"},
+                {"name": "Bursa prof", "color": "rgba(235, 175, 255)"},
+                {"name": "Bursa superf", "color": "rgba(235, 185, 255)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 200)"}
             ],
             "entesis": [
                 {"name": "Tendón de Aquiles superf", "color": "rgb(140, 190, 200)"},
                 {"name": "Tendón de Aquiles prof", "color": "rgb(140, 180, 200)"},
                 {"name": "Paquete de Kager", "color": "rgba(252, 255, 170)"},
-                {"name": "Bursa prof", "color": "rgba(250, 255, 90)"},
-                {"name": "Bursa superf", "color": "rgba(250, 255, 80)"},
+                {"name": "Bursa prof", "color": "rgba(235, 175, 255)"},
+                {"name": "Bursa superf", "color": "rgba(235, 185, 255)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 200)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 190)"},
                 {"name": "Astrágalo", "color": "rgba(225, 255, 180)"},
@@ -187,21 +187,21 @@
                 {"name": "Cuadricipital prof", "color": "rgba(140, 170, 200)"},
                 {"name": "Grasa prefemoral", "color": "rgba(252, 255, 170)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 150)"},
-                {"name": "Receso articular", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula base", "color": "rgba(225, 255, 190)"}
             ],
             "rotuliana": [
                 {"name": "Cuadricipital superf", "color": "rgba(140, 190, 200)"},
-                {"name": "Bursa infrarrotuliana superf", "color": "rgba(250, 255, 70)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 175, 255)"},
                 {"name": "Rótula centro", "color": "rgba(225, 255, 180)"}
             ],
             "infrarrotuliana": [
                 {"name": "Rotuliano superf", "color": "rgba(140, 160, 200)"},
                 {"name": "Rotuliano prof", "color": "rgba(140, 150, 200)"},
                 {"name": "Grasa retrorrotuliana", "color": "rgba(252, 255, 150)"},
-                {"name": "Bursa infrarrotuliana prof", "color": "rgba(250, 255, 80)"},
-                {"name": "Bursa infrarrotuliana superf", "color": "rgba(250, 255, 70)"},
+                {"name": "Bursa infrarrotuliana prof", "color": "rgba(235, 175, 255)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 185, 255)"},
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula ápex", "color": "rgba(225, 255, 170)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 160)"}
@@ -225,21 +225,21 @@
                 {"name": "Cuadricipital prof", "color": "rgba(140, 170, 200)"},
                 {"name": "Grasa prefemoral", "color": "rgba(252, 255, 170)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 160)"},
-                {"name": "Receso articular", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula base", "color": "rgba(225, 255, 190)"}
             ],
             "rotuliana": [
                 {"name": "Cuadricipital superf", "color": "rgba(140, 190, 200)"},
-                {"name": "Bursa infrarrotuliana superf", "color": "rgba(250, 255, 70)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 175, 255)"},
                 {"name": "Rótula centro", "color": "rgba(225, 255, 180)"}
             ],
             "infrarrotuliana": [
                 {"name": "Rotuliano superf", "color": "rgba(140, 160, 200)"},
                 {"name": "Rotuliano prof", "color": "rgba(140, 150, 200)"},
                 {"name": "Grasa retrorrotuliana", "color": "rgba(252, 255, 150)"},
-                {"name": "Bursa infrarrotuliana prof", "color": "rgba(250, 255, 80)"},
-                {"name": "Bursa infrarrotuliana superf", "color": "rgba(250, 255, 70)"},
+                {"name": "Bursa infrarrotuliana prof", "color": "rgba(235, 175, 255)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 185, 255)"},
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula ápex", "color": "rgba(225, 255, 170)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 160)"}
@@ -256,7 +256,7 @@
                 {"name": "Cuadricipital interm", "color": "rgba(140, 180, 200)"},
                 {"name": "Cuadricipital prof", "color": "rgba(140, 170, 200)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 150)"},
-                {"name": "Receso articular", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
                 {"name": "Cartílago Trólea femoral", "color": "rgba(125, 250, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"}
             ]
@@ -272,7 +272,7 @@
                 {"name": "Cuadricipital interm", "color": "rgba(140, 180, 200)"},
                 {"name": "Cuadricipital prof", "color": "rgba(140, 170, 200)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 150)"},
-                {"name": "Receso articular", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
                 {"name": "Cartílago Trólea femoral", "color": "rgba(125, 250, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"}
             ]
@@ -290,7 +290,7 @@
                 {"name": "Cartílago rotuliano", "color": "rgba(125, 240, 255)"},
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula", "color": "rgba(225, 255, 190)"},
-                {"name": "Receso articular", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
                 {"name": "Retináculo superf", "color": "rgba(170, 230, 155)"},
                 {"name": "Retináculo prof", "color": "rgba(170, 220, 155)"}
             ],
@@ -300,7 +300,7 @@
                 {"name": "Cartílago rotuliano", "color": "rgba(125, 240, 255)"},
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula", "color": "rgba(225, 255, 190)"},
-                {"name": "Receso articular", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
                 {"name": "Retináculo superf", "color": "rgba(170, 230, 155)"},
                 {"name": "Retináculo prof", "color": "rgba(170, 220, 155)"}
             ]
@@ -338,8 +338,8 @@
             "none": [
                 {"name": "LLI superf", "color": "rgba(170, 230, 155)"},
                 {"name": "LLI prof", "color": "rgba(170, 220, 155)"},
-                {"name": "Receso medial sup", "color": "rgba(250, 255, 90)"},
-                {"name": "Receso medial inf", "color": "rgba(250, 255, 80)"},
+                {"name": "Receso medial sup", "color": "rgba(235, 175, 255)"},
+                {"name": "Receso medial inf", "color": "rgba(235, 185, 255)"},
                 {"name": "Menisco int", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -370,13 +370,13 @@
             "femur": [
                 {"name": "Vasto ext", "color": "rgba(240, 70, 0)"},
                 {"name": "Cintilla iliotibial", "color": "rgba(140, 190, 200)"},
-                {"name": "Bursa", "color": "rgba(250, 255, 90)"},
+                {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"}
             ],
             "interlinea": [
                 {"name": "Cintilla iliotibial", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 180, 200)"},
-                {"name": "Bursa", "color": "rgba(250, 255, 90)"},
+                {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
                 {"name": "Cápsula articular", "color": "rgba(170, 230, 155)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
@@ -400,7 +400,7 @@
                 {"name": "Ligamento lat ext", "color": "rgba(170, 230, 155)"},
                 {"name": "Cápsula", "color": "rgba(170, 220, 155)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
-                {"name": "Bursa", "color": "rgba(250, 255, 90)"},
+                {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 190)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 180)"}
             ],
@@ -408,7 +408,7 @@
                 {"name": "Ligamento lat ext", "color": "rgba(170, 230, 155)"},
                 {"name": "Cápsula", "color": "rgba(170, 220, 155)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
-                {"name": "Bursa", "color": "rgba(250, 255, 90)"},
+                {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 190)"},
@@ -442,7 +442,7 @@
             "none": [
                 {"name": "Cápsula", "color": "rgba(170, 230, 155)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
-                {"name": "Receso", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso", "color": "rgba(235, 175, 255)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -457,7 +457,7 @@
             "none": [
                 {"name": "Cápsula", "color": "rgba(170, 230, 155)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
-                {"name": "Receso", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso", "color": "rgba(235, 175, 255)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -578,7 +578,7 @@
                 {"name": "Polea A1", "color": "rgba(170, 230, 155)"},
                 {"name": "Placa volar MCF", "color": "rgba(150, 255, 200)"},
                 {"name": "Ligamento de Checkrein", "color": "rgba(170, 220, 155)"},
-                {"name": "Receso", "color": "rgba(250, 255, 90)"}
+                {"name": "Receso", "color": "rgba(235, 175, 255)"}
             ],
             "falangeprox": [
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
@@ -606,7 +606,7 @@
                 {"name": "Polea A5", "color": "rgba(170, 230, 155)"},
                 {"name": "Placa volar IFD", "color": "rgba(150, 255, 200)"}, 
                 {"name": "Ligamento de Checkrein en IFD", "color": "rgba(170, 220, 155)"},
-                {"name": "Receso de IFD", "color": "rgba(250, 255, 90)"},
+                {"name": "Receso de IFD", "color": "rgba(235, 175, 255)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange distal", "color": "rgba(225, 255, 190)"}
             ]

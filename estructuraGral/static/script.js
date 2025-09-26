@@ -105,10 +105,11 @@ document.addEventListener("DOMContentLoaded", () =>{
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     appName = sessionStorage.getItem('selectedApp');
     nbFile = sessionStorage.getItem('selectedFile');
-    console.log(nbFile);
+    evaluatorName = sessionStorage.getItem('evaluator');
     sessionStorage.removeItem('reloadAfterSave');
     sessionStorage.removeItem('selectedApp');
     sessionStorage.removeItem('selectedFile');
+    sessionStorage.removeItem('evaluator');
     selectVideo(appName, nbFile);
 } else {
     fileBtn.addEventListener("click", () => {
@@ -166,7 +167,8 @@ async function countFramesPerEval(evaluatorName) {
             return;
         }
         const data = await response.json();
-        numFramesEval = data.filter(item => item.evaluator === evaluatorName).length;
+        console.log(fileName.textContent, evaluatorName);
+        numFramesEval = data.filter(item => item.evaluator === evaluatorName && item.frameoriginal.startsWith(fileName.textContent)).length;
     } catch (err) {
         console.error("JSON doesn't exist:", err);
         numFramesEval = 0;
@@ -645,7 +647,7 @@ function saveDrawing(){
                 frame: numframe,
                 originalImage: imageURL,
                 imageEdited: imageEditedURL,
-                frameoriginal: `${fileName.textContent}_${timestamp}_${frame}.png`, 
+                frameoriginal: `${fileName.textContent}_${index}.png`, 
                 filesaved: `${timestamp}_${index}.png`,
                 quality: selectedQuality,
                 zone: selectedZone,
@@ -672,7 +674,7 @@ function saveDrawing(){
             frame: frame,
             originalImage: imageURL,
             imageEdited: imageEditedURL,
-            frameoriginal: `${fileName.textContent}_${timestamp}_${frame}.png`, 
+            frameoriginal: `${fileName.textContent}_${frame}.png`, 
             filesaved: `${timestamp}.png`,
             quality: selectedQuality,
             zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
@@ -710,5 +712,7 @@ function recargarVideo(appName, filename){
     sessionStorage.setItem('reloadAfterSave', 'true');
     sessionStorage.setItem('selectedApp', appName);
     sessionStorage.setItem('selectedFile', filename);
+    sessionStorage.setItem('evaluator', evaluatorName);
+
     location.reload();
 }
