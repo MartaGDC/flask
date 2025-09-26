@@ -123,6 +123,7 @@ async function getVideos(){
         alert("Error loading list of videos");
         return;
     }
+    videoList.innerHTML = "";
     const videos = await res.json();
     videoWindow.classList.remove("hidden");
     videos.forEach(video => {
