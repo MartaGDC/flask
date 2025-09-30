@@ -1,4 +1,34 @@
 {
+    "tejidos": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Piel", "color": "rgba(215, 150, 255)"},
+                {"name": "TCS", "color": " rgba(215, 155, 255)"},
+                {"name": "Tejido conectivo", "color": "rgba(245, 255, 200)"},
+                {"name": "Músculo Longitudinal", "color": "rgb(240, 70, 0)"},
+                {"name": "Músculo Transversal", "color": "rgb(240, 60, 0)"},
+                {"name": "Tendón Longitudinal", "color": "rgb(140, 190, 200)"},
+                {"name": "Tendón Transversal", "color": "rgb(140, 180, 200)"},
+                {"name": "Vaina sinovial", "color": "rgba(175, 255, 175)"},
+                {"name": "Cápsula y Ligamento", "color": "rgba(170, 230, 155)"},
+                {"name": "Arteria", "color": "rgba(230, 30, 0)"},
+                {"name": "Vena", "color": "rgba(0, 30, 255)"},
+                {"name": "Nervio Longitudinal", "color": "rgba(255, 255, 50)"},
+                {"name": "Nervio Transversal", "color": "rgba(255, 255, 40)"},
+                {"name": "Fibrocartílago", "color": "rgba(150, 255, 200)"},
+                {"name": "Paquete adiposo", "color": "rgba(252, 255, 170)"},
+                {"name": "Membrana sinovial", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial", "color": "rgba(250, 255, 90)"},
+                {"name": "Cartílago hialino", "color": "rgba(125, 250, 255)"},
+                {"name": "Hueso", "color": "rgba(225, 255, 200)"}
+            ]
+        }
+
+    },
+
     "foot_longitudinal_fascia": {
         "zones": [
             {"value": "insercion", "label": "Inserción"},

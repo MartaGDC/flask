@@ -408,30 +408,31 @@ body {
 
 .coloresAnatomia{
     color: rgba(215, 150, 255); /*Skin and SCT*/
+    color:  rgba(215, 155, 255); /*skin and sct*/
 
     color: rgba(245, 255, 200); /*Connective tissue1*/
     color: rgba(245, 255, 190); /*Connective tissue2*/
     color: rgba(245, 255, 180); /*Connective tissue3*/
     
-    color: rgb(240, 70, 0); /*Muscle1*/
+    color: rgba(240, 70, 0); /*Muscle1*/
     color: rgba(240, 60, 0); /*Muscle2*/
     color: rgba(240, 50, 0); /*Muscle3*/
     color: rgba(240, 40, 0); /*Muscle4*/
     color: rgba(240, 30, 0); /*Muscle5*/
     color: rgba(240, 20, 0); /*Muscle6*/
 
-    color: rgb(140, 190, 200); /*Tendon1*/
+    color: rgba(140, 190, 200); /*Tendon1*/
     color: rgba(140, 180, 200); /*Tendon2*/
     color: rgba(140, 170, 200); /*Tendon3*/
     color: rgba(140, 160, 200); /*Tendon4*/
     color: rgba(140, 150, 200); /*Tendon5*/
     color: rgba(140, 140, 200); /*Tendon6*/
 
-    color: rgb(170, 230, 155); /*Ligament-Capsule1*/
+    color: rgba(170, 230, 155); /*Ligament-Capsule1*/
     color: rgba(170, 220, 155); /*Ligament-Capsule2*/
     color: rgba(170, 210, 155); /*Ligament-Capsule3*/
 
-    color: rgb(250, 255, 90); /*Synovial fluid1*/
+    color: rgba(250, 255, 90); /*Synovial fluid1*/
     color: rgba(250, 255, 80); /*Synovial fluid2*/
     color: rgba(250, 255, 70); /*Synovial fluid3*/
     color: rgba(250, 255, 60); /*Synovial fluid4*/
