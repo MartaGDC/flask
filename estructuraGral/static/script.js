@@ -2,7 +2,6 @@ const body = document.body;
 const content = document.querySelector(".content");
 
 const reloadBtn = document.getElementById("reloadBtn");
-const homeBtn = document.getElementById("homeBtn");
 
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
@@ -78,17 +77,9 @@ let trazoActual = null;
 
 */
 /*-------------------------BOTONES LOGOUT Y HOME-------------------------*/
-homeBtn.addEventListener("click", () => {
+reloadBtn.addEventListener("click", () => {
     location.reload();
 })
-
-reloadBtn.addEventListener("click", () => {
-    console.log(fileName.textContent);
-    if (!fileName.textContent.startsWith("No")){
-        recargarVideo(appName, fileName.textContent);
-    }
-});
-
 
 /*Seleccion del video:
 - Se abre un diálogo para seleccionar un archivo de video.
@@ -105,12 +96,14 @@ document.addEventListener("DOMContentLoaded", () =>{
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     appName = sessionStorage.getItem('selectedApp');
     nbFile = sessionStorage.getItem('selectedFile');
+    frame = sessionStorage.getItem('frame');
     evaluatorName = sessionStorage.getItem('evaluator');
     sessionStorage.removeItem('reloadAfterSave');
     sessionStorage.removeItem('selectedApp');
     sessionStorage.removeItem('selectedFile');
+    sessionStorage.removeItem('frame');
     sessionStorage.removeItem('evaluator');
-    selectVideo(appName, nbFile);
+    selectVideo(appName, nbFile, frame);
 } else {
     fileBtn.addEventListener("click", () => {
         getVideos();
@@ -130,12 +123,12 @@ async function getVideos(){
     videos.forEach(video => {
         const li = document.createElement("li");
         li.textContent = video;
-        li.addEventListener("click", () => selectVideo(appName, video));
+        li.addEventListener("click", () => selectVideo(appName, video, frame));
         videoList.appendChild(li);
     }); 
 }
 
-async function selectVideo(appName, filename){
+async function selectVideo(appName, filename, frame){
     if (filename) {
         videoWindow.classList.add("hidden");
         content.classList.remove("disabled");
@@ -144,13 +137,21 @@ async function selectVideo(appName, filename){
         videoPlayer.src = videoURL;
         videoContainer.style.display = "block";
         videoPlayer.load();
-        videoPlayer.currentTime = 0; // Reset to the start of the video
+        if (frame!== null){
+            const currentTime = frame / 30;
+            videoPlayer.currentTime =currentTime;
+        }
+        else{
+            videoPlayer.currentTime = 0; // Reset to the start of the video
+        }
         await countFramesPerEval(evaluatorName);
         researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
         pausado = true;
         drawFrame();
         acceptFrameBtn.classList.remove("hidden");
         acceptFramesBtn.classList.remove("hidden");
+        fileBtn.disabled = true;
+        fileBtn.classList.add("disabled");
     } else {
         fileName.textContent = "No video selected.";
         videoContainer.style.display = "none";
@@ -169,8 +170,7 @@ async function countFramesPerEval(evaluatorName) {
         const data = await response.json();
         console.log(fileName.textContent, evaluatorName);
         numFramesEval = data.filter(item => item.evaluator === evaluatorName && item.frameoriginal.startsWith(fileName.textContent)).length;
-    } catch (err) {
-        console.error("JSON doesn't exist:", err);
+    } catch (e) {
         numFramesEval = 0;
     }
 }
@@ -203,33 +203,6 @@ videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la re
     progress.max = 100;
     progress.value = 0;
 });
-
-
-/*
-videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
-    framePlaceholder.width = videoPlayer.videoWidth;
-    framePlaceholder.height = videoPlayer.videoHeight;
-    noUiSlider.create(range, {
-        start: [ 0, 10 ],
-        step: 1,
-        margin: 2,
-        connect: true,
-        range: {
-            'min': 0,
-            'max': 100
-        }
-    });
-});
-range.noUiSlider.on('update', function( values, handle ) {
-    if ( handle ) {
-        valueInput.value = values[handle];
-    } else {
-        valueSpan.innerHTML = values[handle];
-    }
-});
-valueInput.addEventListener('change', function(){
-    range.noUiSlider.set([null, this.value]);
-}); */
 
 
 videoPlayer.addEventListener("timeupdate", () => {
@@ -311,8 +284,17 @@ acceptFramesBtn.addEventListener("click", () => {
     acceptGroupBtn.classList.remove("hidden");
     progress.classList.add("hidden");
     range.classList.remove("hidden");
+    if(frame!==null) {
+        firstValue = (frame/30)/videoPlayer.duration *100;
+    }
+    else {
+        firstValue = 0;
+    }
+    lastValue = 10 + firstValue;
+    console.log(lastValue);
+
     noUiSlider.create(range, {
-        start: [ 0, 10 ],
+        start: [ firstValue, lastValue ],
         step: 1,
         margin: 2,
         connect: true,
@@ -321,10 +303,6 @@ acceptFramesBtn.addEventListener("click", () => {
             'max': 100
         }
     });
-    lastValue = (10 / 100) * videoPlayer.duration;
-    lastFrame = Math.floor(lastValue * 30); //Si 30 fps por segundo.
-    firstValue = 0;
-    firstFrame = Math.floor(firstValue * 30); //Si 30 fps por segundo.
     range.noUiSlider.on('update', function( values, handle ) {
         if ( handle ) {
             lastValue = (values[handle] / 100) * videoPlayer.duration;
@@ -379,8 +357,6 @@ acceptFrameBtn.addEventListener("click", () => {
     submitBtn.classList.add("disabled");
     aceptado = true;
     sidebar.classList.remove("hidden");
-    fileBtn.disabled = true;
-    fileBtn.classList.add("disabled");
     content.style.marginRight = "21vw";
 
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
@@ -647,7 +623,7 @@ function saveDrawing(){
                 frame: numframe,
                 originalImage: imageURL,
                 imageEdited: imageEditedURL,
-                frameoriginal: `${fileName.textContent}_${index}.png`, 
+                frameoriginal: `${fileName.textContent}_${numframe}.png`, 
                 filesaved: `${timestamp}_${index}.png`,
                 quality: selectedQuality,
                 zone: selectedZone,
@@ -713,6 +689,6 @@ function recargarVideo(appName, filename){
     sessionStorage.setItem('selectedApp', appName);
     sessionStorage.setItem('selectedFile', filename);
     sessionStorage.setItem('evaluator', evaluatorName);
-
+    sessionStorage.setItem('frame', frame);
     location.reload();
 }
