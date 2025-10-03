@@ -1,5 +1,5 @@
 {
-    "tejidos": {
+    "base_tejidos": {
         "zones": [
             {"value": "none", "label": ""}
         ],
