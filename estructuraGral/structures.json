@@ -6,18 +6,18 @@
         "structures": {
             "none": [
                 {"name": "Piel", "color": "rgba(215, 150, 255)"},
-                {"name": "TCS", "color": " rgba(215, 155, 255)"},
+                {"name": "TCS", "color": " rgba(252, 255, 130)"},
                 {"name": "Tejido conectivo", "color": "rgba(245, 255, 200)"},
                 {"name": "Músculo Longitudinal", "color": "rgb(240, 70, 0)"},
-                {"name": "Músculo Transversal", "color": "rgb(240, 60, 0)"},
+                {"name": "Músculo Transversal", "color": "rgb(240, 40, 0)"},
                 {"name": "Tendón Longitudinal", "color": "rgb(140, 190, 200)"},
                 {"name": "Tendón Transversal", "color": "rgb(140, 180, 200)"},
                 {"name": "Vaina sinovial", "color": "rgba(175, 255, 175)"},
-                {"name": "Cápsula y Ligamento", "color": "rgba(170, 230, 155)"},
+                {"name": "Cápsula y Ligamento", "color": "rgba(170, 230, 255)"},
                 {"name": "Arteria", "color": "rgba(230, 30, 0)"},
                 {"name": "Vena", "color": "rgba(0, 30, 255)"},
-                {"name": "Nervio Longitudinal", "color": "rgba(255, 255, 50)"},
-                {"name": "Nervio Transversal", "color": "rgba(255, 255, 40)"},
+                {"name": "Nervio Longitudinal", "color": "rgba(255, 255, 60)"},
+                {"name": "Nervio Transversal", "color": "rgba(255, 255, 30)"},
                 {"name": "Fibrocartílago", "color": "rgba(150, 255, 200)"},
                 {"name": "Paquete adiposo", "color": "rgba(252, 255, 170)"},
                 {"name": "Membrana sinovial", "color": "rgba(235, 175, 255)"},
@@ -36,19 +36,19 @@
         ],
         "structures": {
             "insercion": [
-                {"name": "Fascia plantar superf", "color": "rgba(170, 230, 155)"},
-                {"name": "Fascia plantar prof", "color": "rgba(170, 220, 155)"},
+                {"name": "Fascia plantar superf", "color": "rgba(170, 230, 255)"},
+                {"name": "Fascia plantar prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Almohadilla", "color": "rgba(252, 255, 170)"},
                 {"name": "Músculos flexores prof", "color": "rgba(240, 70, 0)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 200)"}
             ],
             "arco": [
-                {"name": "Fascia plantar", "color": "rgba(170, 230, 155)"},
+                {"name": "Fascia plantar", "color": "rgba(170, 230, 255)"},
                 {"name": "Músculo flexor corto de los dedos", "color": "rgba(240, 70, 0)"},
                 {"name": "Músculo cuadrado plantar", "color": "rgba(240, 60, 0)"}
             ],
             "meta": [
-                {"name": "Fascia plantar", "color": "rgba(170, 230, 155)"},
+                {"name": "Fascia plantar", "color": "rgba(170, 230, 255)"},
                 {"name": "Músculos intrínsecos", "color": "rgba(240, 70, 0)"},
                 {"name": "Metatarsiano", "color": "rgba(225, 255, 200)"}
             ]
@@ -61,14 +61,14 @@
         ],
         "structures": {
             "insercion": [
-                {"name": "Fascia plantar superf", "color": "rgba(170, 230, 155)"},
-                {"name": "Fascia plantar prof", "color": "rgba(170, 220, 155)"},
+                {"name": "Fascia plantar superf", "color": "rgba(170, 230, 255)"},
+                {"name": "Fascia plantar prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Almohadilla", "color": "rgba(252, 255, 170)"},
                 {"name": "Músculos flexores prof", "color": "rgba(240, 70, 0)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 200)"}
             ],
             "arco": [
-                {"name": "Fascia plantar", "color": "rgba(170, 230, 155)"},
+                {"name": "Fascia plantar", "color": "rgba(170, 230, 255)"},
                 {"name": "Músculo flexor corto de los dedos", "color": "rgba(240, 70, 0)"},
                 {"name": "Músculo cuadrado plantar", "color": "rgba(240, 60, 0)"},
                 {"name": "Abductor del primer dedo", "color": "rgba(240, 50, 0)"},
@@ -160,10 +160,10 @@
         ],
         "structures" : {
             "none": [
-                {"name": "Bandeleta de fascia plantar", "color":"rgba(170, 230, 155)"},
-                {"name": "Ligamento metatarsiano transverso superf", "color":"rgba(170, 220, 155)"},
-                {"name": "Cápsula", "color": "rgba(170, 210, 155)"},
-                {"name": "Ligamento de Checkrein", "color": "rgba(170, 200, 155)"}, 
+                {"name": "Bandeleta de fascia plantar", "color":"rgba(170, 230, 255)"},
+                {"name": "Ligamento metatarsiano transverso superf", "color":"rgba(170, 220, 255)"},
+                {"name": "Cápsula", "color": "rgba(170, 210, 255)"},
+                {"name": "Ligamento de Checkrein", "color": "rgba(170, 200, 255)"}, 
                 {"name": "Tendón flexor corto", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón flexor largo", "color": "rgba(140, 180, 200)"},
                 {"name": "Músculo lumbrical", "color": "rgba(240, 70, 0)"},
@@ -182,7 +182,7 @@
         ],
         "structures" : {
             "none" : [
-                {"name": "Ligamento retináculo flexor", "color":"rgba(170, 230, 155)"},
+                {"name": "Ligamento retináculo flexor", "color":"rgba(170, 230, 255)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 200)"},
                 {"name": "Astrágalo", "color": "rgba(225, 255, 190)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 180)"},
@@ -320,8 +320,8 @@
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula", "color": "rgba(225, 255, 190)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
-                {"name": "Retináculo superf", "color": "rgba(170, 230, 155)"},
-                {"name": "Retináculo prof", "color": "rgba(170, 220, 155)"}
+                {"name": "Retináculo superf", "color": "rgba(170, 230, 255)"},
+                {"name": "Retináculo prof", "color": "rgba(170, 220, 255)"}
             ],
             "lateral": [
                 {"name": "Cuadricipital superf", "color": "rgba(140, 190, 200)"},
@@ -330,8 +330,8 @@
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula", "color": "rgba(225, 255, 190)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
-                {"name": "Retináculo superf", "color": "rgba(170, 230, 155)"},
-                {"name": "Retináculo prof", "color": "rgba(170, 220, 155)"}
+                {"name": "Retináculo superf", "color": "rgba(170, 230, 255)"},
+                {"name": "Retináculo prof", "color": "rgba(170, 220, 255)"}
             ]
         }
     },
@@ -342,16 +342,16 @@
         ],
         "structures": {
             "interlinea": [
-                {"name": "LLI superf", "color": "rgba(170, 230, 155)"},
-                {"name": "LLI prof", "color": "rgba(170, 220, 155)"},
+                {"name": "LLI superf", "color": "rgba(170, 230, 255)"},
+                {"name": "LLI prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Menisco int", "color": "rgba(150, 255, 200)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
             ],
             "pataganso": [
-                {"name": "LLI superf", "color": "rgba(170, 230, 155)"},
-                {"name": "LLI prof", "color": "rgba(170, 220, 155)"},
+                {"name": "LLI superf", "color": "rgba(170, 230, 255)"},
+                {"name": "LLI prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Pata de ganso superf", "color": "rgba(140, 190, 200)"},
                 {"name": "Pata de ganso prof", "color": "rgba(140, 180, 200)"},
                 {"name": "Arteria geniculada inf", "color": "rgba(230, 30, 0)"},                
@@ -365,8 +365,8 @@
         ],
         "structures": {
             "none": [
-                {"name": "LLI superf", "color": "rgba(170, 230, 155)"},
-                {"name": "LLI prof", "color": "rgba(170, 220, 155)"},
+                {"name": "LLI superf", "color": "rgba(170, 230, 255)"},
+                {"name": "LLI prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Receso medial sup", "color": "rgba(235, 175, 255)"},
                 {"name": "Receso medial inf", "color": "rgba(235, 185, 255)"},
                 {"name": "Menisco int", "color": "rgba(150, 255, 200)"},
@@ -381,8 +381,8 @@
         ],
         "structures": {
             "none": [
-                {"name": "LLI superf", "color": "rgba(170, 230, 155)"},
-                {"name": "LLI prof", "color": "rgba(170, 220, 155)"},
+                {"name": "LLI superf", "color": "rgba(170, 230, 255)"},
+                {"name": "LLI prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Menisco int", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -407,7 +407,7 @@
                 {"name": "Tendón poplíteo", "color": "rgba(140, 180, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
-                {"name": "Cápsula articular", "color": "rgba(170, 230, 155)"},
+                {"name": "Cápsula articular", "color": "rgba(170, 230, 255)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -426,16 +426,16 @@
         ],
         "structures": {
             "femur": [
-                {"name": "Ligamento lat ext", "color": "rgba(170, 230, 155)"},
-                {"name": "Cápsula", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento lat ext", "color": "rgba(170, 230, 255)"},
+                {"name": "Cápsula", "color": "rgba(170, 220, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 190)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 180)"}
             ],
             "interlinea": [
-                {"name": "Ligamento lat ext", "color": "rgba(170, 230, 155)"},
-                {"name": "Cápsula", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento lat ext", "color": "rgba(170, 230, 255)"},
+                {"name": "Cápsula", "color": "rgba(170, 220, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
@@ -444,7 +444,7 @@
                 {"name": "Tibia", "color": "rgba(225, 255, 180)"}
             ],
             "perone": [
-                {"name": "Ligamento lat ext", "color": "rgba(170, 230, 155)"},
+                {"name": "Ligamento lat ext", "color": "rgba(170, 230, 255)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"},
                 {"name": "Peroné", "color": "rgba(225, 255, 180)"}
             ]
@@ -469,7 +469,7 @@
         ],
         "structures": {
             "none": [
-                {"name": "Cápsula", "color": "rgba(170, 230, 155)"},
+                {"name": "Cápsula", "color": "rgba(170, 230, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Receso", "color": "rgba(235, 175, 255)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
@@ -484,7 +484,7 @@
         ],
         "structures": {
             "none": [
-                {"name": "Cápsula", "color": "rgba(170, 230, 155)"},
+                {"name": "Cápsula", "color": "rgba(170, 230, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Receso", "color": "rgba(235, 175, 255)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
@@ -604,37 +604,37 @@
                 {"name": "Tendón flexor superf de los dedos", "color": "rgba(140, 180, 200)"},
                 {"name": "Metacarpiano", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 190)"},
-                {"name": "Polea A1", "color": "rgba(170, 230, 155)"},
+                {"name": "Polea A1", "color": "rgba(170, 230, 255)"},
                 {"name": "Placa volar MCF", "color": "rgba(150, 255, 200)"},
-                {"name": "Ligamento de Checkrein", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento de Checkrein", "color": "rgba(170, 220, 255)"},
                 {"name": "Receso", "color": "rgba(235, 175, 255)"}
             ],
             "falangeprox": [
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón flexor superf de los dedos", "color": "rgba(140, 180, 200)"},
-                {"name": "Polea A2", "color": "rgba(170, 230, 155)"},
+                {"name": "Polea A2", "color": "rgba(170, 230, 255)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 200)"}
             ],
             "interfalangicaprox": [
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón flexor superf de los dedos", "color": "rgba(140, 180, 200)"},
-                {"name": "Polea A3", "color": "rgba(170, 230, 155)"},
+                {"name": "Polea A3", "color": "rgba(170, 230, 255)"},
                 {"name": "Placa volar IFP", "color": "rgba(150, 255, 200)"},
-                {"name": "Ligamento de Checkrein en IFP", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento de Checkrein en IFP", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 190)"}
             ],
             "falangemedio": [
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón flexor superf de los dedos", "color": "rgba(140, 180, 200)"},
-                {"name": "Polea A4", "color": "rgba(170, 230, 155)"},
+                {"name": "Polea A4", "color": "rgba(170, 230, 255)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"}
             ],
             "interfalangicadistal": [
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
-                {"name": "Polea A5", "color": "rgba(170, 230, 155)"},
+                {"name": "Polea A5", "color": "rgba(170, 230, 255)"},
                 {"name": "Placa volar IFD", "color": "rgba(150, 255, 200)"}, 
-                {"name": "Ligamento de Checkrein en IFD", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento de Checkrein en IFD", "color": "rgba(170, 220, 255)"},
                 {"name": "Receso de IFD", "color": "rgba(235, 175, 255)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange distal", "color": "rgba(225, 255, 190)"}
@@ -647,7 +647,7 @@
         ],
         "structures": {
             "none" : [
-                {"name": "Polea",  "color":  "rgba(170, 230, 155)"},
+                {"name": "Polea",  "color":  "rgba(170, 230, 255)"},
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón flexor superf de los dedos", "color": "rgba(140, 180, 200)"},
                 {"name": "Vaina sinovial", "color": "rgba(175, 255, 175)"},
@@ -664,14 +664,14 @@
         ],
         "structures": {
             "interfalangicaprox" : [
-                {"name": "Ligamento colateral radial IFP", "color": "rgba(170, 230, 155)"},
-                {"name": "Cápsula IFP", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento colateral radial IFP", "color": "rgba(170, 230, 255)"},
+                {"name": "Cápsula IFP", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 190)"}
             ],
             "interfalangicadistal" : [
-                {"name": "Ligamento colateral radial IFD", "color": "rgba(170, 230, 155)"},
-                {"name": "Cápsula IFD", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento colateral radial IFD", "color": "rgba(170, 230, 255)"},
+                {"name": "Cápsula IFD", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange distal", "color": "rgba(225, 255, 190)"}
             ]
@@ -684,14 +684,14 @@
         ],
         "structures": {
             "interfalangicaprox" : [
-                {"name": "Ligamento colateral cubital IFP", "color": "rgba(170, 230, 155)"},
-                {"name": "Cápsula IFP", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento colateral cubital IFP", "color": "rgba(170, 230, 255)"},
+                {"name": "Cápsula IFP", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 190)"}
             ],
             "interfalangicadistal" : [
-                {"name": "Ligamento colateral cubital IFD", "color": "rgba(170, 230, 155)"},
-                {"name": "Cápsula IFD", "color": "rgba(170, 220, 155)"},
+                {"name": "Ligamento colateral cubital IFD", "color": "rgba(170, 230, 255)"},
+                {"name": "Cápsula IFD", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange distal", "color": "rgba(225, 255, 190)"}
             ]
@@ -706,19 +706,19 @@
         "structures": {
             "metacarpofalangica": [
                 {"name": "Tendón extensor de los dedos", "color": "rgba(140, 190, 200)"},
-                {"name": "Capsula MCF", "color": "rgba(170, 220, 155)"},
+                {"name": "Capsula MCF", "color": "rgba(170, 220, 255)"},
                 {"name": "Metacarpiano", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 190)"}
             ],
             "interfalangicaprox": [
                 {"name": "Tendón extensor de los dedos", "color": "rgba(140, 190, 200)"},
-                {"name": "Capsula IFP", "color": "rgba(170, 220, 155)"},
+                {"name": "Capsula IFP", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange proximal", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 190)"}
             ],
             "interfalangicadistal": [
                 {"name": "Tendón extensor de los dedos", "color": "rgba(140, 190, 200)"},
-                {"name": "Capsula IFD", "color": "rgba(170, 220, 155)"},
+                {"name": "Capsula IFD", "color": "rgba(170, 220, 255)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange distal", "color": "rgba(225, 255, 190)"}
             ]

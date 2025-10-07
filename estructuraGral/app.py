@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, render_template, request, jsonify, session, send_from_directory, abort
+from flask import Flask, render_template, request, jsonify, session, send_from_directory, render_template_string
 #from flask_cors import CORS
 import base64
 from datetime import datetime
@@ -68,6 +68,24 @@ def index(app_name):
     return render_template('index.html', user = user, title=app_name, data=data)
 
 
+@app.route('/verifyUser/<user>/<app_name>')
+def verifyUser(user, app_name):
+    if (user== "None" or user == None or user==""):
+        error = True
+    if(user == "In-Forma" and not app_name.startswith("knee")):
+        error = True
+    if (user == "In-Forma" and app_name.startswith("base")):
+        error = False
+    if error:
+        return jsonify({
+            "error": True,
+            "message": "You must enter a valid user for this project.\nEnter new credentials.",
+            "redirect": "http://localhost/index.php"
+        })
+    else:
+        return jsonify({"error": False})
+
+
 @app.after_request
 def add_header(response): #Con los cambios en el html, había problemas de cache al usar el boton Reload
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -81,7 +99,10 @@ def add_header(response): #Con los cambios en el html, había problemas de cache
 def list_files(app_name):
     app = APP_VIDEOS[app_name]
     dir_path = BASE_DIR
-    videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
+    if(app_name.startswith("base")):
+        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
+    else:
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
     return jsonify(videos)
 #Acceso al video de la carpeta
 @app.route("/media/<app_name>/<filename>", methods=["GET"])

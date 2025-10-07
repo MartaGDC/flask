@@ -91,6 +91,16 @@ reloadBtn.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () =>{
     appName = body.dataset.appname;
     evaluatorName = researcherInfo.dataset.user;
+
+    fetch(`/verifyUser/${evaluatorName}/${appName}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.message);
+            window.location.href = data.redirect;
+        } else {}
+    })
+    .catch();
 });
 
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){

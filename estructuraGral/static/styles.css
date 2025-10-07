@@ -407,8 +407,7 @@ body {
 }
 
 .coloresAnatomia{
-    color: rgba(215, 150, 255); /*Skin and SCT*/
-    color:  rgba(215, 155, 255); /*skin and sct*/
+    color: rgba(215, 150, 255); /*Skin*/
 
     color: rgba(245, 255, 200); /*Connective tissue1*/
     color: rgba(245, 255, 190); /*Connective tissue2*/
@@ -428,9 +427,9 @@ body {
     color: rgba(140, 150, 200); /*Tendon5*/
     color: rgba(140, 140, 200); /*Tendon6*/
 
-    color: rgba(170, 230, 155); /*Ligament-Capsule1*/
-    color: rgba(170, 220, 155); /*Ligament-Capsule2*/
-    color: rgba(170, 210, 155); /*Ligament-Capsule3*/
+    color: rgba(170, 230, 255); /*Ligament-Capsule1*/
+    color: rgba(170, 220, 255); /*Ligament-Capsule2*/
+    color: rgba(170, 210, 255); /*Ligament-Capsule3*/
 
     color: rgba(250, 255, 90); /*Synovial fluid1*/
     color: rgba(250, 255, 80); /*Synovial fluid2*/
@@ -470,6 +469,8 @@ body {
     color: rgba(252, 255, 160); /*Fatty tissue2*/
     color: rgba(252, 255, 150); /*Fatty tissue3*/
     color: rgba(252, 255, 140); /*Fatty tissue4*/
+    color: rgba(252, 255, 130); /*SCT*/
+
 
     color: rgba(235, 175, 255); /*Synovial membrane1*/
     color: rgba(235, 185, 255); /*Synovial membrane2*/
