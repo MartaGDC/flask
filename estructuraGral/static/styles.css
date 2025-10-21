@@ -485,4 +485,21 @@ body {
     color: rgba(160, 90, 180); /*Organs3*/
     color: rgba(160, 90, 170); /*Organs4*/
     color: rgba(160, 90, 160); /*Organs5*/
+
+
+
+    color: rgb(15, 25, 110); /*Anisotropia*/
+    color: rgb(115, 10, 155); /*Falta de contacto puntual*/
+    color: rgb(0, 255, 240); /*Sombra acústica posterior 1: estructura que da la sombra*/
+    color: rgb(0, 130, 255); /*Sombra acústica posterior 2: sombra*/
+    color: rgb(250, 85, 85); /*Sombra por refracción 1: estructura que da la refracción*/
+    color: rgb(185, 0, 0); /*Sombra por refracción 2: sombra*/
+    color: rgb(170, 200, 125); /*Realce por transmisión 1: estructura que realza*/
+    color: rgb(160, 255, 40); /*Realce por transmisión 2: realce*/
+    color: rgb(235, 230, 5); /*Reverberación 1: estructura que reverbera*/
+    color: rgb(240, 240, 125); /*Reverberación 2: reverberación*/
+    color: rgb(245, 0, 100); /*Ruido*/
+
+    color: rgb(0, 170, 0); /*ROIs*/
+    color: rgb(170, 0, 0); /*ROPs*/
 }

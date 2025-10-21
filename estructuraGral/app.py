@@ -12,6 +12,8 @@ app.secret_key = "secret_key"
 BASE_DIR = "/srv/data" #cambiar acceso del usuario ubuntu para que sea como admin (chown y chmod 755)
 APP_VIDEOS = {
     "base_tejidos":"0_",
+    "base_artefactos" : "0_",
+    "base_ROIS":"0_",
     
     "foot_longitudinal_fascia": "1_1_",
     "foot_transversal_fascia": "1_2_",

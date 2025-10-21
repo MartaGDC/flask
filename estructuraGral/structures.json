@@ -12,7 +12,7 @@
                 {"name": "Músculo Transversal", "color": "rgb(240, 40, 0)"},
                 {"name": "Tendón Longitudinal", "color": "rgb(140, 190, 200)"},
                 {"name": "Tendón Transversal", "color": "rgb(140, 180, 200)"},
-                {"name": "Vaina sinovial", "color": "rgba(175, 255, 175)"},
+                {"name": "Vaina sinovial", "color": "rgba(175, 255, 175)"},                
                 {"name": "Cápsula y Ligamento", "color": "rgba(170, 230, 255)"},
                 {"name": "Arteria", "color": "rgba(230, 30, 0)"},
                 {"name": "Vena", "color": "rgba(0, 30, 255)"},
@@ -21,9 +21,42 @@
                 {"name": "Fibrocartílago", "color": "rgba(150, 255, 200)"},
                 {"name": "Paquete adiposo", "color": "rgba(252, 255, 170)"},
                 {"name": "Membrana sinovial", "color": "rgba(235, 175, 255)"},
-                {"name": "Líquido sinovial", "color": "rgba(250, 255, 90)"},
+                {"name": "Líquido sinovial", "color": "rgba(250, 255, 80)"},
                 {"name": "Cartílago hialino", "color": "rgba(125, 250, 255)"},
                 {"name": "Hueso", "color": "rgba(225, 255, 200)"}
+            ]
+        }
+    },
+
+    "base_artefactos": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name" : "Anisotropia", "color":"rgb(15, 25, 110)"},
+                {"name" : "Falta de contacto puntual", "color":"rgb(115, 10, 155)"},
+                {"name": "Sombra acústica posterior 1: estructura que da la sombra", "color":"rgb(0, 255, 240)"},
+                {"name": "Sombra acústica posterior 2: sombra", "color":"rgb(0, 130, 255)"},
+                {"name": "Sombra por refracción 1: estructura que da la refracción", "color":"rgb(250, 85, 85)"},
+                {"name": "Sombra por refracción 2: sombra", "color":"rgb(185, 0, 0)"},
+                {"name": "Realce por transmisión 1: estructura que realza", "color":"rgb(170, 200, 125)"},
+                {"name": "Realce por transmisión 2: realce", "color":"rgb(160, 255, 40)"},
+                {"name": "Reverberación 1: estructura que reverbera", "color":"rgb(235, 230, 5)"},
+                {"name": "Reverberación 2: reverberación", "color":"rgb(240, 240, 125)"},
+                {"name": "Ruido", "color":"rgb(245, 0, 100)"}
+            ]
+        }
+    },
+
+    "base_ROIS": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name" : "ROIs", "color":"rgb(0, 170, 0)"},
+                {"name" : "ROPs", "color":"rgb(170, 0, 0)"}
             ]
         }
     },
@@ -104,6 +137,7 @@
                 {"name": "Paquete de Kager", "color": "rgba(252, 255, 170)"},
                 {"name": "Bursa prof", "color": "rgba(235, 175, 255)"},
                 {"name": "Bursa superf", "color": "rgba(235, 185, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 200)"}
             ],
             "entesis": [
@@ -112,6 +146,7 @@
                 {"name": "Paquete de Kager", "color": "rgba(252, 255, 170)"},
                 {"name": "Bursa prof", "color": "rgba(235, 175, 255)"},
                 {"name": "Bursa superf", "color": "rgba(235, 185, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 200)"},
                 {"name": "Calcáneo", "color": "rgba(225, 255, 190)"},
                 {"name": "Astrágalo", "color": "rgba(225, 255, 180)"},
@@ -223,6 +258,7 @@
             "rotuliana": [
                 {"name": "Cuadricipital superf", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Rótula centro", "color": "rgba(225, 255, 180)"}
             ],
             "infrarrotuliana": [
@@ -231,6 +267,7 @@
                 {"name": "Grasa retrorrotuliana", "color": "rgba(252, 255, 150)"},
                 {"name": "Bursa infrarrotuliana prof", "color": "rgba(235, 175, 255)"},
                 {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 185, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula ápex", "color": "rgba(225, 255, 170)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 160)"}
@@ -261,6 +298,7 @@
             "rotuliana": [
                 {"name": "Cuadricipital superf", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Rótula centro", "color": "rgba(225, 255, 180)"}
             ],
             "infrarrotuliana": [
@@ -269,6 +307,7 @@
                 {"name": "Grasa retrorrotuliana", "color": "rgba(252, 255, 150)"},
                 {"name": "Bursa infrarrotuliana prof", "color": "rgba(235, 175, 255)"},
                 {"name": "Bursa infrarrotuliana superf", "color": "rgba(235, 185, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula ápex", "color": "rgba(225, 255, 170)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 160)"}
@@ -400,12 +439,14 @@
                 {"name": "Vasto ext", "color": "rgba(240, 70, 0)"},
                 {"name": "Cintilla iliotibial", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"}
             ],
             "interlinea": [
                 {"name": "Cintilla iliotibial", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 180, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
                 {"name": "Cápsula articular", "color": "rgba(170, 230, 255)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
@@ -430,6 +471,7 @@
                 {"name": "Cápsula", "color": "rgba(170, 220, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 190)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 180)"}
             ],
@@ -438,6 +480,7 @@
                 {"name": "Cápsula", "color": "rgba(170, 220, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgba(250, 255, 90)"},
                 {"name": "Arteria geniculada superf", "color": "rgba(230, 30, 0)"},                
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 190)"},
@@ -651,6 +694,7 @@
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
                 {"name": "Tendón flexor superf de los dedos", "color": "rgba(140, 180, 200)"},
                 {"name": "Vaina sinovial", "color": "rgba(175, 255, 175)"},
+                {"name": "Líquido sinovial vaina", "color": "rgba(250, 255, 90)"},
                 {"name": "Placa volar", "color": "rgba(150, 255, 200)"},
                 {"name": "Hueso", "color": "rgba(225, 255, 200)"},
                 {"name": "Arterias digitales palmares", "color": "rgba(230, 30, 0)"}
