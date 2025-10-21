@@ -35,15 +35,15 @@
         "structures": {
             "none": [
                 {"name" : "Anisotropia", "color":"rgb(15, 25, 110)"},
-                {"name" : "Falta de contacto puntual", "color":"rgb(115, 10, 155)"},
-                {"name": "Sombra acústica posterior 1: estructura que da la sombra", "color":"rgb(0, 255, 240)"},
-                {"name": "Sombra acústica posterior 2: sombra", "color":"rgb(0, 130, 255)"},
-                {"name": "Sombra por refracción 1: estructura que da la refracción", "color":"rgb(250, 85, 85)"},
-                {"name": "Sombra por refracción 2: sombra", "color":"rgb(185, 0, 0)"},
-                {"name": "Realce por transmisión 1: estructura que realza", "color":"rgb(170, 200, 125)"},
-                {"name": "Realce por transmisión 2: realce", "color":"rgb(160, 255, 40)"},
-                {"name": "Reverberación 1: estructura que reverbera", "color":"rgb(235, 230, 5)"},
-                {"name": "Reverberación 2: reverberación", "color":"rgb(240, 240, 125)"},
+                {"name" : "Falta de contacto", "color":"rgb(115, 10, 155)"},
+                {"name": "SAP1", "color":"rgb(0, 255, 240)"},
+                {"name": "SAP2", "color":"rgb(0, 130, 255)"},
+                {"name": "SR1", "color":"rgb(250, 85, 85)"},
+                {"name": "SR2", "color":"rgb(185, 0, 0)"},
+                {"name": "RT1", "color":"rgb(170, 200, 125)"},
+                {"name": "RT2", "color":"rgb(160, 255, 40)"},
+                {"name": "Reverberación 1", "color":"rgb(235, 230, 5)"},
+                {"name": "Reverberación 2", "color":"rgb(240, 240, 125)"},
                 {"name": "Ruido", "color":"rgb(245, 0, 100)"}
             ]
         }
@@ -252,6 +252,7 @@
                 {"name": "Grasa prefemoral", "color": "rgba(252, 255, 170)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 150)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula base", "color": "rgba(225, 255, 190)"}
             ],
@@ -292,6 +293,7 @@
                 {"name": "Grasa prefemoral", "color": "rgba(252, 255, 170)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 160)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula base", "color": "rgba(225, 255, 190)"}
             ],
@@ -325,6 +327,7 @@
                 {"name": "Cuadricipital prof", "color": "rgba(140, 170, 200)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 150)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Cartílago Trólea femoral", "color": "rgba(125, 250, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"}
             ]
@@ -341,6 +344,7 @@
                 {"name": "Cuadricipital prof", "color": "rgba(140, 170, 200)"},
                 {"name": "Grasa suprapatelar", "color": "rgba(252, 255, 150)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Cartílago Trólea femoral", "color": "rgba(125, 250, 255)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"}
             ]
@@ -359,6 +363,7 @@
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula", "color": "rgba(225, 255, 190)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Retináculo superf", "color": "rgba(170, 230, 255)"},
                 {"name": "Retináculo prof", "color": "rgba(170, 220, 255)"}
             ],
@@ -369,6 +374,7 @@
                 {"name": "Fémur cóndilo", "color": "rgba(225, 255, 200)"},
                 {"name": "Rótula", "color": "rgba(225, 255, 190)"},
                 {"name": "Receso articular", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Retináculo superf", "color": "rgba(170, 230, 255)"},
                 {"name": "Retináculo prof", "color": "rgba(170, 220, 255)"}
             ]
@@ -408,6 +414,7 @@
                 {"name": "LLI prof", "color": "rgba(170, 220, 255)"},
                 {"name": "Receso medial sup", "color": "rgba(235, 175, 255)"},
                 {"name": "Receso medial inf", "color": "rgba(235, 185, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Menisco int", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -515,6 +522,7 @@
                 {"name": "Cápsula", "color": "rgba(170, 230, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Receso", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -530,6 +538,7 @@
                 {"name": "Cápsula", "color": "rgba(170, 230, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgba(140, 190, 200)"},
                 {"name": "Receso", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Menisco ext", "color": "rgba(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgba(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgba(225, 255, 190)"}
@@ -650,7 +659,8 @@
                 {"name": "Polea A1", "color": "rgba(170, 230, 255)"},
                 {"name": "Placa volar MCF", "color": "rgba(150, 255, 200)"},
                 {"name": "Ligamento de Checkrein", "color": "rgba(170, 220, 255)"},
-                {"name": "Receso", "color": "rgba(235, 175, 255)"}
+                {"name": "Receso", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"}
             ],
             "falangeprox": [
                 {"name": "Tendón flexor prof de los dedos", "color": "rgba(140, 190, 200)"},
@@ -679,6 +689,7 @@
                 {"name": "Placa volar IFD", "color": "rgba(150, 255, 200)"}, 
                 {"name": "Ligamento de Checkrein en IFD", "color": "rgba(170, 220, 255)"},
                 {"name": "Receso de IFD", "color": "rgba(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgba(250, 255, 90)"},
                 {"name": "Falange media", "color": "rgba(225, 255, 200)"},
                 {"name": "Falange distal", "color": "rgba(225, 255, 190)"}
             ]
