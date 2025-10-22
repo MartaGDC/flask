@@ -51,7 +51,9 @@ APP_VIDEOS = {
     'abd_transversal_recto': '4_2_',
     'abd_transversal_spiegel': '4_3_',
     'abd_transversal_toracolum': '4_4_',
-    'abd_suelo_pelvico': '4_5_'    
+    'abd_suelo_pelvico': '4_5_',
+
+    'rm': 'rm_'
 
 }
 
@@ -82,6 +84,8 @@ def verifyUser(user, app_name):
         error = False
     elif (user == "ppa" and (app_name.startswith("base") or app_name.startswith("abd"))):
         error = False
+    elif app_name.startswith("rm"):
+        error = False
     else:
         error = True
     if error:
@@ -109,6 +113,8 @@ def list_files(app_name):
     dir_path = BASE_DIR
     if(app_name.startswith("base")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
+    elif(app_name.startswith("rm")):
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and (file.lower().endswith(".jpg"))])
     else:
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
     return jsonify(videos)

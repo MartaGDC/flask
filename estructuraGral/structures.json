@@ -894,5 +894,16 @@
                 {"name": "Músculo puborrectal", "color": "rgba(240, 70, 0)"}
             ]
         }
+    },
+
+    "rm": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Supraespinoso", "color": "rgba(255, 0, 0)"}
+            ]
+        }
     }
 }

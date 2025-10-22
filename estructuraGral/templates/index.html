@@ -104,6 +104,11 @@
             {% endfor %}
         </div>
     </aside>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    {% if title == 'rm' %}
+        <script src="{{ url_for('static', filename='script_rm.js') }}"></script>
+    {% else %}
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    {% endif %}
 </body>
 </html>
