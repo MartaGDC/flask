@@ -74,10 +74,16 @@ def index(app_name):
 def verifyUser(user, app_name):
     if (user== "None" or user == None or user==""):
         error = True
-    if(user == "In-Forma" and not app_name.startswith("knee")):
-        error = True
-    if (user == "In-Forma" and app_name.startswith("base")):
+    if(user == "mmu" and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("abd"))):
         error = False
+    elif (user == "jpr" and (app_name.startswith("base") or app_name.startswith("foot"))):
+        error = False
+    elif (user == "pfm" and (app_name.startswith("base") or app_name.startswith("knee") or app_name.startswith("hand"))):
+        error = False
+    elif (user == "ppa" and (app_name.startswith("base") or app_name.startswith("abd"))):
+        error = False
+    else:
+        error = True
     if error:
         return jsonify({
             "error": True,

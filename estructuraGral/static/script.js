@@ -627,18 +627,60 @@ function saveDrawing(){
             maskOriginalCtx.putImageData(savedFrames[index], 0, 0);
             const imageURL = maskOriginalCanvas.toDataURL();
             const imageEditedURL = maskOriginalCanvas.toDataURL();
-
-            objectJS.push({
-                video: fileName.textContent, 
-                frame: numframe,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `${fileName.textContent}_${numframe}.png`, 
-                filesaved: `${timestamp}_${index}.png`,
-                quality: selectedQuality,
-                zone: selectedZone,
-                evaluator: evaluatorName
-            });
+            
+            //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original 
+            if(appName==="base_tejidos"){
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_1_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
+            else if(appName==="base_artefactos"){
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_2_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
+            else if(appName==="base_ROIS"){
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_3_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
+            else{
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
         });
     } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
@@ -655,17 +697,58 @@ function saveDrawing(){
         maskOriginalCtx.putImageData(savedFrame, 0, 0);
         const imageURL = maskOriginalCanvas.toDataURL();
 
-        objectJS = {
-            video: fileName.textContent, 
-            frame: frame,
-            originalImage: imageURL,
-            imageEdited: imageEditedURL,
-            frameoriginal: `${fileName.textContent}_${frame}.png`, 
-            filesaved: `${timestamp}.png`,
-            quality: selectedQuality,
-            zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
-            evaluator: evaluatorName
-        };
+        if(appName==="base_tejidos"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_1_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
+        else if (appName==="base_artefactos"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_2_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
+        else if (appName==="base_ROIS"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_3_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
+        else{
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
     }
 
 
