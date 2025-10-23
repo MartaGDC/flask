@@ -11,9 +11,9 @@ app.secret_key = "secret_key"
 # CORS(app)
 BASE_DIR = "/srv/data" #cambiar acceso del usuario ubuntu para que sea como admin (chown y chmod 755)
 APP_VIDEOS = {
-    "base_tejidos":"0_",
-    "base_artefactos" : "0_",
-    "base_ROIS":"0_",
+    "base_tejidos":"",
+    "base_artefactos" : "",
+    "base_ROIS":"",
     
     "foot_longitudinal_fascia": "1_1_",
     "foot_transversal_fascia": "1_2_",
@@ -53,7 +53,7 @@ APP_VIDEOS = {
     'abd_transversal_toracolum': '4_4_',
     'abd_suelo_pelvico': '4_5_',
 
-    'rm': 'rm_'
+    'rm': ''
 
 }
 
@@ -114,7 +114,7 @@ def list_files(app_name):
     if(app_name.startswith("base")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and (file.lower().endswith(".jpg"))])
+        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg")])
     else:
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
     return jsonify(videos)
@@ -199,6 +199,45 @@ def save():
         json.dump(metadata, f, indent=4)
 
     return jsonify({"status": "success"})
+
+
+@app.route('/saveRM', methods=['POST'])
+def saveRM():
+    #Cargar el json donde guardar la info
+    os.makedirs("static/DATA", exist_ok=True)
+    os.makedirs("static/frames", exist_ok=True)
+    metadata_file = 'static/DATA/file_info_RM.json'
+    if os.path.exists(metadata_file):
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
+    else:
+        metadata = []
+
+    #Cargar la respuesta
+    data = request.json
+
+    imageoriginal = data["image"]
+    imageEdited = data['imageEdited'].split(",")[1]
+    imageEdited = base64.b64decode(imageEdited)
+    filesaved = data['filesaved']
+    evaluator = data['evaluator']
+    time = data['time']
+    
+    with open(f'static/DATA/{filesaved}', 'wb') as f:
+        f.write(imageEdited)
+    #Añadir la nueva informacion al json
+    metadata.append({
+        "imageoriginal": imageoriginal,
+        "filesaved": filesaved,
+        "evaluator": evaluator,
+        "time": time
+    })
+
+    with open(metadata_file, 'w') as f:
+        json.dump(metadata, f, indent=4)
+
+    return jsonify({"status": "success"})
+
 
 @app.route('/logout', methods=['POST'])
 def logout():

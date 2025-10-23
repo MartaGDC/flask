@@ -8,15 +8,21 @@ const fileName = document.getElementById("fileName");
 let appName = "";
 let nbFile = "";
 let evaluatorName = "";
+let unanalysedImages = [];
 
 const framePlaceholder = document.getElementById("frame-placeholder");
 const ctx = framePlaceholder.getContext("2d");
 let savedFrame = null;
 
 const researcherInfo = document.getElementById("researcherInfo");
+let startTime = 0;
+let elapsedTime = 0;
+let running=true;
 const submitBtn = document.getElementById("submitBtn");
+let aceptado = false; //si false es porque no hay imagenes y no se puede dibujar
 const sidebar = document.getElementById("sidebar");
 const blocks = document.querySelectorAll(".block");
+const selectStructure = document.getElementById("selectStructure");
 
 const zones = document.querySelectorAll('input[name="zone"]');
 let selectedZone = zones[0].value;
@@ -46,8 +52,26 @@ reloadBtn.addEventListener("click", () => {
 /*-------------------------COMENZAR-------------------------*/
 //Se abre el díalogo al hacer click sobre select video
 document.addEventListener("DOMContentLoaded", () =>{
+    appName = body.dataset.appname;
     evaluatorName = researcherInfo.dataset.user;
-    imagen_evaluada = sessionStorage.getItem('imagen');
+    qualityGreen.classList.add("hidden");
+    qualityYellow.classList.add("hidden");
+    qualityRed.classList.add("hidden");
+    qualityBlack.classList.add("hidden");
+    selectStructure.classList.add("hidden");    
+    if (sessionStorage.getItem('reload')) {
+        sessionStorage.removeItem('reload');
+        getImage();
+        sidebar.classList.remove("hidden");
+        submitBtn.classList.remove("hidden");
+        submitBtn.disabled = true;
+        submitBtn.classList.add("disabled");
+        content.style.marginRight = "21vw";
+        fileBtn.disabled = true;
+        fileBtn.classList.add("disabled");
+        researcherInfo.classList.remove("hidden");
+
+    }
 
 });
 
@@ -56,34 +80,75 @@ fileName.textContent = "No image shown.";
 fileBtn.addEventListener("click", () => {
     getImage();
     sidebar.classList.remove("hidden");
-    qualityGreen.classList.add("hidden");
-    qualityYellow.classList.add("hidden");
-    qualityRed.classList.add("hidden");
-    qualityBlack.classList.add("hidden");
     submitBtn.classList.remove("hidden");
+    submitBtn.disabled = true;
+    submitBtn.classList.add("disabled");
     content.style.marginRight = "21vw";
-
+    fileBtn.disabled = true;
+    fileBtn.classList.add("disabled");
+    researcherInfo.classList.remove("hidden");
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 100);
 });
+
+function updateTimer() {
+    if (!running) return;
+    const now = Date.now();
+    const diff = elapsedTime + (now - startTime);
+    const seconds = (diff / 1000).toFixed(1);
+    document.getElementById('researcherInfo').textContent = `${seconds} seg`;
+    requestAnimationFrame(updateTimer);
+}
+
 
 async function getImage(){
     const res = await fetch(`/select/${appName}`);
     if (!res.ok) {
-        alert("Error loading list of videos");
+        alert("Error loading list of images");
         return;
     }
-    const images = await res.json();
+    const images = await res.json(); //Listado de imagenes disponibles
 
-    //Comprobar que no se haya analizado ya la imagen (BACKEND)
-
-    const img = new Image();
-    img.src = ''; //recibida del backend
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
-        savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
-
-    };
+    const resp = await fetch('static/DATA/file_info_RM.json'); //json de imagenes ya evaluadas
+    try{
+        if (resp.ok) { 
+            const analysedImages = await resp.json();
+            const analysedEvaluatorImages = analysedImages
+                .filter(item => item.evaluator === evaluatorName)
+                .map(item => item.imageoriginal);
+            unanalysedImages = images.filter(image => !analysedEvaluatorImages.includes(image));
+        }
+        else { //No hay imagenes evaluadas
+            unanalysedImages = images;
+        }
+    } catch(e){
+            unanalysedImages = images;
+    }
+    if (unanalysedImages.length === 0){
+        fileName.textContent = "Analaysis finished.";
+        fileBtn.disabled = true;
+        fileBtn.classList.add("disabled");
+        researcherInfo.textContent = "";
+        researcherInfo.classList.add("hidden");
+        running=false;
+    }
+    else{
+        aceptado = true;
+        fileName.textContent = unanalysedImages[0];
+        const imageURL = `/media/${appName}/${unanalysedImages[0]}`;
+        const img = new Image();
+        img.src = imageURL;
+        img.onload = function() {
+            framePlaceholder.width = img.width;
+            framePlaceholder.height = img.height;
+            ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
+            savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 100);
+        };
+    }
+    
 };
-
 
 
 /*Sidebar:
@@ -99,6 +164,8 @@ function showStructures(selectedZone){
     activeStructures.forEach(structure => {
         structure.classList.remove("hidden");
         structure.classList.add("transparent");
+        structure.style.marginTop = "25vh";
+        structure.style.paddingBottom = "0vw";
     });
     selectedStructure = activeStructures[0];
     const firstIndex = selectedStructure.querySelector('.brush-slider');
@@ -115,16 +182,6 @@ function showStructures(selectedZone){
     });
 }
 showStructures(selectedZone);
-zones.forEach(zone => {
-    zone.addEventListener('change', (event) => {
-        structures.forEach((structure) => {
-            structure.classList.add("hidden");
-            clearDrawing();
-        });
-        selectedZone = event.target.value;
-        showStructures(selectedZone);
-    });
-});
 
 
 //Al seleccionar una estructura, se activa la misma y se accede al brush correspondiente.
@@ -156,41 +213,47 @@ framePlaceholder.addEventListener('touchend', stopDrawing);
 framePlaceholder.addEventListener('touchcancel', stopDrawing);
 
 function startDrawing(e) {
-    drawing = true;
-    trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
-    draw(e);
+    if(aceptado){
+        drawing = true;
+        trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
+        draw(e);
+    }
 }
 function stopDrawing() {
-    if(trazoActual) {
-        trazos.push(trazoActual);
-        trazoActual = null;
+    if(aceptado) {
+        if(trazoActual) {
+            trazos.push(trazoActual);
+            trazoActual = null;
+        }
+            validar();
+        drawing = false;
+        ctx.beginPath();
     }
-        validar();
-    drawing = false;
-    ctx.beginPath();
 }
 
 function draw(e) {
-    if (!drawing) return;
-    e.preventDefault();
+    if (aceptado){
+        if (!drawing) return;
+        e.preventDefault();
 
-    const color = colors[currentIndex];
-    const width = widths[currentIndex];
-    let pos;
-    if (e.type.includes('mouse')) {
-        pos = getMousePos(framePlaceholder, e);
-    } else {
-        pos = getTouchPos(framePlaceholder, e);
+        const color = colors[currentIndex];
+        const width = widths[currentIndex];
+        let pos;
+        if (e.type.includes('mouse')) {
+            pos = getMousePos(framePlaceholder, e);
+        } else {
+            pos = getTouchPos(framePlaceholder, e);
+        }
+        trazoActual.puntos.push(pos);
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = color;
+
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
     }
-    trazoActual.puntos.push(pos);
-    ctx.lineWidth = width;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = color;
-
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
 }
 
 function getMousePos(canvas, evt) {
@@ -234,35 +297,28 @@ function redrawRest(colorDelete=null) {
     });
     validar();
 }
-//Borrar todos los trazos si se selecciona otra zona.
-function clearDrawing() {
-    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-    ctx.putImageData(savedFrame, 0, 0);
-    trazos = [];
-    validar();
-}
 
 //Formulario completado, validar y enviar (frame editado, filename, evaluator)
 function validar() {
-    const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
-    const allColorsDrawn = activeColors.every(color =>
-        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
-    );
+    const allColorsDrawn = trazos.some(trazo => trazo.color === colors[0] && trazo.puntos.length > 0);
     if (allColorsDrawn) {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
-        submitted = true;
     }
-    else{
+    else {
         submitBtn.disabled = true;
         submitBtn.classList.add("disabled");
-        submitted = false;
     }
 }
 
-submitBtn.addEventListener("click", () => { saveDrawing();});
+submitBtn.addEventListener("click", () => { saveDrawing(); });
 
 function saveDrawing(){
+    console.log(timerInterval);
+    running = false;
+    elapsedTime += Date.now() - startTime;
+    const seconds = (elapsedTime / 1000).toFixed(2);
+
     let objectJS = [];
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
 
@@ -273,17 +329,12 @@ function saveDrawing(){
     maskEditedCtx.drawImage(framePlaceholder, 0, 0);
     const imageEditedURL = maskEditedCanvas.toDataURL();
 
-    const maskOriginalCanvas = document.createElement("canvas");
-    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
-    maskOriginalCanvas.width = savedFrame.width;
-    maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(savedFrame, 0, 0);
-    const imageURL = maskOriginalCanvas.toDataURL();
     objectJS = {
         image: fileName.textContent, 
         imageEdited: imageEditedURL,
-        filesaved: `rm_${timestamp}.png`,
-        evaluator: evaluatorName
+        filesaved: `rm_${evaluatorName}_${timestamp}.png`,
+        evaluator: evaluatorName,
+        time: parseFloat(seconds)
     };
 
     fetch('/saveRM', { //MODIFICAR BACKEND
@@ -302,7 +353,7 @@ function saveDrawing(){
     .then(data => {
         console.log('Drawing saved successfully:', data);
         alert('Drawing saved successfully.');
-        recargarVideo(appName, fileName.textContent);
+        recargarImagen();
     })
     .catch(error => {
         console.error('Error saving drawing:', error);
@@ -310,9 +361,8 @@ function saveDrawing(){
     });
 }
 
-function recargarVideo(filename){
+function recargarImagen(){
     // Guardar datos para usar después de la recarga: nombre de la imagen evaluada
-    sessionStorage.setItem('imagen', filename);
-
+    sessionStorage.setItem('reload', true);
     location.reload();
 }

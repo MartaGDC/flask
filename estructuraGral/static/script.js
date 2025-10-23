@@ -178,8 +178,8 @@ async function countFramesPerEval(evaluatorName) {
             return;
         }
         const data = await response.json();
-        console.log(fileName.textContent, evaluatorName);
-        numFramesEval = data.filter(item => item.evaluator === evaluatorName && item.frameoriginal.startsWith(fileName.textContent)).length;
+        numFramesEval = data.filter(item => item.evaluator === evaluatorName && item.video.startsWith(fileName.textContent)).length;
+        console.log(data);
     } catch (e) {
         numFramesEval = 0;
     }

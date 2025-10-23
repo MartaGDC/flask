@@ -92,7 +92,7 @@
             {% endif %}
         </div>
         <div class="block">
-            <div>Select Structure:</div>
+            <div id="selectStructure">Select Structure:</div>
             {% for zone, structures in data.structures.items() %}
                 {% for structure in structures %}
                     <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
