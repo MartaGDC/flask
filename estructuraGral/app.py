@@ -84,7 +84,7 @@ def verifyUser(user, app_name):
         error = False
     elif (user == "ppa" and (app_name.startswith("base") or app_name.startswith("abd"))):
         error = False
-    elif app_name.startswith("rm"):
+    elif (user == "mmu" and app_name.startswith("rm")):
         error = False
     else:
         error = True
@@ -92,7 +92,7 @@ def verifyUser(user, app_name):
         return jsonify({
             "error": True,
             "message": "You must enter a valid user for this project.\nEnter new credentials.",
-            "redirect": "http://localhost/index.php"
+            "redirect": "http://localhost/index.php" #Cambiar a la url para el servidor
         })
     else:
         return jsonify({"error": False})
@@ -114,7 +114,7 @@ def list_files(app_name):
     if(app_name.startswith("base")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg")])
+        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".jpeg")])
     else:
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
     return jsonify(videos)
