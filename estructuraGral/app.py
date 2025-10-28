@@ -150,7 +150,6 @@ def play_video(app_name, filename):
     return send_from_directory(directory=dir_path, path=filename)
 
 
-
 @app.route('/save', methods=['POST'])
 def save():
     #Cargar el json donde guardar la info
