@@ -121,7 +121,9 @@ def list_files(app_name):
 #Acceso al video de la carpeta
 @app.route("/media/<app_name>/<filename>", methods=["GET"])
 def play_video(app_name, filename):
-    dir_path = BASE_DIR
+    name, extension = os.path.splitext(filename)
+    filename = f"{name}_proxy{extension}"
+    dir_path = BASE_DIR + "/proxy"
     return send_from_directory(directory=dir_path, path=filename)
 
 
