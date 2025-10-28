@@ -131,7 +131,7 @@ def play_video(app_name, filename):
             image = sitk.ReadImage(file_path)
             array = sitk.GetArrayFromImage(image)
             if array.ndim == 3:
-                array = array[array.shape[0] // 2]
+                array = array[array.shape[0] // 2] #las secuencias completas de RM son 3D, coger el corte central
             array = ((array - np.min(array)) / (np.max(array) - np.min(array)) * 255).astype(np.uint8)
             img = Image.fromarray(array)
             buf = io.BytesIO()
