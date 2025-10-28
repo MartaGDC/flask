@@ -1,8 +1,11 @@
 import json
-import os
-from flask import Flask, render_template, request, jsonify, session, send_from_directory, render_template_string
+import os, io
+from flask import Flask, render_template, request, jsonify, session, send_file, send_from_directory, render_template_string
 #from flask_cors import CORS
 import base64
+from PIL import Image
+import SimpleITK as sitk
+import numpy as np
 from datetime import datetime
 
 app = Flask(__name__)
@@ -114,7 +117,7 @@ def list_files(app_name):
     if(app_name.startswith("base")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".jpeg")])
+        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
     else:
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
     return jsonify(videos)
@@ -122,8 +125,28 @@ def list_files(app_name):
 @app.route("/media/<app_name>/<filename>", methods=["GET"])
 def play_video(app_name, filename):
     name, extension = os.path.splitext(filename)
-    filename = f"{name}_proxy{extension}"
-    dir_path = BASE_DIR + "/proxy"
+    if extension.lower() == ".mha":
+        file_path = os.path.join(BASE_DIR, filename)
+        try:
+            image = sitk.ReadImage(file_path)
+            array = sitk.GetArrayFromImage(image)
+            if array.ndim == 3:
+                array = array[array.shape[0] // 2]
+            array = ((array - np.min(array)) / (np.max(array) - np.min(array)) * 255).astype(np.uint8)
+            img = Image.fromarray(array)
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            buf.seek(0)
+            return send_file(buf, mimetype="image/png")
+        
+        except Exception as e:
+            print(f"[ERROR] No se pudo convertir {filename}: {e}")
+            return "Error processing MHA file", 500
+    elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
+        filename = f"{name}_proxy{extension}"
+        dir_path = BASE_DIR + "/proxy"
+    else:
+        dir_path = BASE_DIR
     return send_from_directory(directory=dir_path, path=filename)
 
 
