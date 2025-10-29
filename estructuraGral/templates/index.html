@@ -97,7 +97,7 @@
                 {% for structure in structures %}
                     <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
                         <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
-                        <input type="range" min="1" max="40" value="20" class="brush-slider" style="accent-color: {{ structure.color }};">
+                        <input type="range" min="1" max="40" value="{{ structure.width }}" class="brush-slider" style="accent-color: {{ structure.color }};">
                         <button id="delete{{ loop.index }}" class="delete">✖</button>
                     </div>
                 {% endfor %}

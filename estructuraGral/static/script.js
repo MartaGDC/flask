@@ -101,6 +101,12 @@ document.addEventListener("DOMContentLoaded", () =>{
         } else {}
     })
     .catch();
+    if (appName === "base_artefactos") {
+        qualityGreen.classList.add("hidden");
+        qualityYellow.classList.add("hidden");
+        qualityRed.classList.add("hidden");
+        qualityBlack.classList.add("hidden");
+    }
 });
 
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
@@ -436,10 +442,23 @@ structures.forEach((structure, index) => {
     });
 });
 sliders.forEach((slider, index) => {
-    slider.addEventListener('input', () => {
+    slider.addEventListener('input', async e => {
         widths[index] = parseInt(slider.value);
+        await fetch("/update_brush", {
+            method:"POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                appName: appName,
+                name: activeStructures[index].querySelector('.structure-name').textContent.trim(),
+                zone: selectedZone,
+                width: parseInt(slider.value)
+            })
+        });
+        console.log(parseInt(slider.value));
+
     });
 });
+
 deleteDrawings.forEach((deleteButton, index) => {
     deleteButton.addEventListener('click', () => {
         clearColorDrawing(colors[index]);
@@ -589,10 +608,12 @@ function validar() {
         trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
     );*/
     allColorsDrawn=true; //Se han definido muchas estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
-    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad") {
+    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad" || appName === "base_artefactos") {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
         submitted = true;
+        console.log(appName);
+
     }
     else{
         submitBtn.disabled = true;
@@ -603,7 +624,7 @@ function validar() {
 
 submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
-        if (selectedQuality === "") {
+        if (selectedQuality === "" && appName!=="base_artefactos") {
                 alert('Please select a quality (Good, Fair, or Bad) before saving.');
                 submitBtn.classList.remove("disabled");
 
@@ -706,7 +727,7 @@ function saveDrawing(){
                 frameoriginal: `0_1_${fileName.textContent}_${frame}.png`, 
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
         }
@@ -719,7 +740,7 @@ function saveDrawing(){
                 frameoriginal: `0_2_${fileName.textContent}_${frame}.png`, 
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
         }
@@ -732,7 +753,7 @@ function saveDrawing(){
                 frameoriginal: `0_3_${fileName.textContent}_${frame}.png`, 
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
         }
@@ -745,7 +766,7 @@ function saveDrawing(){
                 frameoriginal: `${fileName.textContent}_${frame}.png`, 
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "" : selectedZone,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
         }

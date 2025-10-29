@@ -60,9 +60,12 @@ APP_VIDEOS = {
 
 }
 
-
-with open("structures.json", "r", encoding="utf-8") as f:
-    STRUCTURES = json.load(f)
+def load_json(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
 @app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
 def index(app_name):
@@ -70,9 +73,46 @@ def index(app_name):
     # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
     #                                                return render_template(template_name, title=app_name)
 
-    #Para que las zonas y las estructuras puedan ser definidas dinámicamente para el html:
-    data = STRUCTURES.get(app_name)
-    return render_template('index.html', user = user, title=app_name, data=data)
+    #Para que las zonas y las estructuras, y el ancho de los pinceles, puedan ser definidas dinámicamente para el html:
+    structures = load_json("structures.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
+    brush = load_json("settings_brush.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
+    for zone, structs in structures["structures"].items():
+        print(zone, structs)
+        for structure in structs:
+            s_name = structure["name"]
+            for b in brush["structures"].get(zone, []):
+                if b["name"] == s_name:
+                    structure["width"] = b["width"]
+                    break
+
+    return render_template('index.html', user = user, title=app_name, data=structures)
+
+
+@app.route("/update_brush", methods=["POST"])
+def update_brush_width():
+    req = request.json
+    appName = req["appName"]
+    name = req["name"]
+    zone = req["zone"]
+    width = req["width"]
+
+    brush = load_json("settings_brush.json")
+
+    if appName not in brush:
+        brush[appName] = {"zones": [{"value": zone, "label": ""}],
+                          "structures": {zone: []}}
+    found = False
+    for b in brush[appName]["structures"][zone]:
+        if b["name"] == str(name):
+            b["width"] = str(width)
+            print(width)
+            found = True
+            break
+    if not found:
+        brush[appName]["structures"][zone].append({"name": name, "width": width})
+
+    save_json("settings_brush.json", brush)
+    return jsonify({"status": "ok", "updated": name})
 
 
 @app.route('/verifyUser/<user>/<app_name>')
@@ -130,8 +170,6 @@ def play_video(app_name, filename):
         try:
             image = sitk.ReadImage(file_path)
             array = sitk.GetArrayFromImage(image)
-            if array.ndim == 3:
-                array = array[array.shape[0] // 2] #las secuencias completas de RM son 3D, coger el corte central
             array = ((array - np.min(array)) / (np.max(array) - np.min(array)) * 255).astype(np.uint8)
             img = Image.fromarray(array)
             buf = io.BytesIO()
