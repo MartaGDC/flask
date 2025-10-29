@@ -192,10 +192,21 @@ structures.forEach((structure, index) => {
     });
 });
 sliders.forEach((slider, index) => {
-    slider.addEventListener('input', () => {
+    slider.addEventListener('input', async e => {
         widths[index] = parseInt(slider.value);
+        await fetch("/update_brush", {
+            method:"POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                appName: appName,
+                name: activeStructures[index].querySelector('.structure-name').textContent.trim(),
+                zone: selectedZone,
+                width: parseInt(slider.value)
+            })
+        });
     });
 });
+
 deleteDrawings.forEach((deleteButton, index) => {
     deleteButton.addEventListener('click', () => {
         clearColorDrawing(colors[index]);
