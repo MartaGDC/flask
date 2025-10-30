@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () =>{
     qualityRed.classList.add("hidden");
     qualityBlack.classList.add("hidden");
     selectStructure.classList.add("hidden");    
+    framePlaceholder.style.height="67vh"
     if (sessionStorage.getItem('reload')) {
         sessionStorage.removeItem('reload');
         getImage();
@@ -96,7 +97,9 @@ function updateTimer() {
     const now = Date.now();
     const diff = elapsedTime + (now - startTime);
     const seconds = (diff / 1000).toFixed(1);
-    document.getElementById('researcherInfo').textContent = `${seconds} seg`;
+    researcherInfo.textContent = `${seconds} seg`;
+    researcherInfo.style.fontSize = "1.1vw";
+
     requestAnimationFrame(updateTimer);
 }
 
