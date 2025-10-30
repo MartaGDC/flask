@@ -16,7 +16,7 @@ for filename in os.listdir(ORIG):
         subprocess.run([
             "ffmpeg", #comando para ejecutar ffmpeg (instalado previamente en el sistema)
             "-i", orig_path, #-i: Archivo de entrada
-            "-vf", "scale=640:-1", #redimensiona por si puede hacerse mas ligero
+            "-vf", 'scale=640:trunc(ow/a/2)*2', #redimensiona por si puede hacerse mas ligero. Necesario hacer esto en vez de scale=640:-1 para las imagenes con pixeles impares.
             "-vsync", "cfr", #contant frame rate
             "-c:v", "libx264", #asegura formato de video compatible con web, libx264 es el codec de video H.264
             "-preset", "veryfast", #optimiza velocidad de codificación
