@@ -285,7 +285,7 @@ def saveRM():
     imageEdited = base64.b64decode(imageEdited)
     filesaved = data['filesaved']
     evaluator = data['evaluator']
-    time = data['time']
+    #time = data['time']
     
     with open(f'static/DATA/{filesaved}', 'wb') as f:
         f.write(imageEdited)
@@ -294,7 +294,7 @@ def saveRM():
         "imageoriginal": imageoriginal,
         "filesaved": filesaved,
         "evaluator": evaluator,
-        "time": time
+        #"time": time
     })
 
     with open(metadata_file, 'w') as f:

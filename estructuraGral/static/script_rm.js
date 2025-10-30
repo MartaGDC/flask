@@ -15,9 +15,9 @@ const ctx = framePlaceholder.getContext("2d");
 let savedFrame = null;
 
 const researcherInfo = document.getElementById("researcherInfo");
-let startTime = 0;
+/*let startTime = 0;
 let elapsedTime = 0;
-let running=true;
+let running=true;*/
 const submitBtn = document.getElementById("submitBtn");
 let aceptado = false; //si false es porque no hay imagenes y no se puede dibujar
 const sidebar = document.getElementById("sidebar");
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () =>{
     qualityRed.classList.add("hidden");
     qualityBlack.classList.add("hidden");
     selectStructure.classList.add("hidden");    
-    framePlaceholder.style.height="67vh"
+    //framePlaceholder.style.height="67vh"
     if (sessionStorage.getItem('reload')) {
         sessionStorage.removeItem('reload');
         getImage();
@@ -88,11 +88,11 @@ fileBtn.addEventListener("click", () => {
     fileBtn.disabled = true;
     fileBtn.classList.add("disabled");
     researcherInfo.classList.remove("hidden");
-    startTime = Date.now();
-    timerInterval = setInterval(updateTimer, 100);
+    /*startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 100);*/
 });
 
-function updateTimer() {
+/*function updateTimer() {
     if (!running) return;
     const now = Date.now();
     const diff = elapsedTime + (now - startTime);
@@ -101,7 +101,7 @@ function updateTimer() {
     researcherInfo.style.fontSize = "1.1vw";
 
     requestAnimationFrame(updateTimer);
-}
+}*/
 
 
 async function getImage(){
@@ -146,8 +146,8 @@ async function getImage(){
             framePlaceholder.height = img.height;
             ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
             savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
-            startTime = Date.now();
-            timerInterval = setInterval(updateTimer, 100);
+            /*startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 100);*/
         };
     }
     
@@ -328,10 +328,9 @@ function validar() {
 submitBtn.addEventListener("click", () => { saveDrawing(); });
 
 function saveDrawing(){
-    console.log(timerInterval);
-    running = false;
+    /*running = false;
     elapsedTime += Date.now() - startTime;
-    const seconds = (elapsedTime / 1000).toFixed(2);
+    const seconds = (elapsedTime / 1000).toFixed(2);*/
 
     let objectJS = [];
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
@@ -348,7 +347,7 @@ function saveDrawing(){
         imageEdited: imageEditedURL,
         filesaved: `rm_${evaluatorName}_${timestamp}.png`,
         evaluator: evaluatorName,
-        time: parseFloat(seconds)
+        /*time: parseFloat(seconds)*/
     };
 
     fetch('/saveRM', { //MODIFICAR BACKEND
