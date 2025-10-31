@@ -121,7 +121,7 @@ def update_brush_width():
 def verifyUser(user, app_name):
     if (user== "None" or user == None or user==""):
         error = True
-    if(user == "mmu" and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("abd"))):
+    if((user == "mmu" or user == "mgd") and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("abd"))):
         error = False
     elif (user == "jpr" and (app_name.startswith("base") or app_name.startswith("foot"))):
         error = False
@@ -129,7 +129,7 @@ def verifyUser(user, app_name):
         error = False
     elif (user == "ppa" and (app_name.startswith("base") or app_name.startswith("abd"))):
         error = False
-    elif (user == "mmu" and app_name.startswith("rm")):
+    elif ((user == "mmu" or user == "mgd") and app_name.startswith("rm")):
         error = False
     else:
         error = True

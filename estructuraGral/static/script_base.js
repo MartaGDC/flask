@@ -12,6 +12,13 @@ const videoWindow = document.getElementById("videoWindow");
 const videoList = document.getElementById("videoList");
 let evaluatorName = "";
 
+const baseLimits = document.getElementById("bases-limits")
+const retryLimits = document.getElementById("limtis-retry")
+const acceptLimits = document.getElementById("limtis-accept")
+const baseScale = document.getElementById("bases-scale")
+const scaleRetry = document.getElementById("scale-retry")
+const scaleAccept = document.getElementById("scale-accept")
+
 const videoContainer = document.getElementById("video-container");
 const videoPlayer = document.getElementById("video-player");
 const progress = document.getElementById("progress");
@@ -24,6 +31,8 @@ const startFrame = document.getElementById("mark-start");
 const endFrame = document.getElementById("mark-end");
 const framePlaceholder = document.getElementById("frame-placeholder");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
+const frameOverlay = document.getElementById("frame-overlay");
+const ctxOverlay = frameOverlay.getContext("2d", { willReadFrequently: true });
 let firstValue = null;
 let firstFrame = null;
 let lastValue = null;
@@ -101,6 +110,12 @@ document.addEventListener("DOMContentLoaded", () =>{
         } else {}
     })
     .catch();
+    if (appName === "base_artefactos") {
+        qualityGreen.classList.add("hidden");
+        qualityYellow.classList.add("hidden");
+        qualityRed.classList.add("hidden");
+        qualityBlack.classList.add("hidden");
+    }
 });
 
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
@@ -185,29 +200,12 @@ async function countFramesPerEval(evaluatorName) {
     }
 }
 
-/*
-videoFileInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        fileName.textContent = file.name;
-        const videoURL = URL.createObjectURL(file);
-        videoPlayer.src = videoURL;
-        videoContainer.style.display = "block";
-        videoPlayer.load();
-        videoPlayer.currentTime = 0; // Reset to the start of the video
-        researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
-        pausado = true;
-        drawFrame();
-    } else {
-        fileName.textContent = "No video selected.";
-        videoContainer.style.display = "none";
-        acceptFrameBtn.disabled = true;
-    }
-});
-*/
+
 videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
     framePlaceholder.width = videoPlayer.videoWidth;
     framePlaceholder.height = videoPlayer.videoHeight;
+    frameOverlay.width = videoPlayer.videoWidth;
+    frameOverlay.height = videoPlayer.videoHeight;
     
     progress.min = 0;
     progress.max = 100;
@@ -365,13 +363,149 @@ acceptFrameBtn.addEventListener("click", () => {
     acceptFramesBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
-    aceptado = true;
-    sidebar.classList.remove("hidden");
-    content.style.marginRight = "21vw";
+    if(appName.startsWith('base')){
+        baseLimits.classList.remove('hidden');
+        frameOverlay.classList.remove('hidden');
 
+        framePlaceholder.addEventListener("mousedown", startSelection);
+        framePlaceholder.addEventListener("mousemove", drawSelection);
+        framePlaceholder.addEventListener("mouseup", endSelection);
+
+        framePlaceholder.addEventListener("touchstart", startSelection);
+        framePlaceholder.addEventListener("touchmove", drawSelection);
+        framePlaceholder.addEventListener("touchend", endSelection);
+    }
+    else{
+        aceptado = true;
+        sidebar.classList.remove("hidden");
+        content.style.marginRight = "21vw";
+    }
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
 });
+
+let startX, startY;
+let isSelecting = false;
+let selection = null;
+
+// Obtener coordenadas del mouse o táctil
+function getPos(canvas, e) {
+    const rect = canvas.getBoundingClientRect();
+
+    // Coordenadas del clic respecto al viewport
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    // Ajuste de escala
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+frameOverlay.addEventListener("mousedown", startSelection);
+frameOverlay.addEventListener("mousemove", drawSelection);
+frameOverlay.addEventListener("mouseup", endSelection);
+frameOverlay.addEventListener("touchstart", startSelection);
+frameOverlay.addEventListener("touchmove", drawSelection);
+frameOverlay.addEventListener("touchend", endSelection);
+
+function startSelection(e) {
+    const pos = getPos(frameOverlay, e);
+    startX = pos.x;
+    startY = pos.y;
+    isSelecting = true;
+}
+
+function drawSelection(e) {
+    if (!isSelecting) return;
+    e.preventDefault();
+
+    const pos = getPos(frameOverlay, e);
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    // Limpiar overlay
+    ctxOverlay.clearRect(0, 0, frameOverlay.width, frameOverlay.height);
+
+    // Dibuja la capa semitransparente
+    ctxOverlay.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctxOverlay.fillRect(0, 0, frameOverlay.width, frameOverlay.height);
+
+    // Crear "ventana" de selección (área más clara)
+    ctxOverlay.clearRect(startX, startY, width, height);
+
+    // Borde visible
+    ctxOverlay.lineWidth = 2;
+    ctxOverlay.strokeStyle = "red";
+    ctxOverlay.setLineDash([6]);
+    ctxOverlay.strokeRect(startX, startY, width, height);
+}
+
+function endSelection(e) {
+    if (!isSelecting) return;
+    isSelecting = false;
+
+    const pos = getPos(frameOverlay, e);
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    selection = {
+        x: Math.min(startX, pos.x),
+        y: Math.min(startY, pos.y),
+        w: Math.abs(width),
+        h: Math.abs(height)
+    };
+
+    // Limpia overlay final
+    ctxOverlay.clearRect(0, 0, frameOverlay.width, frameOverlay.height);
+
+    // Crea el nuevo canvas con la selección
+    createSubCanvas(selection);
+}
+
+function createSubCanvas(sel) {
+    const resultadoCanvas = document.getElementById("frame-final"); // canvas existente donde mostrar
+
+    resultadoCanvas.width = sel.w;
+    resultadoCanvas.height = sel.h;
+    resultadoCanvas.style.width = "auto";
+    resultadoCanvas.style.maxHeight = "90%";
+    const newCtx = resultadoCanvas.getContext("2d");
+    newCtx.fillStyle = "white";
+    newCtx.fillRect(0,0,resultadoCanvas.width, resultadoCanvas.height);    
+    newCtx.drawImage(
+        framePlaceholder,
+        sel.x, sel.y, sel.w, sel.h, // area origen dentro de src
+        0, 0, sel.w, sel.h          // area destino en resultadoCanvas
+    );
+
+    // Mostrar resultado y ocultar originales (usa clases o style consistentemente)
+    framePlaceholder.classList.add("hidden");
+    frameOverlay.classList.add("hidden");
+    resultadoCanvas.classList.remove("hidden");
+
+    activarDibujoEnCanvas(resultadoCanvas);
+}
+
+function activarDibujoEnCanvas(canvas) {
+    // Ejemplo simple para activar tu función draw
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchcancel', stopDrawing);
+}
+
+
+
+
 
 
 
@@ -602,7 +736,7 @@ function validar() {
         trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
     );*/
     allColorsDrawn=true; //Se han definido muchas estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
-    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad") {
+    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad" || appName === "base_artefactos") {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
         submitted = true;
@@ -618,7 +752,7 @@ function validar() {
 
 submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
-        if (selectedQuality === "") {
+        if (selectedQuality === "" && appName!=="base_artefactos") {
                 alert('Please select a quality (Good, Fair, or Bad) before saving.');
                 submitBtn.classList.remove("disabled");
 
@@ -643,19 +777,59 @@ function saveDrawing(){
             const imageURL = maskOriginalCanvas.toDataURL();
             const imageEditedURL = maskOriginalCanvas.toDataURL();
             
-            //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original
-            objectJS.push({
-                video: fileName.textContent, 
-                frame: numframe,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `${fileName.textContent}_${numframe}.png`, 
-                filesaved: `${timestamp}_${index}.png`,
-                quality: selectedQuality,
-                zone: selectedZone,
-                evaluator: evaluatorName
-            });
-            
+            //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original 
+            if(appName==="base_tejidos"){
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_1_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
+            else if(appName==="base_artefactos"){
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_2_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
+            else if(appName==="base_ROIS"){
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_3_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
+            else{
+                objectJS.push({
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                });
+            }
         });
     } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
@@ -672,18 +846,58 @@ function saveDrawing(){
         maskOriginalCtx.putImageData(savedFrame, 0, 0);
         const imageURL = maskOriginalCanvas.toDataURL();
 
-        objectJS = {
-            video: fileName.textContent, 
-            frame: frame,
-            originalImage: imageURL,
-            imageEdited: imageEditedURL,
-            frameoriginal: `${fileName.textContent}_${frame}.png`, 
-            filesaved: `${timestamp}.png`,
-            quality: selectedQuality,
-            zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-            evaluator: evaluatorName
-        };
-    
+        if(appName==="base_tejidos"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_1_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
+        else if (appName==="base_artefactos"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_2_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
+        else if (appName==="base_ROIS"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_3_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
+        else{
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+        }
     }
 
 

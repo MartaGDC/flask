@@ -27,7 +27,13 @@
         </div>
         <!-- <input type="file" id="videoFileInput" accept="video/*" style="display:none;"> -->
         <div class="frame-viewer">
-            <canvas id="frame-placeholder"></canvas>
+            <div class="canvas-container">
+                <canvas id="frame-placeholder"></canvas>
+                {% if title.startswith('base') %}
+                    <canvas id="frame-overlay" class="hidden"></canvas>
+                    <canvas id="frame-final" class="hidden" ></canvas>
+                {% endif %}
+            </div>
             <div class="botones_frame">
                 <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
                 <button id="acceptFramesBtn" class="hidden">Select group of frames</button>
@@ -39,6 +45,22 @@
     <div id="videoWindow" class="window hidden">
         <ul id="videoList" class="videoList"></ul>
     </div>
+
+    <div id="bases-limits" class="popup hidden">
+        <span>Limits</span>
+        <div class="popup-content">
+            <button id="limtis-retry">Retry</button>
+            <button id="limits-accept">Accept</button>
+        </div>
+    </div>
+    <div id="bases_scale" class="popup hidden">
+        <span>Scale</span>
+        <div class="popup-content">
+            <button id="scale-retry">Retry</button>
+            <button id="scale-accept">Accept</button>
+            </div>
+    </div>
+
     <!--<div id="evaluator-popup" class="popup hidden">
         <div class="popup-content">
             <label for="evaluator">Evaluator: </label>
@@ -106,6 +128,8 @@
     </aside>
     {% if title == 'rm' %}
         <script src="{{ url_for('static', filename='script_rm.js') }}"></script>
+    {% elif title.startswith('base') %}
+        <script src="{{ url_for('static', filename='script_base.js') }}"></script>
     {% else %}
         <script src="{{ url_for('static', filename='script.js') }}"></script>
 
