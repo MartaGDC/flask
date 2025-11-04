@@ -68,6 +68,8 @@ const sliders = document.querySelectorAll('.brush-slider');
 const  widths = Array.from(document.querySelectorAll(".brush-slider")).map(slider => parseInt(slider.value));
 const colors = Array.from(document.querySelectorAll(".structure-item")).map(div => div.dataset.color);
 const deleteDrawings = document.querySelectorAll(".delete");
+let invisibleStructures = {};
+const invisible = document.querySelectorAll(".invisible");
 let drawing = false;
 let trazos = [];
 let trazoActual = null;
@@ -420,6 +422,11 @@ zones.forEach(zone => {
     zone.addEventListener('change', (event) => {
         structures.forEach((structure) => {
             structure.classList.add("hidden");
+            invisible.forEach((invisibleBtn, _) => {
+                invisibleBtn.classList.remove("active");
+                const structureName = invisibleBtn.getAttribute('data-structure');
+                invisibleStructures[structureName] = false;
+            });
             clearDrawing();
         });
         selectedZone = event.target.value;
@@ -457,6 +464,14 @@ deleteDrawings.forEach((deleteButton, index) => {
     deleteButton.addEventListener('click', () => {
         clearColorDrawing(colors[index]);
     });
+});
+
+invisible.forEach((invisibleBtn, _) => {
+    invisibleBtn.addEventListener('click', () => {
+        const structureName = invisibleBtn.getAttribute('data-structure');
+        const isActive = invisibleBtn.classList.toggle('active');
+        invisibleStructures[structureName] = isActive;
+    }) 
 });
 
 //Dibujos con los brush
@@ -644,7 +659,7 @@ function saveDrawing(){
             const imageEditedURL = maskOriginalCanvas.toDataURL();
             
             //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original
-            objectJS.push({
+            const frameObject = {
                 video: fileName.textContent, 
                 frame: numframe,
                 originalImage: imageURL,
@@ -654,8 +669,14 @@ function saveDrawing(){
                 quality: selectedQuality,
                 zone: selectedZone,
                 evaluator: evaluatorName
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if (used) {
+                    frameObject[name] = "invisible";
+                }
             });
-            
+            objectJS.push(frameObject);
+                
         });
     } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
@@ -683,7 +704,12 @@ function saveDrawing(){
             zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
             evaluator: evaluatorName
         };
-    
+        Object.entries(invisibleStructures).forEach(([name, used]) => {
+            if(used){
+                objectJS[name] = "invisible";
+            }
+        });
+
     }
 
 
