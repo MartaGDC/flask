@@ -18,6 +18,12 @@ cd ../Tunnel-Trans
 gunicorn -w 4 -b 0.0.0.0:5002 --reload app:app &
 # ...
 
+Al final para el puerto 5004 despuÈs de meses funcionando correctamente, ha empezado a dar fallos.
+He tenido que matar todos los procesos de este puerto y hacer esto:
+cd /home/ubuntu/Echo-Selector-Flask/New-Projects/
+source /home/ubuntu/venv/bin/activate
+nohup setsid gunicorn -w 4 -b 0.0.0.0:5004 --reload app:app > /home/ubuntu/gunicorn_5004.log 2>&1 &
+disown
 
 # Para produccion se puede a√±adir a systemd:
 #-------------------------------------------

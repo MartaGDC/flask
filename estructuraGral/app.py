@@ -17,6 +17,7 @@ APP_VIDEOS = {
     "base_tejidos":"",
     "base_artefactos" : "",
     "base_ROIS":"",
+    "base_marco":"",
     
     "foot_longitudinal_fascia": "1_1_",
     "foot_transversal_fascia": "1_2_",
@@ -79,7 +80,7 @@ def index(app_name):
     structures = load_json("structures.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
     brush = load_json("settings_brush.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
     for zone, structs in structures["structures"].items():
-        print(zone, structs)
+        print("hola ", zone, structs)
         for structure in structs:
             s_name = structure["name"]
             for b in brush["structures"].get(zone, []):
@@ -154,14 +155,14 @@ def add_header(response): #Con los cambios en el html, había problemas de cache
 #Acceso a carpetas de videos según la app_name
 @app.route("/select/<app_name>", methods=["GET"])
 def list_files(app_name):
-    app = APP_VIDEOS[app_name]
+    app_num = APP_VIDEOS[app_name]
     dir_path = BASE_DIR
     if(app_name.startswith("base")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
     else:
-        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app) and file.lower().endswith(".mp4")])
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
     return jsonify(videos)
 #Acceso al video de la carpeta
 @app.route("/media/<app_name>/<filename>", methods=["GET"])
@@ -192,89 +193,79 @@ def play_video(app_name, filename):
 
 @app.route('/save', methods=['POST'])
 def save():
-    import traceback
+    #Cargar el json donde guardar la info
+    os.makedirs("static/DATA", exist_ok=True)
+    os.makedirs("static/frames", exist_ok=True)
+    metadata_file = 'static/DATA/file_info.json'
+    if os.path.exists(metadata_file):
+        with open(metadata_file, 'r', encoding='utf-8') as f:
+            metadata = json.load(f)
+    else:
+        metadata = []
 
-    try:
-        #Cargar el json donde guardar la info
-        os.makedirs("static/DATA", exist_ok=True)
-        os.makedirs("static/frames", exist_ok=True)
-        metadata_file = 'static/DATA/file_info.json'
-        if os.path.exists(metadata_file):
-            with open(metadata_file, 'r', encoding='utf-8') as f:
-                metadata = json.load(f)
-        else:
-            metadata = []
+    #Cargar la respuesta
+    data = request.json
+    if isinstance(data, dict): #guardado de un solo frame
+        entry = {
+            "video": data["video"],
+            "frame": data["frame"],
+            "frameoriginal": data["frameoriginal"],
+            "filesaved": data["filesaved"],
+            "quality": data["quality"],
+            "zone": data["zone"],
+            "evaluator": data["evaluator"]
+        }
+        for key, value in data.items():
+            if key not in entry and key not in ["originalImage", "imageEdited"]:
+                entry[key] = value
 
-        #Cargar la respuesta
-        data = request.json
-        if isinstance(data, dict): #guardado de un solo frame
+        frameoriginal = data['frameoriginal']
+        filesaved = data['filesaved']
+        originalImage = data['originalImage'].split(",")[1]
+        originalImage = base64.b64decode(originalImage)
+        imageEdited = data['imageEdited'].split(",")[1]
+        imageEdited = base64.b64decode(imageEdited)
+                
+        with open(f'static/frames/{frameoriginal}', 'wb') as f:
+            f.write(originalImage)
+        with open(f'static/DATA/{filesaved}', 'wb') as f:
+            f.write(imageEdited)
+
+        metadata.append(entry)
+
+    elif isinstance(data, list): #guardado de multiples frames
+        for i in data:
             entry = {
-                "video": data["video"],
-                "frame": data["frame"],
-                "frameoriginal": data["frameoriginal"],
-                "filesaved": data["filesaved"],
-                "quality": data["quality"],
-                "zone": data["zone"],
-                "evaluator": data["evaluator"]
+                "video": item.get("video"),
+                "frame": item.get("frame"),
+                "frameoriginal": item.get("frameoriginal"),
+                "filesaved": item.get("filesaved"),
+                "quality": item.get("quality"),
+                "zone": item.get("zone"),
+                "evaluator": item.get("evaluator"),
             }
-            for key, value in data.items():
+            for key, value in i.items():
                 if key not in entry and key not in ["originalImage", "imageEdited"]:
                     entry[key] = value
-
-            frameoriginal = data['frameoriginal']
-            filesaved = data['filesaved']
-            originalImage = data['originalImage'].split(",")[1]
+            
+            frameoriginal = data[i]['frameoriginal']
+            filesaved = data[i]['filesaved']
+            originalImage = data[i]['originalImage'].split(",")[1]
             originalImage = base64.b64decode(originalImage)
-            imageEdited = data['imageEdited'].split(",")[1]
+            imageEdited = data[i]['imageEdited'].split(",")[1]
             imageEdited = base64.b64decode(imageEdited)
-                    
+            
             with open(f'static/frames/{frameoriginal}', 'wb') as f:
                 f.write(originalImage)
             with open(f'static/DATA/{filesaved}', 'wb') as f:
                 f.write(imageEdited)
-
+            #Añadir la nueva informacion al json
             metadata.append(entry)
 
-        elif isinstance(data, list): #guardado de multiples frames
-            for i in data:
-                entry = {
-                    "video": item.get("video"),
-                    "frame": item.get("frame"),
-                    "frameoriginal": item.get("frameoriginal"),
-                    "filesaved": item.get("filesaved"),
-                    "quality": item.get("quality"),
-                    "zone": item.get("zone"),
-                    "evaluator": item.get("evaluator"),
-                }
-                for key, value in i.items():
-                    if key not in entry and key not in ["originalImage", "imageEdited"]:
-                        entry[key] = value
-                
-                frameoriginal = data[i]['frameoriginal']
-                filesaved = data[i]['filesaved']
-                originalImage = data[i]['originalImage'].split(",")[1]
-                originalImage = base64.b64decode(originalImage)
-                imageEdited = data[i]['imageEdited'].split(",")[1]
-                imageEdited = base64.b64decode(imageEdited)
-                
-                with open(f'static/frames/{frameoriginal}', 'wb') as f:
-                    f.write(originalImage)
-                with open(f'static/DATA/{filesaved}', 'wb') as f:
-                    f.write(imageEdited)
-                #Añadir la nueva informacion al json
-                metadata.append(entry)
-    
-        with open(metadata_file, 'w', encoding='utf-8') as f:
-            json.dump(metadata, f, indent=4, ensure_ascii=False)
+    with open(metadata_file, 'w', encoding='utf-8') as f:
+        json.dump(metadata, f, indent=4, ensure_ascii=False)
 
-        return jsonify({"status": "success"})
-    
-    except Exception as e:
-        print("error en save: ")
-        traceback.print_exc()
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
+    return jsonify({"status": "success"})
 
 @app.route('/saveRM', methods=['POST'])
 def saveRM():

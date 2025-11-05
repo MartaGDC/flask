@@ -12,13 +12,6 @@ const videoWindow = document.getElementById("videoWindow");
 const videoList = document.getElementById("videoList");
 let evaluatorName = "";
 
-const baseLimits = document.getElementById("bases-limits")
-const retryLimits = document.getElementById("limtis-retry")
-const acceptLimits = document.getElementById("limtis-accept")
-const baseScale = document.getElementById("bases-scale")
-const scaleRetry = document.getElementById("scale-retry")
-const scaleAccept = document.getElementById("scale-accept")
-
 const videoContainer = document.getElementById("video-container");
 const videoPlayer = document.getElementById("video-player");
 const progress = document.getElementById("progress");
@@ -30,9 +23,9 @@ const pauseBtn = document.getElementById("pause");
 const startFrame = document.getElementById("mark-start");
 const endFrame = document.getElementById("mark-end");
 const framePlaceholder = document.getElementById("frame-placeholder");
+const overlay = document.getElementById("canvas-overlay");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
-const frameOverlay = document.getElementById("frame-overlay");
-const ctxOverlay = frameOverlay.getContext("2d", { willReadFrequently: true });
+const ctxOverlay = overlay.getContext("2d");
 let firstValue = null;
 let firstFrame = null;
 let lastValue = null;
@@ -53,30 +46,15 @@ const acceptGroupBtn = document.getElementById("acceptGroup");
 const frames = [];
 const submitBtn = document.getElementById("submitBtn");
 let aceptado = false; //frame aceptado, para no modificarlo hasta terminar el formulario
-let good = true;
+let limits = false; //dibujar limites solo si se ha clicado el boton y aun no se ha guardado el dibujo hehco
+let scale = false; //lo mimso para la escala
 let submitted = false; //formulario del frame aceptado
 
 const sidebar = document.getElementById("sidebar");
 const blocks = document.querySelectorAll(".block");
+const limitsBtn = document.getElementById("limitsBtn");
+const scaleBtn = document.getElementById("scaleBtn");
 
-const qualityButtons = document.querySelectorAll(".quality-button");
-const qualityGreen = document.getElementById("qualityGreen");
-const qualityYellow = document.getElementById("qualityYellow");
-const qualityRed = document.getElementById("qualityRed");
-const qualityBlack = document.getElementById("qualityBlack");
-let selectedQuality = "";
-
-const zones = document.querySelectorAll('input[name="zone"]');
-//const selectZone = document.getElementById('selectZone');
-let selectedZone = zones[0].value;
-
-const structures = document.querySelectorAll(".structure-item");
-let selectedStructure = null;
-let currentIndex = null;
-const sliders = document.querySelectorAll('.brush-slider');
-const  widths = Array.from(document.querySelectorAll(".brush-slider")).map(slider => parseInt(slider.value));
-const colors = Array.from(document.querySelectorAll(".structure-item")).map(div => div.dataset.color);
-const deleteDrawings = document.querySelectorAll(".delete");
 let drawing = false;
 let trazos = [];
 let trazoActual = null;
@@ -110,12 +88,6 @@ document.addEventListener("DOMContentLoaded", () =>{
         } else {}
     })
     .catch();
-    if (appName === "base_artefactos") {
-        qualityGreen.classList.add("hidden");
-        qualityYellow.classList.add("hidden");
-        qualityRed.classList.add("hidden");
-        qualityBlack.classList.add("hidden");
-    }
 });
 
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
@@ -200,13 +172,12 @@ async function countFramesPerEval(evaluatorName) {
     }
 }
 
-
 videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
     framePlaceholder.width = videoPlayer.videoWidth;
     framePlaceholder.height = videoPlayer.videoHeight;
-    frameOverlay.width = videoPlayer.videoWidth;
-    frameOverlay.height = videoPlayer.videoHeight;
-    
+    overlay.width = videoPlayer.videoWidth;
+    overlay.height = videoPlayer.videoHeight;
+
     progress.min = 0;
     progress.max = 100;
     progress.value = 0;
@@ -244,13 +215,7 @@ function pausar(){
     pauseBtn.classList.add("hidden");
     playBtn.classList.remove("hidden")
 }
-/*videoPlayer.addEventListener("pause", () => {
-    pausado = true;
-    drawFrame();
-});
-videoPlayer.addEventListener("play", () => {
-    pausado = false;
-});*/
+
 function drawFrame() {
     if (pausado && !aceptado) {
         ctx.drawImage(videoPlayer, 0, 0);
@@ -286,7 +251,6 @@ nextFrameBtn.addEventListener("click", () => {
 */
 /*-------------------------SELECCIONAR UN GRUPO DE FRAMES-------------------------*/
 acceptFramesBtn.addEventListener("click", () => {
-    good = false;
     acceptFrameBtn.classList.add("hidden");
     acceptFramesBtn.classList.add("hidden");
     acceptGroupBtn.classList.remove("hidden");
@@ -363,25 +327,27 @@ acceptFrameBtn.addEventListener("click", () => {
     acceptFramesBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
-    if(appName.startsWith('base')){
-        baseLimits.classList.remove('hidden');
-        frameOverlay.classList.remove('hidden');
+    aceptado = true;
+    sidebar.classList.remove("hidden");
+    content.style.marginRight = "21vw";
 
-        framePlaceholder.addEventListener("mousedown", startSelection);
-        framePlaceholder.addEventListener("mousemove", drawSelection);
-        framePlaceholder.addEventListener("mouseup", endSelection);
-
-        framePlaceholder.addEventListener("touchstart", startSelection);
-        framePlaceholder.addEventListener("touchmove", drawSelection);
-        framePlaceholder.addEventListener("touchend", endSelection);
-    }
-    else{
-        aceptado = true;
-        sidebar.classList.remove("hidden");
-        content.style.marginRight = "21vw";
-    }
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
+});
+
+
+
+/*Sidebar:
+- Seleccion de marco
+- Guardado del marco
+- Seleccion de escala
+- Guardado de escala
+- Cuando se ha completado, se puede enviar
+*/
+/*-------------------------SIDEBAR-------------------------*/
+limitsBtn.addEventListener("click", () => {
+    overlay.style.cursor="crosshair";
+    limits= true;
 });
 
 let startX, startY;
@@ -405,193 +371,59 @@ function getPos(canvas, e) {
         y: (clientY - rect.top) * scaleY
     };
 }
-
-frameOverlay.addEventListener("mousedown", startSelection);
-frameOverlay.addEventListener("mousemove", drawSelection);
-frameOverlay.addEventListener("mouseup", endSelection);
-frameOverlay.addEventListener("touchstart", startSelection);
-frameOverlay.addEventListener("touchmove", drawSelection);
-frameOverlay.addEventListener("touchend", endSelection);
+overlay.addEventListener("mousedown", startSelection);
+overlay.addEventListener("mousemove", drawSelection);
+overlay.addEventListener("mouseup", endSelection);
+overlay.addEventListener("touchstart", startSelection);
+overlay.addEventListener("touchmove", drawSelection);
+overlay.addEventListener("touchend", endSelection);
 
 function startSelection(e) {
-    const pos = getPos(frameOverlay, e);
-    startX = pos.x;
-    startY = pos.y;
-    isSelecting = true;
+    if(limits){
+        const pos = getPos(overlay, e);
+        startX = pos.x;
+        startY = pos.y;
+        isSelecting = true;
+    }
 }
 
 function drawSelection(e) {
-    if (!isSelecting) return;
-    e.preventDefault();
+    if(limits){
+        if (!isSelecting) return;
+        e.preventDefault();
 
-    const pos = getPos(frameOverlay, e);
-    const width = pos.x - startX;
-    const height = pos.y - startY;
+        const pos = getPos(overlay, e);
+        const width = pos.x - startX;
+        const height = pos.y - startY;
 
-    // Limpiar overlay
-    ctxOverlay.clearRect(0, 0, frameOverlay.width, frameOverlay.height);
+        // Dibuja la capa semitransparente
+        ctxOverlay.fillStyle = "rgba(255, 255, 255)";
+        ctxOverlay.fillRect(0, 0, overlay.width, overlay.height);
 
-    // Dibuja la capa semitransparente
-    ctxOverlay.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctxOverlay.fillRect(0, 0, frameOverlay.width, frameOverlay.height);
+        // Crear "ventana" de selección (área más clara)
+        ctxOverlay.clearRect(startX, startY, width, height);
 
-    // Crear "ventana" de selección (área más clara)
-    ctxOverlay.clearRect(startX, startY, width, height);
-
-    // Borde visible
-    ctxOverlay.lineWidth = 2;
-    ctxOverlay.strokeStyle = "red";
-    ctxOverlay.setLineDash([6]);
-    ctxOverlay.strokeRect(startX, startY, width, height);
+    }
 }
 
 function endSelection(e) {
-    if (!isSelecting) return;
-    isSelecting = false;
+    if(limits) {
+        if (!isSelecting) return;
+        isSelecting = false;
 
-    const pos = getPos(frameOverlay, e);
-    const width = pos.x - startX;
-    const height = pos.y - startY;
+        const pos = getPos(overlay, e);
+        const width = pos.x - startX;
+        const height = pos.y - startY;
 
-    selection = {
-        x: Math.min(startX, pos.x),
-        y: Math.min(startY, pos.y),
-        w: Math.abs(width),
-        h: Math.abs(height)
-    };
-
-    // Limpia overlay final
-    ctxOverlay.clearRect(0, 0, frameOverlay.width, frameOverlay.height);
-
-    // Crea el nuevo canvas con la selección
-    createSubCanvas(selection);
+        selection = {
+            x: Math.min(startX, pos.x),
+            y: Math.min(startY, pos.y),
+            w: Math.abs(width),
+            h: Math.abs(height)
+        };
+    }
 }
 
-function createSubCanvas(sel) {
-    const resultadoCanvas = document.getElementById("frame-final"); // canvas existente donde mostrar
-
-    resultadoCanvas.width = sel.w;
-    resultadoCanvas.height = sel.h;
-    resultadoCanvas.style.width = "auto";
-    resultadoCanvas.style.maxHeight = "90%";
-    const newCtx = resultadoCanvas.getContext("2d");
-    newCtx.fillStyle = "white";
-    newCtx.fillRect(0,0,resultadoCanvas.width, resultadoCanvas.height);    
-    newCtx.drawImage(
-        framePlaceholder,
-        sel.x, sel.y, sel.w, sel.h, // area origen dentro de src
-        0, 0, sel.w, sel.h          // area destino en resultadoCanvas
-    );
-
-    // Mostrar resultado y ocultar originales (usa clases o style consistentemente)
-    framePlaceholder.classList.add("hidden");
-    frameOverlay.classList.add("hidden");
-    resultadoCanvas.classList.remove("hidden");
-
-    activarDibujoEnCanvas(resultadoCanvas);
-}
-
-function activarDibujoEnCanvas(canvas) {
-    // Ejemplo simple para activar tu función draw
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', stopDrawing);
-    canvas.addEventListener('touchcancel', stopDrawing);
-}
-
-
-
-
-
-
-
-/*Sidebar:
-- Selección de calidad (verde, amarillo, rojo, negro). 
-- Al seleccionar una zona, se muestran las estructuras correspondientes.
-- Al seleccionar una estructura, se activa el brush correspondiente, permitiendo dibujar.
-- El tamaño del brush se puede ajustar con un slider.
-- Cada estructura tiene un botón para borrar el trazo correspondiente.
-- Cuando se ha completado el formulario, se puede enviar. Si rojo o negro, no necesita info, formulario finalizado
-*/
-/*-------------------------SIDEBAR-------------------------*/
-qualityButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        selectedQuality = button.innerText.toLowerCase();
-        qualityButtons.forEach(btn => btn.classList.add('transparent'));
-        button.classList.remove('transparent');
-        validar();
-    })
-});
-
-
-//Al seleccionar una zona, se muestran las estructuras correspondientes. Si no hay una zona seleccionada, se selecciona la primera por defecto.
-function showStructures(selectedZone){
-    activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
-    activeStructures.forEach(structure => {
-        structure.classList.remove("hidden");
-        structure.classList.add("transparent");
-    });
-    selectedStructure = activeStructures[0];
-    const firstIndex = selectedStructure.querySelector('.brush-slider');
-    currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
-    selectedStructure.classList.remove("transparent");
-    activeStructures.forEach(structure => {
-        structure.addEventListener('click', (event) => {
-            structures.forEach(structure => {
-                structure.classList.add("transparent");
-            });
-            selectedStructure = event.currentTarget;
-            selectedStructure.classList.remove("transparent");
-        });
-    });
-}
-showStructures(selectedZone);
-zones.forEach(zone => {
-    zone.addEventListener('change', (event) => {
-        structures.forEach((structure) => {
-            structure.classList.add("hidden");
-            clearDrawing();
-        });
-        selectedZone = event.target.value;
-        showStructures(selectedZone);
-    });
-});
-
-
-//Al seleccionar una estructura, se activa la misma y se accede al brush correspondiente.
-structures.forEach((structure, index) => {
-    structure.addEventListener('click', () => {
-        widths[index] = parseInt(sliders[index].value);
-        currentIndex = index;
-    });
-});
-sliders.forEach((slider, index) => {
-    slider.addEventListener('input', async e => {
-        widths[index] = parseInt(slider.value);
-        await fetch("/update_brush", {
-            method:"POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                appName: appName,
-                name: activeStructures[index].querySelector('.structure-name').textContent.trim(),
-                zone: selectedZone,
-                width: parseInt(slider.value)
-            })
-        });
-        console.log(parseInt(slider.value));
-
-    });
-});
-
-deleteDrawings.forEach((deleteButton, index) => {
-    deleteButton.addEventListener('click', () => {
-        clearColorDrawing(colors[index]);
-    });
-});
 
 //Dibujos con los brush
 framePlaceholder.addEventListener('mousedown', startDrawing);
@@ -604,14 +436,14 @@ framePlaceholder.addEventListener('touchend', stopDrawing);
 framePlaceholder.addEventListener('touchcancel', stopDrawing);
 
 function startDrawing(e) {
-    if(aceptado && good){
+    if(aceptado){
         drawing = true;
         trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
         draw(e);
     }
 }
 function stopDrawing() {
-    if (aceptado && good){
+    if (aceptado){
         if(trazoActual) {
             trazos.push(trazoActual);
             trazoActual = null;
@@ -623,7 +455,7 @@ function stopDrawing() {
 }
 
 function draw(e) {
-    if (aceptado && good){
+    if (aceptado){
 
         if (!drawing) return;
         e.preventDefault();
@@ -697,68 +529,14 @@ function clearDrawing() {
     validar();
 }
 
-//Formulario completado, validar y enviar (video, frame original, frame editado, filename, quality, zone, evaluator)
-qualityGreen.addEventListener('click', greenYellowQuality);
-qualityYellow.addEventListener('click', greenYellowQuality);
-qualityRed.addEventListener('click', redBlackQuality);
-qualityBlack.addEventListener('click',redBlackQuality);
-
-function redBlackQuality(){
-    zones.forEach(zone => {
-        zone.parentElement.classList.add("disabled");
-        zone.disabled = true;
-    });
-
-    structures.forEach(structure => {
-        structure.disabled = true;
-        structure.classList.add("disabled");
-    });
-    clearDrawing();
-    good = false;
-}
-function greenYellowQuality() {
-    zones.forEach(zone => {
-        zone.parentElement.classList.remove("disabled");
-        zone.disabled = false;
-    });
-    structures.forEach(structure => {
-        structure.disabled = false;
-        structure.classList.remove("disabled");
-    });
-    good = true;
-}
-
-
-
+//Formulario completado, validar y enviar (video, frame original, frame editado, filename, marco, escala, evaluator)
 function validar() {
-    /*const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
-    const allColorsDrawn = activeColors.every(color =>
-        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
-    );*/
-    allColorsDrawn=true; //Se han definido muchas estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
-    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad" || appName === "base_artefactos") {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove("disabled");
-        submitted = true;
-        console.log(appName);
-
-    }
-    else{
-        submitBtn.disabled = true;
-        submitBtn.classList.add("disabled");
-        submitted = false;
-    }
+    
 }
 
 submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
-        if (selectedQuality === "" && appName!=="base_artefactos") {
-                alert('Please select a quality (Good, Fair, or Bad) before saving.');
-                submitBtn.classList.remove("disabled");
-
-                return;
-            }
-            saveDrawing();
+        saveDrawing();
     }
 });
 
@@ -777,9 +555,9 @@ function saveDrawing(){
             const imageURL = maskOriginalCanvas.toDataURL();
             const imageEditedURL = maskOriginalCanvas.toDataURL();
             
-            //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original 
+            //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original
             if(appName==="base_tejidos"){
-                objectJS.push({
+                const frameObject = {
                     video: fileName.textContent, 
                     frame: numframe,
                     originalImage: imageURL,
@@ -789,10 +567,16 @@ function saveDrawing(){
                     quality: selectedQuality,
                     zone: selectedZone,
                     evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
                 });
+                objectJS.push(frameObject);
             }
             else if(appName==="base_artefactos"){
-                objectJS.push({
+                const frameObject = {
                     video: fileName.textContent, 
                     frame: numframe,
                     originalImage: imageURL,
@@ -802,10 +586,16 @@ function saveDrawing(){
                     quality: selectedQuality,
                     zone: selectedZone,
                     evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
                 });
+                objectJS.push(frameObject);
             }
-            else if(appName==="base_ROIS"){
-                objectJS.push({
+             else if(appName==="base_ROIS"){
+                const frameObject = {
                     video: fileName.textContent, 
                     frame: numframe,
                     originalImage: imageURL,
@@ -815,10 +605,16 @@ function saveDrawing(){
                     quality: selectedQuality,
                     zone: selectedZone,
                     evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
                 });
+                objectJS.push(frameObject);
             }
-            else{
-                objectJS.push({
+            else {
+                const frameObject = {
                     video: fileName.textContent, 
                     frame: numframe,
                     originalImage: imageURL,
@@ -828,8 +624,14 @@ function saveDrawing(){
                     quality: selectedQuality,
                     zone: selectedZone,
                     evaluator: evaluatorName
+                };
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
                 });
-            }
+                objectJS.push(frameObject);
+            }                
         });
     } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
@@ -858,6 +660,11 @@ function saveDrawing(){
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
         }
         else if (appName==="base_artefactos"){
             objectJS = {
@@ -871,8 +678,13 @@ function saveDrawing(){
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
         }
-        else if (appName==="base_ROIS"){
+         else if (appName==="base_ROIS"){
             objectJS = {
                 video: fileName.textContent, 
                 frame: frame,
@@ -884,8 +696,13 @@ function saveDrawing(){
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
         }
-        else{
+        else {
             objectJS = {
                 video: fileName.textContent, 
                 frame: frame,
@@ -897,7 +714,15 @@ function saveDrawing(){
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
                 evaluator: evaluatorName
             };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
         }
+
+        
+
     }
 
 

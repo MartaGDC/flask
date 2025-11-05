@@ -27,13 +27,16 @@
         </div>
         <!-- <input type="file" id="videoFileInput" accept="video/*" style="display:none;"> -->
         <div class="frame-viewer">
-            <div class="canvas-container">
+            {% if title != 'base_marco' %}
                 <canvas id="frame-placeholder"></canvas>
-                {% if title.startswith('base') %}
-                    <canvas id="frame-overlay" class="hidden"></canvas>
-                    <canvas id="frame-final" class="hidden" ></canvas>
-                {% endif %}
-            </div>
+            {% else %}
+                <div style="position: relative; display: inline-block;">
+                    <canvas id="frame-placeholder"></canvas>
+                    <canvas id="canvas-overlay"
+                     style="position: absolute; top: 0; left: 0;"></canvas>
+                </div>
+                <div id="resultado" style="margin-top: 20px;"></div>
+            {% endif %}
             <div class="botones_frame">
                 <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
                 <button id="acceptFramesBtn" class="hidden">Select group of frames</button>
@@ -44,21 +47,6 @@
     </main>
     <div id="videoWindow" class="window hidden">
         <ul id="videoList" class="videoList"></ul>
-    </div>
-
-    <div id="bases-limits" class="popup hidden">
-        <span>Limits</span>
-        <div class="popup-content">
-            <button id="limtis-retry">Retry</button>
-            <button id="limits-accept">Accept</button>
-        </div>
-    </div>
-    <div id="bases_scale" class="popup hidden">
-        <span>Scale</span>
-        <div class="popup-content">
-            <button id="scale-retry">Retry</button>
-            <button id="scale-accept">Accept</button>
-            </div>
     </div>
 
     <!--<div id="evaluator-popup" class="popup hidden">
@@ -86,53 +74,68 @@
 
     <!-- Menú lateral (oculto hasta aceptar) -->
     <aside class="sidebar hidden" id="sidebar">
-        <div class="quality">
-            <button id="qualityGreen" class="quality-button transparent" style="background-color: #4CAF50;">Good</button>
-            <button id="qualityYellow" class="quality-button transparent" style="background-color: #FFC107;">Fair</button>
-            <button id="qualityRed" class="quality-button transparent" style="background-color: #E53935;">Bad</button>
-            <button id="qualityBlack" class="quality-button transparent" style="background-color: #333333;">None</button>
-        </div>
-        <div class="block">
-            {% if data.zones|length > 1 %}
-                <div id="selectZone">Select Zone:</div>
-                <div class="zones">
-                    {% for zone in data.zones %}
-                        <label>
-                            <input type="radio" name="zone" value="{{ zone.value }}"
-                            {% if loop.first %}
-                                checked
-                            {% endif %}>
-                            <span class="check"></span>
-                            {{ zone.label }}
-                        </label>
-                    {% endfor %}
-                </div>
-            {% else %}
-                {% for zone in data.zones %}
-                    <input type="radio" name="zone" value="{{ zone.value }}" checked hidden>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div class="block">
-            <div id="selectStructure">Select Structure:</div>
-            {% for zone, structures in data.structures.items() %}
-                {% for structure in structures %}
-                    <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
-                        <div class = "rectangulo">
-                            <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
-                            <input type="range" min="1" max="40" value="{{ structure.width }}" class="brush-slider" style="accent-color: {{ structure.color }};">
-                            <button id="delete{{ loop.index }}" class="delete">✖</button>
-                        </div>
-                        <button class="invisible" data-structure="{{ structure.name }}">Ø</button>
+        {% if title != "base_marco" %}
+            <div class="quality">
+                <button id="qualityGreen" class="quality-button transparent" style="background-color: #4CAF50;">Good</button>
+                <button id="qualityYellow" class="quality-button transparent" style="background-color: #FFC107;">Fair</button>
+                <button id="qualityRed" class="quality-button transparent" style="background-color: #E53935;">Bad</button>
+                <button id="qualityBlack" class="quality-button transparent" style="background-color: #333333;">None</button>
+            </div>
+            <div class="block">
+                {% if data.zones|length > 1 %}
+                    <div id="selectZone">Select Zone:</div>
+                    <div class="zones">
+                        {% for zone in data.zones %}
+                            <label>
+                                <input type="radio" name="zone" value="{{ zone.value }}"
+                                {% if loop.first %}
+                                    checked
+                                {% endif %}>
+                                <span class="check"></span>
+                                {{ zone.label }}
+                            </label>
+                        {% endfor %}
                     </div>
+                {% else %}
+                    {% for zone in data.zones %}
+                        <input type="radio" name="zone" value="{{ zone.value }}" checked hidden>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="block">
+                <div id="selectStructure">Select Structure:</div>
+                {% for zone, structures in data.structures.items() %}
+                    {% for structure in structures %}
+                        <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
+                            <div class = "rectangulo">
+                                <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
+                                <input type="range" min="1" max="40" value="{{ structure.width }}" class="brush-slider" style="accent-color: {{ structure.color }};">
+                                <button id="delete{{ loop.index }}" class="delete">✖</button>
+                            </div>
+                            <button class="invisible" data-structure="{{ structure.name }}">Ø</button>
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </div>
+            </div>
+        {% else %}
+            <div class="marco">
+                <button id="limitsBtn">Draw limits</button>
+                <div>
+                    <button id="saveLimits">Save</button>
+                    <button id="clearLimits">Clear</button>
+                </div>
+                <button id="scaleBtn">Draw scale</button>
+                <div>
+                    <button id="saveScale">Save</button>
+                    <button id="clearScale">Clear</button>
+                </div>
+            </div>
+        {% endif %}
     </aside>
     {% if title == 'rm' %}
         <script src="{{ url_for('static', filename='script_rm.js') }}"></script>
-    {% elif title.startswith('base') %}
-        <script src="{{ url_for('static', filename='script_base.js') }}"></script>
+    {% elif title == 'base_marco' %}
+        <script src="{{ url_for('static', filename='script_marco.js') }}"></script>
     {% else %}
         <script src="{{ url_for('static', filename='script.js') }}"></script>
 

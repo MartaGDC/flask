@@ -61,6 +61,17 @@
         }
     },
 
+    "base_marco" : {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "", "color": ""}
+            ]
+        }
+    },
+
     "foot_longitudinal_fascia": {
         "zones": [
             {"value": "insercion", "label": "Inserción"},

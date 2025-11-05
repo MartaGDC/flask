@@ -163,6 +163,22 @@
             ]
         }
     },
+    "base_marco": {
+        "zones": [
+            {
+                "value": "none",
+                "label": ""
+            }
+        ],
+        "structures": {
+            "none": [
+                {
+                    "name": "",
+                    "width": "0"
+                }
+            ]
+        }
+    },
     "foot_longitudinal_fascia": {
         "zones": [
             {

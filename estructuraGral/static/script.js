@@ -103,6 +103,12 @@ document.addEventListener("DOMContentLoaded", () =>{
         } else {}
     })
     .catch();
+    if (appName === "base_artefactos") {
+        qualityGreen.classList.add("hidden");
+        qualityYellow.classList.add("hidden");
+        qualityRed.classList.add("hidden");
+        qualityBlack.classList.add("hidden");
+    }
 });
 
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
@@ -617,7 +623,7 @@ function validar() {
         trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
     );*/
     allColorsDrawn=true; //Se han definido muchas estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
-    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad") {
+    if (allColorsDrawn || selectedQuality==="none" || selectedQuality === "bad" || appName === "base_artefactos") {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
         submitted = true;
@@ -633,7 +639,7 @@ function validar() {
 
 submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
-        if (selectedQuality === "") {
+        if (selectedQuality === "" && appName!=="base_artefactos") {
                 alert('Please select a quality (Good, Fair, or Bad) before saving.');
                 submitBtn.classList.remove("disabled");
 
@@ -659,24 +665,82 @@ function saveDrawing(){
             const imageEditedURL = maskOriginalCanvas.toDataURL();
             
             //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original
-            const frameObject = {
-                video: fileName.textContent, 
-                frame: numframe,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `${fileName.textContent}_${numframe}.png`, 
-                filesaved: `${timestamp}_${index}.png`,
-                quality: selectedQuality,
-                zone: selectedZone,
-                evaluator: evaluatorName
-            };
-            Object.entries(invisibleStructures).forEach(([name, used]) => {
-                if (used) {
-                    frameObject[name] = "invisible";
+            if(appName==="base_tejidos"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_1_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
                 }
-            });
-            objectJS.push(frameObject);
-                
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
+            else if(appName==="base_artefactos"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_2_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
+             else if(appName==="base_ROIS"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_3_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
+            else {
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                };
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }                
         });
     } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
@@ -693,22 +757,80 @@ function saveDrawing(){
         maskOriginalCtx.putImageData(savedFrame, 0, 0);
         const imageURL = maskOriginalCanvas.toDataURL();
 
-        objectJS = {
-            video: fileName.textContent, 
-            frame: frame,
-            originalImage: imageURL,
-            imageEdited: imageEditedURL,
-            frameoriginal: `${fileName.textContent}_${frame}.png`, 
-            filesaved: `${timestamp}.png`,
-            quality: selectedQuality,
-            zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-            evaluator: evaluatorName
-        };
-        Object.entries(invisibleStructures).forEach(([name, used]) => {
-            if(used){
-                objectJS[name] = "invisible";
-            }
-        });
+        if(appName==="base_tejidos"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_1_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+        else if (appName==="base_artefactos"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_2_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+         else if (appName==="base_ROIS"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_3_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+        else {
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+
+        
 
     }
 
