@@ -393,7 +393,6 @@ saveLimits.addEventListener('click', () => {
         saveLimits.classList.add("disabled");
         clearLimits.disabled = true;
         clearLimits.classList.add("disabled");
-        validar();
         dibujoHecho=false;
     }
     else{
@@ -447,7 +446,6 @@ saveScale.addEventListener('click', () => {
         saveScale.classList.add("disabled");
         clearScale.disabled = true;
         clearScale.classList.add("disabled");
-        validar();
         dibujoHecho=false;
     }
     else{
@@ -510,14 +508,6 @@ function getPos(canvas, e) {
         x: (clientX - rect.left)/rect.width*canvas.width,
         y: (clientY - rect.top)/rect.height*canvas.height
     };
-}
-
-
-//Formulario completado, validar y enviar (video, frame original, frame editado, filename, marco, escala, evaluator)
-function validar() {
-    if(marcoSubmitted && escalaSubmitted) {
-        recargarVideo(appName, fileName.textContent);
-    }
 }
 
 
@@ -592,12 +582,22 @@ function saveDrawing(caract){
         },
         body: JSON.stringify(objectJS)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        console.log('Server response:', data);
+        console.log('Drawing saved successfully:', data);
+        alert('Drawing saved successfully.');
+        if(marcoSubmitted && escalaSubmitted) {
+            recargarVideo(appName, fileName.textContent);
+        }
     })
     .catch(error => {
         console.error('Error saving drawing:', error);
+        alert('An error occurred while saving. Please try again.');
     });
     
 }
