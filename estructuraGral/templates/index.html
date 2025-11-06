@@ -42,7 +42,9 @@
                 <button id="acceptFramesBtn" class="hidden">Select group of frames</button>
             </div>
             <button id="acceptGroup" class="hidden">Accept group of frames</button>
-            <button id="submitBtn" class="hidden" disabled>Submit</button>
+            {% if title!="base_marco" %}
+                <button id="submitBtn" class="hidden" disabled>Submit</button>
+            {% endif %}
         </div>
     </main>
     <div id="videoWindow" class="window hidden">
@@ -121,13 +123,13 @@
             <div class="marco">
                 <button id="limitsBtn">Draw limits</button>
                 <div>
-                    <button id="saveLimits">Save</button>
-                    <button id="clearLimits">Clear</button>
+                    <button id="saveLimits" disabled class="disabled">Save</button>
+                    <button id="clearLimits" disabled class="disabled">Clear</button>
                 </div>
                 <button id="scaleBtn">Draw scale</button>
                 <div>
-                    <button id="saveScale">Save</button>
-                    <button id="clearScale">Clear</button>
+                    <button id="saveScale" disabled class="disabled">Save</button>
+                    <button id="clearScale" disabled class="disabled">Clear</button>
                 </div>
             </div>
         {% endif %}

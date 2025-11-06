@@ -44,20 +44,23 @@ const acceptFrameBtn = document.getElementById("acceptFrameBtn");
 const acceptFramesBtn = document.getElementById("acceptFramesBtn");
 const acceptGroupBtn = document.getElementById("acceptGroup");
 const frames = [];
-const submitBtn = document.getElementById("submitBtn");
 let aceptado = false; //frame aceptado, para no modificarlo hasta terminar el formulario
+let dibujoHecho = false;
 let limits = false; //dibujar limites solo si se ha clicado el boton y aun no se ha guardado el dibujo hehco
 let scale = false; //lo mimso para la escala
-let submitted = false; //formulario del frame aceptado
+let marcoSubmitted = false;
+let escalaSubmitted = false;
 
 const sidebar = document.getElementById("sidebar");
-const blocks = document.querySelectorAll(".block");
 const limitsBtn = document.getElementById("limitsBtn");
+const saveLimits = document.getElementById("saveLimits");
+const clearLimits = document.getElementById("clearLimits");
 const scaleBtn = document.getElementById("scaleBtn");
+const saveScale = document.getElementById("saveScale");
+const clearScale = document.getElementById("clearScale");
 
 let drawing = false;
-let trazos = [];
-let trazoActual = null;
+let startX, startY;
 
 
 /*Botones reload y home:
@@ -134,7 +137,7 @@ async function selectVideo(appName, filename, frame){
         videoPlayer.src = videoURL;
         videoContainer.style.display = "block";
         videoPlayer.load();
-        if (frame!== null){
+        if (frame && !isNaN(frame)){
             const currentTime = frame / 30;
             videoPlayer.currentTime =currentTime;
         }
@@ -142,7 +145,12 @@ async function selectVideo(appName, filename, frame){
             videoPlayer.currentTime = 0; // Reset to the start of the video
         }
         await countFramesPerEval(evaluatorName);
-        researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
+        if(numFramesEval===0){
+            researcherInfo.textContent = `Evaluator ${evaluatorName} hasn't studied this video.`;
+        }
+        else{
+            researcherInfo.textContent = `Evaluator ${evaluatorName} has already studied this video.`;
+        }
         pausado = true;
         drawFrame();
         acceptFrameBtn.classList.remove("hidden");
@@ -263,7 +271,6 @@ acceptFramesBtn.addEventListener("click", () => {
         firstValue = 0;
     }
     lastValue = 10 + firstValue;
-    console.log(lastValue);
 
     noUiSlider.create(range, {
         start: [ firstValue, lastValue ],
@@ -288,27 +295,28 @@ acceptFramesBtn.addEventListener("click", () => {
     });
 });
 
-acceptGroupBtn.addEventListener("click", ()=> {
+acceptGroupBtn.addEventListener("click", async ()=> {
     acceptGroupBtn.classList.add("hidden");
-    submitBtn.classList.remove("hidden");
-    submitBtn.classList.add("disabled");
     sidebar.classList.remove("hidden");
-    qualityGreen.classList.add("hidden");
-    qualityYellow.classList.add("hidden");
-    blocks.forEach(block => {
-        block.classList.add("hidden");
-    });
+    content.style.marginRight = "21vw";
     aceptado=true;
     for (let i = firstFrame; i <= lastFrame; i++) {
         frames.push(i);
     }
-    for (let i = firstFrame; i <= lastFrame; i++) {
-        videoPlayer.currentTime = i/30;
-        ctx.drawImage(videoPlayer, 0, 0);
-        savedFrames.push(ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height));
-    }
+    savedFrames = await captureFrames(videoPlayer, ctx, firstFrame, lastFrame); //necesario un await, porque empezaba a tener problemas para que realmente videoplayer se posicionase
 });
-
+async function captureFrames(videoPlayer, ctx, firstFrame, lastFrame, fps = 30) {
+    for (let i = firstFrame; i <= lastFrame; i++) {
+        const time = i / fps;
+        videoPlayer.currentTime = time;
+        await new Promise(resolve => {
+            videoPlayer.addEventListener('seeked', resolve, { once: true });
+        });
+        ctx.drawImage(videoPlayer, 0, 0);
+        savedFrames.push(ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height));
+    }
+    return savedFrames;
+}
 
 
 
@@ -325,8 +333,6 @@ acceptFrameBtn.addEventListener("click", () => {
     pausar();
     acceptFrameBtn.classList.add("hidden");
     acceptFramesBtn.classList.add("hidden");
-    submitBtn.classList.remove("hidden");
-    submitBtn.classList.add("disabled");
     aceptado = true;
     sidebar.classList.remove("hidden");
     content.style.marginRight = "21vw";
@@ -345,300 +351,217 @@ acceptFrameBtn.addEventListener("click", () => {
 - Cuando se ha completado, se puede enviar
 */
 /*-------------------------SIDEBAR-------------------------*/
+//Quitar eventos y ponerlos para que el overlay responda solo cuando debe
+function activarListeners(bool){
+    const activo = bool ? 'addEventListener' : 'removeEventListener';
+    overlay[activo]("mousedown", startDrawing); //overlay["addEventListener"]("mousedown", startDrawing) es lo mismo que overlay.addEventListener("mousedown", startDrawing)
+    overlay[activo]("mousemove", draw);
+    overlay[activo]("mouseup", stopDrawing);
+    overlay[activo]("touchstart", startDrawing);
+    overlay[activo]("touchmove", draw);
+    overlay[activo]("touchend", stopDrawing);
+    overlay.style.cursor= bool ? "crosshair" : "";
+}
+
 limitsBtn.addEventListener("click", () => {
-    overlay.style.cursor="crosshair";
+    limitsBtn.disabled = true;
+    limitsBtn.classList.add("disabled");
+    scaleBtn.disabled = true;
+    scaleBtn.classList.add("disabled");
+    saveScale.disabled = true;
+    saveScale.classList.add("disabled");
+    clearScale.disabled = true;
+    clearScale.classList.add("disabled");
+    saveLimits.disabled = false;
+    saveLimits.classList.remove("disabled");
+    clearLimits.disabled = false;
+    clearLimits.classList.remove("disabled");
+
     limits= true;
+    activarListeners(true);
+});
+saveLimits.addEventListener('click', () => {
+    if(dibujoHecho){
+        marcoSubmitted=true;
+        saveDrawing("marco");
+        activarListeners(false);
+        if(!escalaSubmitted){
+            scaleBtn.disabled = false;
+            scaleBtn.classList.remove("disabled");
+        }
+        saveLimits.disabled = true;
+        saveLimits.classList.add("disabled");
+        clearLimits.disabled = true;
+        clearLimits.classList.add("disabled");
+        validar();
+        dibujoHecho=false;
+    }
+    else{
+        alert('Draw something on canvas before saving.');
+    }
+});
+clearLimits.addEventListener('click', () => {
+    ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
+    limits=false;
+    limitsBtn.disabled = false;
+    limitsBtn.classList.remove("disabled");
+    if(!escalaSubmitted) {
+        scaleBtn.disabled = false;
+        scaleBtn.classList.remove("disabled");
+    }
+    saveLimits.disabled = true;
+    saveLimits.classList.add("disabled");
+    clearLimits.disabled = true;
+    clearLimits.classList.add("disabled");
+    activarListeners(false);
 });
 
-let startX, startY;
-let isSelecting = false;
-let selection = null;
 
-// Obtener coordenadas del mouse o táctil
-function getPos(canvas, e) {
-    const rect = canvas.getBoundingClientRect();
+scaleBtn.addEventListener("click", () => {
+    limitsBtn.disabled = true;
+    limitsBtn.classList.add("disabled");
+    scaleBtn.disabled = true;
+    scaleBtn.classList.add("disabled");
+    saveLimits.disabled = true;
+    saveLimits.classList.add("disabled");
+    clearLimits.disabled = true;
+    clearLimits.classList.add("disabled");
+    saveScale.disabled = false;
+    saveScale.classList.remove("disabled");
+    clearScale.disabled = false;
+    clearScale.classList.remove("disabled");
 
-    // Coordenadas del clic respecto al viewport
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-    // Ajuste de escala
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    return {
-        x: (clientX - rect.left) * scaleX,
-        y: (clientY - rect.top) * scaleY
-    };
-}
-overlay.addEventListener("mousedown", startSelection);
-overlay.addEventListener("mousemove", drawSelection);
-overlay.addEventListener("mouseup", endSelection);
-overlay.addEventListener("touchstart", startSelection);
-overlay.addEventListener("touchmove", drawSelection);
-overlay.addEventListener("touchend", endSelection);
-
-function startSelection(e) {
-    if(limits){
+    scale= true;
+    activarListeners(true);
+});
+saveScale.addEventListener('click', () => {
+    if(dibujoHecho){
+        escalaSubmitted=true;
+        saveDrawing("escala");
+        activarListeners(false);
+        if(!marcoSubmitted) {
+            limitsBtn.disabled = false;
+            limitsBtn.classList.remove("disabled");
+        }
+        saveScale.disabled = true;
+        saveScale.classList.add("disabled");
+        clearScale.disabled = true;
+        clearScale.classList.add("disabled");
+        validar();
+        dibujoHecho=false;
+    }
+    else{
+        alert('Draw something on canvas before saving.');
+    }
+});
+clearScale.addEventListener('click', () => {
+    ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
+    escala=false;
+    scaleBtn.disabled = false;
+    scaleBtn.classList.remove("disabled");
+    if(!marcoSubmitted) {
+        limitsBtn.disabled = false;
+        limitsBtn.classList.remove("disabled");
+    }
+    saveScale.disabled = true;
+    saveScale.classList.add("disabled");
+    clearScale.disabled = true;
+    clearScale.classList.add("disabled");
+    activarListeners(false);
+});
+//Dibujar rectangulos
+function startDrawing(e) {
+    if(limits || scale){
         const pos = getPos(overlay, e);
         startX = pos.x;
         startY = pos.y;
-        isSelecting = true;
-    }
-}
-
-function drawSelection(e) {
-    if(limits){
-        if (!isSelecting) return;
-        e.preventDefault();
-
-        const pos = getPos(overlay, e);
-        const width = pos.x - startX;
-        const height = pos.y - startY;
-
-        // Dibuja la capa semitransparente
-        ctxOverlay.fillStyle = "rgba(255, 255, 255)";
-        ctxOverlay.fillRect(0, 0, overlay.width, overlay.height);
-
-        // Crear "ventana" de selección (área más clara)
-        ctxOverlay.clearRect(startX, startY, width, height);
-
-    }
-}
-
-function endSelection(e) {
-    if(limits) {
-        if (!isSelecting) return;
-        isSelecting = false;
-
-        const pos = getPos(overlay, e);
-        const width = pos.x - startX;
-        const height = pos.y - startY;
-
-        selection = {
-            x: Math.min(startX, pos.x),
-            y: Math.min(startY, pos.y),
-            w: Math.abs(width),
-            h: Math.abs(height)
-        };
-    }
-}
-
-
-//Dibujos con los brush
-framePlaceholder.addEventListener('mousedown', startDrawing);
-framePlaceholder.addEventListener('mousemove', draw);
-framePlaceholder.addEventListener('mouseup', stopDrawing);
-framePlaceholder.addEventListener('mouseleave', stopDrawing);
-framePlaceholder.addEventListener('touchstart', startDrawing);
-framePlaceholder.addEventListener('touchmove', draw);
-framePlaceholder.addEventListener('touchend', stopDrawing);
-framePlaceholder.addEventListener('touchcancel', stopDrawing);
-
-function startDrawing(e) {
-    if(aceptado){
         drawing = true;
-        trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
-        draw(e);
-    }
-}
-function stopDrawing() {
-    if (aceptado){
-        if(trazoActual) {
-            trazos.push(trazoActual);
-            trazoActual = null;
-        }
-            validar();
-        drawing = false;
-        ctx.beginPath();
+        dibujoHecho=false;
     }
 }
 
 function draw(e) {
-    if (aceptado){
-
+    if(limits || scale){
         if (!drawing) return;
         e.preventDefault();
-
-        const color = colors[currentIndex];
-        const width = widths[currentIndex];
-        let pos;
-        if (e.type.includes('mouse')) {
-            pos = getMousePos(framePlaceholder, e);
-        } else {
-            pos = getTouchPos(framePlaceholder, e);
-        }
-        trazoActual.puntos.push(pos);
-        ctx.lineWidth = width;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = color;
-
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
+        const pos = getPos(overlay, e);
+        const width = pos.x - startX;
+        const height = pos.y - startY;
+        ctxOverlay.fillStyle = "rgba(255, 255, 255)"; //capa blanca
+        ctxOverlay.fillRect(0, 0, overlay.width, overlay.height); //capa blanca para todo el overlay
+        ctxOverlay.clearRect(startX, startY, width, height); //quitar capa blanca en rectangulo dibujado
     }
 }
 
-function getMousePos(canvas, evt) {
-    const rect = canvas.getBoundingClientRect();
-    return {
-        x: (evt.clientX - rect.left)/rect.width*canvas.width,
-        y: (evt.clientY - rect.top)/rect.height*canvas.height
-    };
+function stopDrawing(e) {
+    if(limits || scale){
+        if (!drawing) return;
+        drawing = false;
+        dibujoHecho=true;
+    }
 }
-function getTouchPos(canvas, touch) {
+
+function getPos(canvas, e) {
     const rect = canvas.getBoundingClientRect();
+    //Si existe el contacto con la pantalla, recoge el valor del primer contacto con la misma (por si hay varios dedos), si no, recoge directamente la posicion del raton
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return {
-        x: (touch.touches[0].clientX - rect.left)/rect.width*canvas.width,
-        y: (touch.touches[0].clientY - rect.top)/rect.height*canvas.height
+        x: (clientX - rect.left)/rect.width*canvas.width,
+        y: (clientY - rect.top)/rect.height*canvas.height
     };
 }
 
-//Borrar el trazo correspondiente
-function clearColorDrawing(colorDelete) {
-    trazos = trazos.filter(trazo => trazo.color !== colorDelete);
-    redrawRest(colorDelete);
-}
-function redrawRest(colorDelete=null) {
-    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-    ctx.putImageData(savedFrame, 0, 0);
-    trazos.forEach(trazo => {
-        if (!colorDelete || trazo.color !== colorDelete) {
-            ctx.lineWidth = trazo.width;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = trazo.color;
-            for (let i = 1; i < trazo.puntos.length; i++) {
-                const punto1 = trazo.puntos[i-1];
-                const punto2 = trazo.puntos[i];
-                ctx.beginPath();
-                ctx.moveTo(punto1.x, punto1.y);
-                ctx.lineTo(punto2.x, punto2.y);
-                ctx.stroke();
-            }
-            ctx.beginPath();
-        }
-    });
-    validar();
-}
-//Borrar todos los trazos si se selecciona otra zona.
-function clearDrawing() {
-    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-    ctx.putImageData(savedFrame, 0, 0);
-    trazos = [];
-    validar();
-}
 
 //Formulario completado, validar y enviar (video, frame original, frame editado, filename, marco, escala, evaluator)
 function validar() {
-    
+    if(marcoSubmitted && escalaSubmitted) {
+        recargarVideo(appName, fileName.textContent);
+    }
 }
 
-submitBtn.addEventListener("click", () => {
-    if (aceptado && submitted) {
-        saveDrawing();
-    }
-});
 
-function saveDrawing(){
+function saveDrawing(caract){
     let objectJS = [];
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
 
     if (frames.length > 0) { //Existe un listado de frames
         frames.forEach((numframe, index) => {
             //imagenes de cada frame para guardarlas en png. Tendrán el mismo timestamp, así que añadimos el frame al final
+            const maskEditedCanvas = document.createElement('canvas');
+            const maskEditedCtx = maskEditedCanvas.getContext('2d');
+            maskEditedCanvas.width = savedFrames[index].width;
+            maskEditedCanvas.height = savedFrames[index].height;
+            maskEditedCtx.putImageData(savedFrames[index], 0, 0);
+            maskEditedCtx.drawImage(overlay, 0, 0);
+            const imageEditedURL = maskEditedCanvas.toDataURL();
+
             const maskOriginalCanvas = document.createElement("canvas");
             const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
             maskOriginalCanvas.width = savedFrames[index].width;
             maskOriginalCanvas.height = savedFrames[index].height;
             maskOriginalCtx.putImageData(savedFrames[index], 0, 0);
             const imageURL = maskOriginalCanvas.toDataURL();
-            const imageEditedURL = maskOriginalCanvas.toDataURL();
-            
-            //Los dibujos hechos en los botones de Base pueden pertenecer a cualquier proyecto. Establecer de alguna manera que el dibujo pertenece a analisis de base y no del proyecto al que pertence la imagen original
-            if(appName==="base_tejidos"){
-                const frameObject = {
-                    video: fileName.textContent, 
-                    frame: numframe,
-                    originalImage: imageURL,
-                    imageEdited: imageEditedURL,
-                    frameoriginal: `0_1_${fileName.textContent}_${numframe}.png`, 
-                    filesaved: `${timestamp}_${index}.png`,
-                    quality: selectedQuality,
-                    zone: selectedZone,
-                    evaluator: evaluatorName
-                }
-                Object.entries(invisibleStructures).forEach(([name, used]) => {
-                    if (used) {
-                        frameObject[name] = "invisible";
-                    }
-                });
-                objectJS.push(frameObject);
+            const frameObject = {
+                video: fileName.textContent, 
+                frame: numframe,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_4_${fileName.textContent}_${numframe}.png`, 
+                filesaved: `${timestamp}_${caract}_${index}.png`,
+                quality: "",
+                zone: "none",
+                evaluator: evaluatorName
             }
-            else if(appName==="base_artefactos"){
-                const frameObject = {
-                    video: fileName.textContent, 
-                    frame: numframe,
-                    originalImage: imageURL,
-                    imageEdited: imageEditedURL,
-                    frameoriginal: `0_2_${fileName.textContent}_${numframe}.png`, 
-                    filesaved: `${timestamp}_${index}.png`,
-                    quality: selectedQuality,
-                    zone: selectedZone,
-                    evaluator: evaluatorName
-                }
-                Object.entries(invisibleStructures).forEach(([name, used]) => {
-                    if (used) {
-                        frameObject[name] = "invisible";
-                    }
-                });
-                objectJS.push(frameObject);
-            }
-             else if(appName==="base_ROIS"){
-                const frameObject = {
-                    video: fileName.textContent, 
-                    frame: numframe,
-                    originalImage: imageURL,
-                    imageEdited: imageEditedURL,
-                    frameoriginal: `0_3_${fileName.textContent}_${numframe}.png`, 
-                    filesaved: `${timestamp}_${index}.png`,
-                    quality: selectedQuality,
-                    zone: selectedZone,
-                    evaluator: evaluatorName
-                }
-                Object.entries(invisibleStructures).forEach(([name, used]) => {
-                    if (used) {
-                        frameObject[name] = "invisible";
-                    }
-                });
-                objectJS.push(frameObject);
-            }
-            else {
-                const frameObject = {
-                    video: fileName.textContent, 
-                    frame: numframe,
-                    originalImage: imageURL,
-                    imageEdited: imageEditedURL,
-                    frameoriginal: `${fileName.textContent}_${numframe}.png`, 
-                    filesaved: `${timestamp}_${index}.png`,
-                    quality: selectedQuality,
-                    zone: selectedZone,
-                    evaluator: evaluatorName
-                };
-                Object.entries(invisibleStructures).forEach(([name, used]) => {
-                    if (used) {
-                        frameObject[name] = "invisible";
-                    }
-                });
-                objectJS.push(frameObject);
-            }                
+            objectJS.push(frameObject);     
         });
     } else { //No existe frames, solo frame
         const maskEditedCanvas = document.createElement('canvas');
         const maskEditedCtx = maskEditedCanvas.getContext('2d');
-        maskEditedCanvas.width = framePlaceholder.width;
-        maskEditedCanvas.height = framePlaceholder.height;
-        maskEditedCtx.drawImage(framePlaceholder, 0, 0);
+        maskEditedCanvas.width = overlay.width;
+        maskEditedCanvas.height = overlay.height;
+        maskEditedCtx.putImageData(savedFrame, 0, 0);
+        maskEditedCtx.drawImage(overlay, 0, 0);
         const imageEditedURL = maskEditedCanvas.toDataURL();
 
         const maskOriginalCanvas = document.createElement("canvas");
@@ -647,84 +570,20 @@ function saveDrawing(){
         maskOriginalCanvas.height = savedFrame.height;
         maskOriginalCtx.putImageData(savedFrame, 0, 0);
         const imageURL = maskOriginalCanvas.toDataURL();
-
-        if(appName==="base_tejidos"){
-            objectJS = {
-                video: fileName.textContent, 
-                frame: frame,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `0_1_${fileName.textContent}_${frame}.png`, 
-                filesaved: `${timestamp}.png`,
-                quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-                evaluator: evaluatorName
-            };
-            Object.entries(invisibleStructures).forEach(([name, used]) => {
-                if(used){
-                    objectJS[name] = "invisible";
-                }
-            });
-        }
-        else if (appName==="base_artefactos"){
-            objectJS = {
-                video: fileName.textContent, 
-                frame: frame,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `0_2_${fileName.textContent}_${frame}.png`, 
-                filesaved: `${timestamp}.png`,
-                quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-                evaluator: evaluatorName
-            };
-            Object.entries(invisibleStructures).forEach(([name, used]) => {
-                if(used){
-                    objectJS[name] = "invisible";
-                }
-            });
-        }
-         else if (appName==="base_ROIS"){
-            objectJS = {
-                video: fileName.textContent, 
-                frame: frame,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `0_3_${fileName.textContent}_${frame}.png`, 
-                filesaved: `${timestamp}.png`,
-                quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-                evaluator: evaluatorName
-            };
-            Object.entries(invisibleStructures).forEach(([name, used]) => {
-                if(used){
-                    objectJS[name] = "invisible";
-                }
-            });
-        }
-        else {
-            objectJS = {
-                video: fileName.textContent, 
-                frame: frame,
-                originalImage: imageURL,
-                imageEdited: imageEditedURL,
-                frameoriginal: `${fileName.textContent}_${frame}.png`, 
-                filesaved: `${timestamp}.png`,
-                quality: selectedQuality,
-                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-                evaluator: evaluatorName
-            };
-            Object.entries(invisibleStructures).forEach(([name, used]) => {
-                if(used){
-                    objectJS[name] = "invisible";
-                }
-            });
-        }
-
-        
-
+        objectJS = {
+            video: fileName.textContent, 
+            frame: frame,
+            originalImage: imageURL,
+            imageEdited: imageEditedURL,
+            frameoriginal: `0_4_${fileName.textContent}_${frame}.png`, 
+            filesaved: `${timestamp}_${caract}.png`,
+            quality: "",
+            zone: "none",
+            evaluator: evaluatorName
+        };
     }
 
+    ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
 
     fetch('/save', {
         method: 'POST',
@@ -733,21 +592,14 @@ function saveDrawing(){
         },
         body: JSON.stringify(objectJS)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Drawing saved successfully:', data);
-        alert('Drawing saved successfully.');
-        recargarVideo(appName, fileName.textContent);
+        console.log('Server response:', data);
     })
     .catch(error => {
         console.error('Error saving drawing:', error);
-        alert('An error occurred while saving. Please try again.');
     });
+    
 }
 
 function recargarVideo(appName, filename){

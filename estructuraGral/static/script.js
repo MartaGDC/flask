@@ -155,7 +155,7 @@ async function selectVideo(appName, filename, frame){
         videoPlayer.src = videoURL;
         videoContainer.style.display = "block";
         videoPlayer.load();
-        if (frame!== null){
+        if (frame && !isNaN(frame)){
             const currentTime = frame / 30;
             videoPlayer.currentTime =currentTime;
         }
@@ -334,7 +334,7 @@ acceptFramesBtn.addEventListener("click", () => {
     });
 });
 
-acceptGroupBtn.addEventListener("click", ()=> {
+acceptGroupBtn.addEventListener("click", async ()=> {
     acceptGroupBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
@@ -348,13 +348,20 @@ acceptGroupBtn.addEventListener("click", ()=> {
     for (let i = firstFrame; i <= lastFrame; i++) {
         frames.push(i);
     }
-    for (let i = firstFrame; i <= lastFrame; i++) {
-        videoPlayer.currentTime = i/30;
-        ctx.drawImage(videoPlayer, 0, 0);
-        savedFrames.push(ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height));
-    }
+    savedFrames = await captureFrames(videoPlayer, ctx, firstFrame, lastFrame); //necesario un await, porque empezaba a tener problemas para que realmente videoplayer se posicionase
 });
-
+async function captureFrames(videoPlayer, ctx, firstFrame, lastFrame, fps = 30) {
+    for (let i = firstFrame; i <= lastFrame; i++) {
+        const time = i / fps;
+        videoPlayer.currentTime = time;
+        await new Promise(resolve => {
+            videoPlayer.addEventListener('seeked', resolve, { once: true });
+        });
+        ctx.drawImage(videoPlayer, 0, 0);
+        savedFrames.push(ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height));
+    }
+    return savedFrames;
+}
 
 
 

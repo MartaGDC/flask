@@ -236,23 +236,23 @@ def save():
     elif isinstance(data, list): #guardado de multiples frames
         for i in data:
             entry = {
-                "video": item.get("video"),
-                "frame": item.get("frame"),
-                "frameoriginal": item.get("frameoriginal"),
-                "filesaved": item.get("filesaved"),
-                "quality": item.get("quality"),
-                "zone": item.get("zone"),
-                "evaluator": item.get("evaluator"),
+                "video": i.get("video"),
+                "frame": i.get("frame"),
+                "frameoriginal": i.get("frameoriginal"),
+                "filesaved": i.get("filesaved"),
+                "quality": i.get("quality"),
+                "zone": i.get("zone"),
+                "evaluator": i.get("evaluator"),
             }
             for key, value in i.items():
                 if key not in entry and key not in ["originalImage", "imageEdited"]:
                     entry[key] = value
             
-            frameoriginal = data[i]['frameoriginal']
-            filesaved = data[i]['filesaved']
-            originalImage = data[i]['originalImage'].split(",")[1]
+            frameoriginal = i.get('frameoriginal')
+            filesaved = i.get('filesaved')
+            originalImage = i.get('originalImage').split(",")[1]
             originalImage = base64.b64decode(originalImage)
-            imageEdited = data[i]['imageEdited'].split(",")[1]
+            imageEdited = i.get('imageEdited').split(",")[1]
             imageEdited = base64.b64decode(imageEdited)
             
             with open(f'static/frames/{frameoriginal}', 'wb') as f:
