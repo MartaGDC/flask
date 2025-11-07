@@ -119,6 +119,17 @@
                     {% endfor %}
                 {% endfor %}
             </div>
+
+            {% if title == "base_ROIS" %}
+                <div class="block">
+                    <label>
+                        <input type="checkbox" id="ref" value="referencia">
+                        <span class="check"></span>
+                        Corte de referencia
+                    </label>    
+                </div>
+            {% endif %}
+
         {% else %}
             <div class="marco">
                 <button id="limitsBtn">Draw limits</button>

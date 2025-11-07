@@ -333,7 +333,7 @@ body {
     flex-direction: column;
     font-size: 1.1vw;
 }
-.zones input[type="radio"] {
+.zones input[type="radio"], .block input[type="checkbox"] {
   position: absolute;
   opacity: 0;
 }
@@ -347,7 +347,7 @@ body {
     vertical-align: middle;
     margin-top: -5px;
 }
-.zones input:checked ~ .check {
+.zones input:checked ~ .check, .block input:checked ~ .check {
   background-color: #333333;
 }
 .check::after {
@@ -360,7 +360,7 @@ body {
   border-radius: 50%;
   background: #FFFFFF;
 }
-.zones input:checked ~ .check::after {
+.zones input:checked ~ .check::after, .block input:checked ~ .check::after {
   display: block;
 }
 

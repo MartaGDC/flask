@@ -74,6 +74,8 @@ let drawing = false;
 let trazos = [];
 let trazoActual = null;
 
+const referencia = document.getElementById("ref");
+
 
 /*Botones reload y home:
 
@@ -614,6 +616,8 @@ function redBlackQuality(){
         structure.disabled = true;
         structure.classList.add("disabled");
     });
+    referencia.checked = false;
+    referencia.disabled = true;
     clearDrawing();
     good = false;
 }
@@ -626,6 +630,7 @@ function greenYellowQuality() {
         structure.disabled = false;
         structure.classList.remove("disabled");
     });
+    referencia.disabled = false;
     good = true;
 }
 
@@ -727,7 +732,8 @@ function saveDrawing(){
                     filesaved: `${timestamp}_${index}.png`,
                     quality: selectedQuality,
                     zone: selectedZone,
-                    evaluator: evaluatorName
+                    evaluator: evaluatorName,
+                    referencia: referencia.checked ? "ref" : "no ref"
                 }
                 Object.entries(invisibleStructures).forEach(([name, used]) => {
                     if (used) {
@@ -817,7 +823,8 @@ function saveDrawing(){
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
-                evaluator: evaluatorName
+                evaluator: evaluatorName,
+                referencia: referencia.checked ? "ref" : "no ref"
             };
             Object.entries(invisibleStructures).forEach(([name, used]) => {
                 if(used){
