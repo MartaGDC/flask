@@ -309,8 +309,10 @@ acceptFramesBtn.addEventListener("click", () => {
         firstValue = 0;
     }
     lastValue = 10 + firstValue;
-    console.log(lastValue);
 
+    if (range.noUiSlider) {
+        range.noUiSlider.destroy();
+    }
     noUiSlider.create(range, {
         start: [ firstValue, lastValue ],
         step: 1,
@@ -321,20 +323,25 @@ acceptFramesBtn.addEventListener("click", () => {
             'max': 100
         }
     });
-    range.noUiSlider.on('update', function( values, handle ) {
-        if ( handle ) {
-            lastValue = (values[handle] / 100) * videoPlayer.duration;
-            videoPlayer.currentTime = lastValue;
-            lastFrame = Math.floor(lastValue * 30); //Si 30 fps por segundo.
-        } else {
-            firstValue = (values[handle] / 100) * videoPlayer.duration;
-            videoPlayer.currentTime = firstValue;
-            firstFrame = Math.floor(firstValue * 30); //Si 30 fps por segundo.
-        }
-    });
+    range.noUiSlider.on('update', listenerRange);
 });
 
+function listenerRange(values, handle) {
+    if ( handle ) {
+        lastValue = (values[handle] / 100) * videoPlayer.duration;
+        videoPlayer.currentTime = lastValue;
+        lastFrame = Math.floor(lastValue * 30); //Si 30 fps por segundo.
+    } else {
+        firstValue = (values[handle] / 100) * videoPlayer.duration;
+        videoPlayer.currentTime = firstValue;
+        firstFrame = Math.floor(firstValue * 30); //Si 30 fps por segundo.
+    }
+}
+
 acceptGroupBtn.addEventListener("click", async ()=> {
+    range.noUiSlider.off('update', listenerRange);
+    range.noUiSlider.destroy();
+
     acceptGroupBtn.classList.add("hidden");
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
