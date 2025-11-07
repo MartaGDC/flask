@@ -616,8 +616,10 @@ function redBlackQuality(){
         structure.disabled = true;
         structure.classList.add("disabled");
     });
-    referencia.checked = false;
-    referencia.disabled = true;
+    if (referencia){
+        referencia.checked = false;
+        referencia.disabled = true;
+    }
     clearDrawing();
     good = false;
 }
@@ -630,7 +632,9 @@ function greenYellowQuality() {
         structure.disabled = false;
         structure.classList.remove("disabled");
     });
-    referencia.disabled = false;
+    if(referencia){
+        referencia.disabled = false;
+    }
     good = true;
 }
 
@@ -646,8 +650,6 @@ function validar() {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
         submitted = true;
-        console.log(appName);
-
     }
     else{
         submitBtn.disabled = true;
