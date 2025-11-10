@@ -1,6 +1,7 @@
 import json
-import os, io
+import os, io, shutil
 from flask import Flask, render_template, request, jsonify, session, send_file, send_from_directory, render_template_string
+from filelock import FileLock
 #from flask_cors import CORS
 import base64
 from PIL import Image
@@ -80,7 +81,6 @@ def index(app_name):
     structures = load_json("structures.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
     brush = load_json("settings_brush.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
     for zone, structs in structures["structures"].items():
-        print("hola ", zone, structs)
         for structure in structs:
             s_name = structure["name"]
             for b in brush["structures"].get(zone, []):
@@ -91,6 +91,28 @@ def index(app_name):
     return render_template('index.html', user = user, title=app_name, data=structures)
 
 
+
+def load_json_safe(path):
+    """Carga JSON, restaurando backup si hay error."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        if os.path.exists("settings_brush.json.bak"):
+            shutil.copy("settings_brush.json.bak", path)
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        return {}
+def save_json_atomic_safe(path, data):
+    """Guarda JSON con lock, backup y escritura atómica."""
+    with FileLock("settings_brush.json.lock"):
+        if os.path.exists(path):
+            shutil.copy(path, "settings_brush.json.bak")
+        temp_path = path + ".tmp"
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+        os.replace(temp_path, path)
+
 @app.route("/update_brush", methods=["POST"])
 def update_brush_width():
     req = request.json
@@ -99,7 +121,7 @@ def update_brush_width():
     zone = req["zone"]
     width = req["width"]
 
-    brush = load_json("settings_brush.json")
+    brush = load_json_safe("settings_brush.json")
 
     if appName not in brush:
         brush[appName] = {"zones": [{"value": zone, "label": ""}],
@@ -108,13 +130,12 @@ def update_brush_width():
     for b in brush[appName]["structures"][zone]:
         if b["name"] == str(name):
             b["width"] = str(width)
-            print(width)
             found = True
             break
     if not found:
         brush[appName]["structures"][zone].append({"name": name, "width": width})
 
-    save_json("settings_brush.json", brush)
+    save_json_atomic_safe("settings_brush.json", brush)
     return jsonify({"status": "ok", "updated": name})
 
 
