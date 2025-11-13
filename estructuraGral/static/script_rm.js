@@ -339,10 +339,7 @@ function clearDrawing() {
 //Formulario completado, validar y enviar (frame editado, filename, evaluator)
 function validar() {
     //const allColorsDrawn = trazos.some(trazo => trazo.color === colors[0] && trazo.puntos.length > 0); //para supraespinoso porque solo hbaia un color
-    const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
-    const allColorsDrawn = activeColors.every(color =>
-        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
-    );
+    allColorsDrawn=true; //Se han definido varias estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
     if (allColorsDrawn) {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
