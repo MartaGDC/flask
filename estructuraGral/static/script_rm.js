@@ -329,7 +329,9 @@ function redrawRest(colorDelete=null) {
 //Borrar todos los trazos si se selecciona otra zona. Este funcion es innecesaria para supraespinoso
 function clearDrawing() {
     ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-    ctx.putImageData(savedFrame, 0, 0);
+    if(savedFrame){
+        ctx.putImageData(savedFrame, 0, 0);
+    }
     trazos = [];
     validar();
 }
