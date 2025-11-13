@@ -338,6 +338,10 @@
         ],
         "structures": {
             "umt": [
+                                {
+                    "name": "Tendón de Aquiles",
+                    "width": "20"
+                },
                 {
                     "name": "Músculo gastrocnemio",
                     "width": "20"
@@ -348,10 +352,6 @@
                 },
                 {
                     "name": "Músculo flexores prof",
-                    "width": "20"
-                },
-                {
-                    "name": "Tendón de Aquiles",
                     "width": "20"
                 },
                 {
@@ -373,53 +373,37 @@
                     "width": "20"
                 },
                 {
-                    "name": "Tibia",
-                    "width": "20"
-                },
-                {
-                    "name": "Calcáneo",
-                    "width": "20"
-                },
-                {
-                    "name": "Astrágalo",
-                    "width": "20"
-                },
-                {
                     "name": "Paquete de Kager",
                     "width": "20"
                 },
                 {
-                    "name": "Bursa prof",
-                    "width": "20"
-                },
-                {
-                    "name": "Líquido sinovial bursa prof",
-                    "width": "20"
-                },
-                {
-                    "name": "Bursa superf",
-                    "width": "20"
-                },
-                {
-                    "name": "Líquido sinovial bursa superf",
-                    "width": "20"
-                },
-                {
-                    "name": "Calcáneo",
+                    "name": "Tibia",
                     "width": "20"
                 }
             ],
             "entesis": [
                 {
-                    "name": "Tendón de Aquiles superf",
-                    "width": "20"
-                },
-                {
-                    "name": "Tendón de Aquiles prof",
+                    "name": "Tendón de Aquiles",
                     "width": "20"
                 },
                 {
                     "name": "Paquete de Kager",
+                    "width": "20"
+                },
+                {
+                    "name": "Músculo flexor largo del primer dedo",
+                    "width": "20"
+                },
+                {
+                    "name": "Tibia",
+                    "width": "20"
+                },
+                {
+                    "name": "Calcáneo",
+                    "width": "20"
+                },
+                {
+                    "name": "Astrágalo",
                     "width": "20"
                 },
                 {
@@ -436,22 +420,6 @@
                 },
                 {
                     "name": "Líquido sinovial bursa superf",
-                    "width": "20"
-                },
-                {
-                    "name": "Tibia",
-                    "width": "20"
-                },
-                {
-                    "name": "Calcáneo",
-                    "width": "20"
-                },
-                {
-                    "name": "Astrágalo",
-                    "width": "20"
-                },
-                {
-                    "name": "Músculo flexor largo del primer dedo",
                     "width": "20"
                 }
             ]
@@ -2517,7 +2485,7 @@
             ]
         }
     },
-    "rm": {
+    "rmSupra": {
         "zones": [
             {
                 "value": "none",
@@ -2528,6 +2496,22 @@
             "none": [
                 {
                     "name": "Supraespinoso",
+                    "width": "20"
+                }
+            ]
+        }
+    },
+    "rmRodilla": {
+        "zones": [
+            {
+                "value": "none",
+                "label": ""
+            }
+        ],
+        "structures": {
+            "none": [
+                {
+                    "name": "Femorotibial",
                     "width": "20"
                 }
             ]

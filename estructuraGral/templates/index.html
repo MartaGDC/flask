@@ -145,7 +145,7 @@
             </div>
         {% endif %}
     </aside>
-    {% if title == 'rm' %}
+    {% if title.startswith('rm') %}
         <script src="{{ url_for('static', filename='script_rm.js') }}"></script>
     {% elif title == 'base_marco' %}
         <script src="{{ url_for('static', filename='script_marco.js') }}"></script>

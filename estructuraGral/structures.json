@@ -132,38 +132,30 @@
         ],
         "structures": {
             "umt": [
+                {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
                 {"name": "Músculo gastrocnemio", "color": "rgb(240, 70, 0)"},
                 {"name": "Músculo sóleo", "color": "rgb(240, 60, 0)"},
                 {"name": "Músculo flexores prof", "color": "rgb(240, 50, 0)"},
-                {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 200)"}
             ],
             "cuerpo": [
                 {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
                 {"name": "Músculo sóleo", "color": "rgb(240, 60, 0)"},
                 {"name": "Músculo flexores prof", "color": "rgb(240, 50, 0)"},
-                {"name": "Tibia", "color": "rgb(225, 255, 200)"},
-                {"name": "Calcáneo", "color": "rgb(225, 255, 190)"},
-                {"name": "Astrágalo", "color": "rgb(225, 255, 180)"},
                 {"name": "Paquete de Kager", "color": "rgb(252, 255, 170)"},
-                {"name": "Bursa prof", "color": "rgb(235, 175, 255)"},
-                {"name": "Líquido sinovial bursa prof", "color": "rgb(250, 255, 90)"},
-                {"name": "Bursa superf", "color": "rgb(235, 185, 255)"},
-                {"name": "Líquido sinovial bursa superf", "color": "rgb(250, 255, 80)"},
-                {"name": "Calcáneo", "color": "rgb(225, 255, 200)"}
+                {"name": "Tibia", "color": "rgb(225, 255, 200)"}
             ],
             "entesis": [
-                {"name": "Tendón de Aquiles superf", "color": "rgb(140, 190, 200)"},
-                {"name": "Tendón de Aquiles prof", "color": "rgb(140, 180, 200)"},
+                {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
                 {"name": "Paquete de Kager", "color": "rgb(252, 255, 170)"},
-                {"name": "Bursa prof", "color": "rgb(235, 175, 255)"},
-                {"name": "Líquido sinovial bursa prof", "color": "rgb(250, 255, 90)"},
-                {"name": "Bursa superf", "color": "rgb(235, 185, 255)"},
-                {"name": "Líquido sinovial bursa superf", "color": "rgb(250, 255, 80)"},
+                {"name": "Músculo flexor largo del primer dedo", "color": "rgb(240, 60, 0)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 200)"},
                 {"name": "Calcáneo", "color": "rgb(225, 255, 190)"},
                 {"name": "Astrágalo", "color": "rgb(225, 255, 180)"},
-                {"name": "Músculo flexor largo del primer dedo", "color": "rgb(240, 60, 0)"}
+                {"name": "Bursa prof", "color": "rgb(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa prof", "color": "rgb(250, 255, 90)"},
+                {"name": "Bursa superf", "color": "rgb(235, 185, 255)"},
+                {"name": "Líquido sinovial bursa superf", "color": "rgb(250, 255, 80)"}
             ]
         }
     },
@@ -907,13 +899,23 @@
         }
     },
 
-    "rm": {
+    "rmSupra": {
         "zones": [
             {"value": "none", "label": ""}
         ],
         "structures": {
             "none": [
                 {"name": "Supraespinoso", "color": "rgb(255, 0, 0)"}
+            ]
+        }
+    },
+    "rmRodilla": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Femorotibial", "color": "rgb(255, 0, 0)"}
             ]
         }
     }

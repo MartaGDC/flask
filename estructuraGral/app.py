@@ -60,7 +60,8 @@ APP_VIDEOS = {
     'abd_transversal_toracolum': '5_4_',
     'abd_suelo_pelvico': '5_5_',
 
-    'rm': ''
+    'rmSupra': '',
+    'rmRodilla': ''
 
 }
 
