@@ -340,19 +340,19 @@
             "umt": [
                                 {
                     "name": "Tendón de Aquiles",
-                    "width": "20"
+                    "width": "10"
                 },
                 {
                     "name": "Músculo gastrocnemio",
-                    "width": "20"
+                    "width": "12"
                 },
                 {
                     "name": "Músculo sóleo",
-                    "width": "20"
+                    "width": "40"
                 },
                 {
                     "name": "Músculo flexores prof",
-                    "width": "20"
+                    "width": "16"
                 },
                 {
                     "name": "Tibia",
@@ -2485,23 +2485,7 @@
             ]
         }
     },
-    "rmSupra": {
-        "zones": [
-            {
-                "value": "none",
-                "label": ""
-            }
-        ],
-        "structures": {
-            "none": [
-                {
-                    "name": "Supraespinoso",
-                    "width": "20"
-                }
-            ]
-        }
-    },
-    "rmRodilla": {
+    "rm": {
         "zones": [
             {
                 "value": "none",

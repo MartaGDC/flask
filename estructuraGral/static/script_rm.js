@@ -22,16 +22,18 @@ const submitBtn = document.getElementById("submitBtn");
 let aceptado = false; //si false es porque no hay imagenes y no se puede dibujar
 const sidebar = document.getElementById("sidebar");
 const blocks = document.querySelectorAll(".block");
-const selectStructure = document.getElementById("selectStructure");
 
 const zones = document.querySelectorAll('input[name="zone"]');
 let selectedZone = zones[0].value;
 const structures = document.querySelectorAll(".structure-item");
 let selectedStructure = null;
+let currentIndex = null;
 const sliders = document.querySelectorAll('.brush-slider');
 const  widths = Array.from(document.querySelectorAll(".brush-slider")).map(slider => parseInt(slider.value));
 const colors = Array.from(document.querySelectorAll(".structure-item")).map(div => div.dataset.color);
 const deleteDrawings = document.querySelectorAll(".delete");
+let invisibleStructures = {};
+const invisible = document.querySelectorAll(".invisible");
 let drawing = false;
 let trazos = [];
 let trazoActual = null;
@@ -58,7 +60,10 @@ document.addEventListener("DOMContentLoaded", () =>{
     qualityYellow.classList.add("hidden");
     qualityRed.classList.add("hidden");
     qualityBlack.classList.add("hidden");
-    selectStructure.classList.add("hidden");    
+    invisible.forEach((invisibleBtn, _) => {
+        invisibleBtn.classList.remove("active");
+        invisibleBtn.classList.add("hidden");
+    });
     //framePlaceholder.style.height="67vh"
     if (sessionStorage.getItem('reload')) {
         sessionStorage.removeItem('reload');
@@ -167,8 +172,8 @@ function showStructures(selectedZone){
     activeStructures.forEach(structure => {
         structure.classList.remove("hidden");
         structure.classList.add("transparent");
-        structure.style.marginTop = "25vh";
-        structure.style.paddingBottom = "0vw";
+        //structure.style.marginTop = "25vh"; //Necesario para supraespinoso porque había solo un pincel
+        //structure.style.paddingBottom = "0vw"; //Necesario para supraespinoso porque había solo un pincel
     });
     selectedStructure = activeStructures[0];
     const firstIndex = selectedStructure.querySelector('.brush-slider');
@@ -185,6 +190,16 @@ function showStructures(selectedZone){
     });
 }
 showStructures(selectedZone);
+zones.forEach(zone => {
+    zone.addEventListener('change', (event) => {
+        structures.forEach((structure) => {
+            structure.classList.add("hidden");
+            clearDrawing();
+        });
+        selectedZone = event.target.value;
+        showStructures(selectedZone);
+    });
+}); //Esto no era necesario para Supraespinoso porque solo había una zona
 
 
 //Al seleccionar una estructura, se activa la misma y se accede al brush correspondiente.
@@ -311,10 +326,21 @@ function redrawRest(colorDelete=null) {
     });
     validar();
 }
+//Borrar todos los trazos si se selecciona otra zona. Este funcion es innecesaria para supraespinoso
+function clearDrawing() {
+    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
+    ctx.putImageData(savedFrame, 0, 0);
+    trazos = [];
+    validar();
+}
 
 //Formulario completado, validar y enviar (frame editado, filename, evaluator)
 function validar() {
-    const allColorsDrawn = trazos.some(trazo => trazo.color === colors[0] && trazo.puntos.length > 0);
+    //const allColorsDrawn = trazos.some(trazo => trazo.color === colors[0] && trazo.puntos.length > 0); //para supraespinoso porque solo hbaia un color
+    const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
+    const allColorsDrawn = activeColors.every(color =>
+        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
+    );
     if (allColorsDrawn) {
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
@@ -350,7 +376,7 @@ function saveDrawing(){
         /*time: parseFloat(seconds)*/
     };
 
-    fetch('/saveRM', { //MODIFICAR BACKEND
+    fetch('/saveRM', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
