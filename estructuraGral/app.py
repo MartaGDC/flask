@@ -307,6 +307,7 @@ def saveRM():
     imageEdited = data['imageEdited'].split(",")[1]
     imageEdited = base64.b64decode(imageEdited)
     filesaved = data['filesaved']
+    zone = data['zone'] #innecesario en supraespinoso
     evaluator = data['evaluator']
     #time = data['time']
     
@@ -316,7 +317,8 @@ def saveRM():
     metadata.append({
         "imageoriginal": imageoriginal,
         "filesaved": filesaved,
-        "evaluator": evaluator,
+        "zone": zone,
+        "evaluator": evaluator
         #"time": time
     })
 

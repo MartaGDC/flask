@@ -371,7 +371,8 @@ function saveDrawing(){
         image: fileName.textContent, 
         imageEdited: imageEditedURL,
         filesaved: `rm_${evaluatorName}_${timestamp}.png`,
-        evaluator: evaluatorName,
+        zone: selectedZone,
+        evaluator: evaluatorName
         /*time: parseFloat(seconds)*/
     };
 
