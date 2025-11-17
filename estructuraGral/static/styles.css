@@ -487,6 +487,8 @@ body {
 
 .coloresAnatomia{
     color: rgba(215, 150, 255); /*Skin*/
+    color: rgba(215, 150, 240); /*Epidermis*/
+    color: rgba(215, 150, 220); /*Dermis*/
 
     color: rgba(245, 255, 200); /*Connective tissue1*/
     color: rgba(245, 255, 190); /*Connective tissue2*/

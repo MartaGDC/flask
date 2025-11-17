@@ -5,7 +5,8 @@
         ],
         "structures": {
             "none": [
-                {"name": "Piel", "color": "rgb(215, 150, 255)"},
+                {"name": "Epidermis", "color": "rgb(215, 150, 240)"},
+                {"name": "Dermis", "color": "rgb(215, 150, 220)"},
                 {"name": "TCS", "color": " rgb(252, 255, 130)"},
                 {"name": "Tejido conectivo", "color": "rgb(245, 255, 200)"},
                 {"name": "Músculo Longitudinal", "color": "rgb(240, 70, 0)"},

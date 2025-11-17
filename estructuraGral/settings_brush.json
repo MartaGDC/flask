@@ -9,7 +9,11 @@
         "structures": {
             "none": [
                 {
-                    "name": "Piel",
+                    "name": "Epidermis",
+                    "width": "20"
+                },
+                {
+                    "name": "Dermis",
                     "width": "20"
                 },
                 {
