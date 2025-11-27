@@ -151,7 +151,7 @@ def verifyUser(user, app_name):
         error = False
     elif(user == 'ebg' and app_name.startswith("nerves")):
         error = False
-    elif (user == "ppa" and app_name.startswith("abd"))):
+    elif (user == "ppa" and app_name.startswith("abd")):
         error = False
     elif ((user == "mmu" or user == "mgd") and app_name.startswith("rm")):
         error = False

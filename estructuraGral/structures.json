@@ -789,6 +789,18 @@
         }
     },
 
+    
+    "nerves_STC": {
+        "zones": [
+            {"value": "none", "label":""}
+        ],
+         "structures": {
+            "none": [
+                {"name": "Zona 1", "color": "rgb(252, 255, 170)"}
+            ]
+        }
+    },
+
 
     "abd_transversal_alba": {
         "zones": [
