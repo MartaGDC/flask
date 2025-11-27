@@ -52,8 +52,7 @@ APP_VIDEOS = {
     'hand_cubital': '3_4_',
     'hand_dorsal': '3_5_',
 
-    # nervios pendiente '4_'
-    'nerves_': '4_',
+    'nerves_STC': '4_1_',
 
     'abd_transversal_alba': '5_1_',
     'abd_transversal_recto': '5_2_',
@@ -144,15 +143,15 @@ def update_brush_width():
 def verifyUser(user, app_name):
     if (user== "None" or user == None or user==""):
         error = True
-    if((user == "mmu" or user == "mgd") and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("abd"))):
+    if((user == "mmu" or user == "mgd") and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("nerves") or app_name.startswith("abd"))):
         error = False
-    elif (user == "jpr" and (app_name.startswith("base") or app_name.startswith("foot"))):
+    elif (user == "jpr" and app_name.startswith("foot")):
         error = False
-    elif (user == "pfm" and (app_name.startswith("base") or app_name.startswith("knee") or app_name.startswith("hand"))):
+    elif (user == "pfm" and (app_name.startswith("knee") or app_name.startswith("hand"))):
         error = False
-    elif((user == 'mmu' or user == 'mgd' or user == 'ebg') and app_name.startswith("nerves")):
+    elif(user == 'ebg' and app_name.startswith("nerves")):
         error = False
-    elif (user == "ppa" and (app_name.startswith("base") or app_name.startswith("abd"))):
+    elif (user == "ppa" and app_name.startswith("abd"))):
         error = False
     elif ((user == "mmu" or user == "mgd") and app_name.startswith("rm")):
         error = False
