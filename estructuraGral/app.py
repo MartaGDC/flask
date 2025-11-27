@@ -52,7 +52,8 @@ APP_VIDEOS = {
     'hand_cubital': '3_4_',
     'hand_dorsal': '3_5_',
 
-    # codo pendiente '4_'
+    # nervios pendiente '4_'
+    'nerves_': '4_',
 
     'abd_transversal_alba': '5_1_',
     'abd_transversal_recto': '5_2_',
@@ -148,6 +149,8 @@ def verifyUser(user, app_name):
     elif (user == "jpr" and (app_name.startswith("base") or app_name.startswith("foot"))):
         error = False
     elif (user == "pfm" and (app_name.startswith("base") or app_name.startswith("knee") or app_name.startswith("hand"))):
+        error = False
+    elif((user == 'mmu' or user == 'mgd' or user == 'ebg') and app_name.startswith("nerves")):
         error = False
     elif (user == "ppa" and (app_name.startswith("base") or app_name.startswith("abd"))):
         error = False

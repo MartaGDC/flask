@@ -358,6 +358,7 @@ acceptGroupBtn.addEventListener("click", async ()=> {
         frames.push(i);
     }
     savedFrames = await captureFrames(videoPlayer, ctx, firstFrame, lastFrame); //necesario un await, porque empezaba a tener problemas para que realmente videoplayer se posicionase
+    validar();
 });
 async function captureFrames(videoPlayer, ctx, firstFrame, lastFrame, fps = 30) {
     for (let i = firstFrame; i <= lastFrame; i++) {
@@ -395,6 +396,7 @@ acceptFrameBtn.addEventListener("click", () => {
 
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
+    validar();
 });
 
 
