@@ -2188,14 +2188,72 @@
     "nerves_STC":{
         "zones": [
             {
-                "value": "none",
-                "label": ""
+                "value": "transversal",
+                "label": "Transversal"
+            },
+            {
+                "value": "longitudinal",
+                "label": "Longitudinal"
             }
         ],
         "structures":{
-            "none": [
+            "transversal": [
                 {
-                    "name": "Zona 1",
+                    "name": "Ligamento transverso",
+                    "width":"20"
+                },
+                {
+                    "name": "Nervio mediano",
+                    "width":"20"
+                },
+                {
+                    "name": "Epineuro",
+                    "width":"20"
+                },
+                {
+                    "name": "Túnel carpiano",
+                    "width":"20"
+                },
+                {
+                    "name": "Hueso pisiforme",
+                    "width":"20"
+                },
+                {
+                    "name": "Hueso escafoides",
+                    "width":"20"
+                },
+                {
+                    "name": "Hueso carpo",
+                    "width":"20"
+                }
+            ],
+            "longitudinal": [
+                {
+                    "name": "Ligamento transverso",
+                    "width":"20"
+                },
+                {
+                    "name": "Nervio mediano",
+                    "width":"20"
+                },
+                {
+                    "name": "Epineuro",
+                    "width":"20"
+                },
+                {
+                    "name": "Tendones flexores superficiales",
+                    "width":"20"
+                },
+                {
+                    "name": "Tendones flexores profundos",
+                    "width":"20"
+                },
+                {
+                    "name": "Hueso radio",
+                    "width":"20"
+                },
+                {
+                    "name": "Hueso carpo",
                     "width":"20"
                 }
             ]

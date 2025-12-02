@@ -792,11 +792,27 @@
     
     "nerves_STC": {
         "zones": [
-            {"value": "none", "label":""}
+            {"value": "transversal", "label":"Transversal"},
+            {"value": "longitudinal", "label": "Longitudinal"}
         ],
          "structures": {
-            "none": [
-                {"name": "Zona 1", "color": "rgb(252, 255, 170)"}
+            "transversal": [
+                {"name": "Ligamento transverso", "color": "rgb(170, 230, 255)"},
+                {"name": "Nervio mediano", "color": "rgb(255, 255, 50)"},
+                {"name": "Epineuro", "color": "rgb(255, 255, 30)"},
+                {"name": "Túnel carpiano", "color": "rgb(100, 100, 100)"},
+                {"name": "Hueso pisiforme", "color": "rgb(225, 255, 200)"},
+                {"name": "Hueso escafoides", "color": "rgb(225, 255, 180)"},
+                {"name": "Hueso carpo", "color": "rgb(225, 255, 160)"}
+            ],
+            "longitudinal": [
+                {"name": "Ligamento transverso", "color": "rgb(170, 230, 255)"},
+                {"name": "Nervio mediano", "color": "rgb(255, 255, 50)"},
+                {"name": "Epineuro", "color": "rgb(255, 255, 30)"},
+                {"name": "Tendones flexores superficiales", "color": "rgb(140, 190, 200)"},
+                {"name": "Tendones flexores profundos", "color": "rgb(140, 170, 200)"},
+                {"name": "Hueso radio", "color": "rgb(225, 255, 200)"},
+                {"name": "Hueso carpo", "color": "rgb(225, 255, 180)"}
             ]
         }
     },
