@@ -808,7 +808,7 @@
             "longitudinal": [
                 {"name": "Ligamento transverso", "color": "rgb(170, 230, 255)"},
                 {"name": "Nervio mediano", "color": "rgb(255, 255, 50)"},
-                {"name": "Epineuro", "color": "rgb(255, 255, 30)"},
+                {"name": "Epineuro", "color": "rgb(245, 255, 200)"},
                 {"name": "Tendones flexores superficiales", "color": "rgb(140, 190, 200)"},
                 {"name": "Tendones flexores profundos", "color": "rgb(140, 170, 200)"},
                 {"name": "Hueso radio", "color": "rgb(225, 255, 200)"},
