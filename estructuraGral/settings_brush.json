@@ -10,34 +10,34 @@
             "none": [
                 {
                     "name": "Epidermis",
-                    "width": "20"
+                    "width": "5"
                 },
                 {
                     "name": "Dermis",
-                    "width": "20"
+                    "width": "5"
                 },
                 {
                     "name": "TCS",
-                    "width": "20"
+                    "width": "6"
                 },
                 {
                     "name": "Tejido conectivo",
+                    "width": "6"
+                },
+                {
+                    "name": "M\u00fasculo Longitudinal",
+                    "width": "33"
+                },
+                {
+                    "name": "M\u00fasculo Transversal",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo Longitudinal",
-                    "width": "20"
+                    "name": "Tend\u00f3n Longitudinal",
+                    "width": "3"
                 },
                 {
-                    "name": "Músculo Transversal",
-                    "width": "20"
-                },
-                {
-                    "name": "Tendón Longitudinal",
-                    "width": "20"
-                },
-                {
-                    "name": "Tendón Transversal",
+                    "name": "Tend\u00f3n Transversal",
                     "width": "20"
                 },
                 {
@@ -45,8 +45,8 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula y Ligamento",
-                    "width": "20"
+                    "name": "C\u00e1psula y Ligamento",
+                    "width": "11"
                 },
                 {
                     "name": "Arteria",
@@ -65,28 +65,28 @@
                     "width": "20"
                 },
                 {
-                    "name": "Fibrocartílago",
-                    "width": "20"
+                    "name": "Fibrocart\u00edlago",
+                    "width": "11"
                 },
                 {
                     "name": "Paquete adiposo",
-                    "width": "20"
+                    "width": "17"
                 },
                 {
                     "name": "Membrana sinovial",
-                    "width": "20"
+                    "width": "6"
                 },
                 {
-                    "name": "Líquido sinovial",
-                    "width": "20"
+                    "name": "L\u00edquido sinovial",
+                    "width": "5"
                 },
                 {
-                    "name": "Cartílago hialino",
-                    "width": "20"
+                    "name": "Cart\u00edlago hialino",
+                    "width": "13"
                 },
                 {
                     "name": "Hueso",
-                    "width": "20"
+                    "width": "11"
                 }
             ]
         }
@@ -102,7 +102,7 @@
             "none": [
                 {
                     "name": "Anisotropia",
-                    "width": "20"
+                    "width": "12"
                 },
                 {
                     "name": "Falta de contacto",
@@ -110,19 +110,19 @@
                 },
                 {
                     "name": "SAP1",
-                    "width": "20"
+                    "width": "9"
                 },
                 {
                     "name": "SAP2",
-                    "width": "20"
+                    "width": "40"
                 },
                 {
                     "name": "SR1",
-                    "width": "20"
+                    "width": "10"
                 },
                 {
                     "name": "SR2",
-                    "width": "20"
+                    "width": "14"
                 },
                 {
                     "name": "RT1",
@@ -133,16 +133,16 @@
                     "width": "20"
                 },
                 {
-                    "name": "Reverberación 1",
+                    "name": "Reverberaci\u00f3n 1",
                     "width": "20"
                 },
                 {
-                    "name": "Reverberación 2",
+                    "name": "Reverberaci\u00f3n 2",
                     "width": "20"
                 },
                 {
                     "name": "Ruido",
-                    "width": "20"
+                    "width": "40"
                 }
             ]
         }
@@ -187,7 +187,7 @@
         "zones": [
             {
                 "value": "insercion",
-                "label": "Inserción"
+                "label": "Inserci\u00f3n"
             },
             {
                 "value": "arco",
@@ -202,22 +202,22 @@
             "insercion": [
                 {
                     "name": "Fascia plantar superf",
-                    "width": "20"
+                    "width": "9"
                 },
                 {
                     "name": "Fascia plantar prof",
-                    "width": "20"
+                    "width": "13"
                 },
                 {
                     "name": "Almohadilla",
-                    "width": "20"
+                    "width": "33"
                 },
                 {
-                    "name": "Músculos flexores prof",
-                    "width": "20"
+                    "name": "M\u00fasculos flexores prof",
+                    "width": "5"
                 },
                 {
-                    "name": "Calcáneo",
+                    "name": "Calc\u00e1neo",
                     "width": "20"
                 }
             ],
@@ -227,11 +227,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo flexor corto de los dedos",
+                    "name": "M\u00fasculo flexor corto de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo cuadrado plantar",
+                    "name": "M\u00fasculo cuadrado plantar",
                     "width": "20"
                 }
             ],
@@ -241,7 +241,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculos intrínsecos",
+                    "name": "M\u00fasculos intr\u00ednsecos",
                     "width": "20"
                 },
                 {
@@ -255,7 +255,7 @@
         "zones": [
             {
                 "value": "insercion",
-                "label": "Inserción"
+                "label": "Inserci\u00f3n"
             },
             {
                 "value": "arco",
@@ -277,11 +277,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculos flexores prof",
+                    "name": "M\u00fasculos flexores prof",
                     "width": "20"
                 },
                 {
-                    "name": "Calcáneo",
+                    "name": "Calc\u00e1neo",
                     "width": "20"
                 }
             ],
@@ -291,11 +291,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo flexor corto de los dedos",
+                    "name": "M\u00fasculo flexor corto de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo cuadrado plantar",
+                    "name": "M\u00fasculo cuadrado plantar",
                     "width": "20"
                 },
                 {
@@ -303,15 +303,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor largo de los dedos",
+                    "name": "Tend\u00f3n flexor largo de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor largo del primer dedo",
+                    "name": "Tend\u00f3n flexor largo del primer dedo",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón peroneo largo",
+                    "name": "Tend\u00f3n peroneo largo",
                     "width": "20"
                 },
                 {
@@ -342,25 +342,25 @@
         ],
         "structures": {
             "umt": [
-                                {
-                    "name": "Tendón de Aquiles",
-                    "width": "10"
+                {
+                    "name": "Tend\u00f3n de Aquiles",
+                    "width": "19"
                 },
                 {
-                    "name": "Músculo gastrocnemio",
-                    "width": "12"
+                    "name": "M\u00fasculo gastrocnemio",
+                    "width": "31"
                 },
                 {
-                    "name": "Músculo sóleo",
-                    "width": "40"
+                    "name": "M\u00fasculo s\u00f3leo",
+                    "width": "32"
                 },
                 {
-                    "name": "Músculo flexores prof",
-                    "width": "16"
+                    "name": "M\u00fasculo flexores prof",
+                    "width": "17"
                 },
                 {
                     "name": "Tibia",
-                    "width": "20"
+                    "width": "33"
                 }
             ],
             "cuerpo": [
@@ -383,11 +383,15 @@
                 {
                     "name": "Tibia",
                     "width": "20"
+                },
+                {
+                    "name": "Astrágalo",
+                    "width": "20"
                 }
             ],
             "entesis": [
                 {
-                    "name": "Tendón de Aquiles",
+                    "name": "Tend\u00f3n de Aquiles",
                     "width": "20"
                 },
                 {
@@ -395,7 +399,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo flexor largo del primer dedo",
+                    "name": "M\u00fasculo flexor largo del primer dedo",
                     "width": "20"
                 },
                 {
@@ -403,11 +407,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Calcáneo",
+                    "name": "Calc\u00e1neo",
                     "width": "20"
                 },
                 {
-                    "name": "Astrágalo",
+                    "name": "Astr\u00e1galo",
                     "width": "20"
                 },
                 {
@@ -415,7 +419,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa prof",
+                    "name": "L\u00edquido sinovial bursa prof",
                     "width": "20"
                 },
                 {
@@ -423,7 +427,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa superf",
+                    "name": "L\u00edquido sinovial bursa superf",
                     "width": "20"
                 }
             ]
@@ -447,14 +451,6 @@
         "structures": {
             "umt": [
                 {
-                    "name": "Músculo gastrocnemio medial",
-                    "width": "20"
-                },
-                {
-                    "name": "Músculo gastrocnemio lat",
-                    "width": "20"
-                },
-                {
                     "name": "Músculo sóleo",
                     "width": "20"
                 },
@@ -464,18 +460,14 @@
                 },
                 {
                     "name": "Tendón de Aquiles",
-                    "width": "20"
-                },
-                {
-                    "name": "Tendón delgado plantar",
-                    "width": "20"
+                    "width": "10"
                 },
                 {
                     "name": "Tibia",
                     "width": "20"
                 },
                 {
-                    "name": "Peroné",
+                    "name": "Peron\u00e9",
                     "width": "20"
                 },
                 {
@@ -485,19 +477,23 @@
                 {
                     "name": "N sural",
                     "width": "20"
+                },
+                {
+                    "name": "Vena safena menor",
+                    "width": 20
                 }
             ],
             "cuerpo": [
                 {
-                    "name": "Tendón de Aquiles",
+                    "name": "Tend\u00f3n de Aquiles",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo sóleo",
+                    "name": "M\u00fasculo s\u00f3leo",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo flexores prof",
+                    "name": "M\u00fasculo flexores prof",
                     "width": "20"
                 },
                 {
@@ -505,8 +501,12 @@
                     "width": "20"
                 },
                 {
-                    "name": "Peroné",
+                    "name": "Peron\u00e9",
                     "width": "20"
+                },
+                {
+                    "name": "Astrágalo",
+                    "width": 20
                 },
                 {
                     "name": "N tibial",
@@ -519,15 +519,47 @@
                 {
                     "name": "Paquete de Kager",
                     "width": "20"
+                },
+                {
+                    "name": "Bursa profunda",
+                    "width": "20"
+                },
+                {
+                    "name": "Bursa superficial",
+                    "width": 20
+                },
+                {
+                    "name": "Líquido bursa prof",
+                    "width": "20"
+                },
+                {
+                    "name": "Líquido bursa superf",
+                    "width": "20"
                 }
             ],
             "entesis": [
                 {
-                    "name": "Tendón de Aquiles",
+                    "name": "Tend\u00f3n de Aquiles",
                     "width": "20"
                 },
                 {
-                    "name": "Calcáneo",
+                    "name": "Calc\u00e1neo",
+                    "width": "20"
+                },
+                {
+                    "name": "Bursa profunda",
+                    "width": "20"
+                },
+                {
+                    "name": "Bursa superficial",
+                    "width": 20
+                },
+                {
+                    "name": "Líquido bursa prof",
+                    "width": "20"
+                },
+                {
+                    "name": "Líquido bursa superf",
                     "width": "20"
                 }
             ]
@@ -551,7 +583,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula",
+                    "name": "C\u00e1psula",
                     "width": "20"
                 },
                 {
@@ -559,19 +591,19 @@
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor corto",
+                    "name": "Tend\u00f3n flexor corto",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor largo",
+                    "name": "Tend\u00f3n flexor largo",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo lumbrical",
+                    "name": "M\u00fasculo lumbrical",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo aductor hallucis",
+                    "name": "M\u00fasculo aductor hallucis",
                     "width": "20"
                 },
                 {
@@ -579,11 +611,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago metatarsiano",
+                    "name": "Cart\u00edlago metatarsiano",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago falange",
+                    "name": "Cart\u00edlago falange",
                     "width": "20"
                 },
                 {
@@ -607,7 +639,7 @@
         "structures": {
             "none": [
                 {
-                    "name": "Ligamento retináculo flexor",
+                    "name": "Ligamento retin\u00e1culo flexor",
                     "width": "20"
                 },
                 {
@@ -615,23 +647,23 @@
                     "width": "20"
                 },
                 {
-                    "name": "Astrágalo",
+                    "name": "Astr\u00e1galo",
                     "width": "20"
                 },
                 {
-                    "name": "Calcáneo",
+                    "name": "Calc\u00e1neo",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón tibial post",
+                    "name": "Tend\u00f3n tibial post",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor largo de los dedos",
+                    "name": "Tend\u00f3n flexor largo de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor largo del primer dedo",
+                    "name": "Tend\u00f3n flexor largo del primer dedo",
                     "width": "20"
                 },
                 {
@@ -647,7 +679,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "N ramas calcáneas",
+                    "name": "N ramas calc\u00e1neas",
                     "width": "20"
                 },
                 {
@@ -687,44 +719,44 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo articular",
-                    "width": "20"
+                    "name": "M\u00fasculo articular",
+                    "width": "10"
                 },
                 {
                     "name": "Cuadricipital superf",
-                    "width": "20"
+                    "width": "7"
                 },
                 {
                     "name": "Cuadricipital interm",
-                    "width": "20"
+                    "width": "15"
                 },
                 {
                     "name": "Cuadricipital prof",
-                    "width": "20"
+                    "width": "7"
                 },
                 {
                     "name": "Grasa prefemoral",
-                    "width": "20"
+                    "width": "31"
                 },
                 {
                     "name": "Grasa suprapatelar",
-                    "width": "20"
+                    "width": "7"
                 },
                 {
                     "name": "Receso articular",
-                    "width": "20"
+                    "width": "3"
                 },
                 {
-                    "name": "Líquido sinovial articular",
-                    "width": "20"
+                    "name": "L\u00edquido sinovial articular",
+                    "width": "4"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "11"
                 },
                 {
-                    "name": "Rótula base",
-                    "width": "20"
+                    "name": "R\u00f3tula base",
+                    "width": "8"
                 }
             ],
             "rotuliana": [
@@ -737,11 +769,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa",
+                    "name": "L\u00edquido sinovial bursa",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula centro",
+                    "name": "R\u00f3tula centro",
                     "width": "20"
                 }
             ],
@@ -763,7 +795,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa prof",
+                    "name": "L\u00edquido sinovial bursa prof",
                     "width": "20"
                 },
                 {
@@ -771,15 +803,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa superf",
+                    "name": "L\u00edquido sinovial bursa superf",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur cóndilo",
+                    "name": "F\u00e9mur c\u00f3ndilo",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula ápex",
+                    "name": "R\u00f3tula \u00e1pex",
                     "width": "20"
                 },
                 {
@@ -847,15 +879,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20)"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula base",
+                    "name": "R\u00f3tula base",
                     "width": "20"
                 }
             ],
@@ -869,11 +901,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa",
+                    "name": "L\u00edquido sinovial bursa",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula centro",
+                    "name": "R\u00f3tula centro",
                     "width": "20"
                 }
             ],
@@ -895,7 +927,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa prof",
+                    "name": "L\u00edquido sinovial bursa prof",
                     "width": "20"
                 },
                 {
@@ -903,15 +935,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa superf",
+                    "name": "L\u00edquido sinovial bursa superf",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur cóndilo",
+                    "name": "F\u00e9mur c\u00f3ndilo",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula ápex",
+                    "name": "R\u00f3tula \u00e1pex",
                     "width": "20"
                 },
                 {
@@ -951,16 +983,16 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago Trólea femoral",
-                    "width": "20"
+                    "name": "Cart\u00edlago Tr\u00f3lea femoral",
+                    "width": "11"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "15"
                 }
             ]
         }
@@ -995,16 +1027,16 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago Trólea femoral",
-                    "width": "20"
+                    "name": "Cart\u00edlago Tr\u00f3lea femoral",
+                    "width": "10"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "10"
                 }
             ]
         }
@@ -1027,19 +1059,19 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago Trólea femoral",
+                    "name": "Cart\u00edlago Tr\u00f3lea femoral",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago rotuliano",
+                    "name": "Cart\u00edlago rotuliano",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur cóndilo",
+                    "name": "F\u00e9mur c\u00f3ndilo",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula",
+                    "name": "R\u00f3tula",
                     "width": "20"
                 },
                 {
@@ -1047,15 +1079,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
-                    "name": "Retináculo superf",
+                    "name": "Retin\u00e1culo superf",
                     "width": "20"
                 },
                 {
-                    "name": "Retináculo prof",
+                    "name": "Retin\u00e1culo prof",
                     "width": "20"
                 }
             ],
@@ -1065,19 +1097,19 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago Trólea femoral",
+                    "name": "Cart\u00edlago Tr\u00f3lea femoral",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago rotuliano",
+                    "name": "Cart\u00edlago rotuliano",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur cóndilo",
+                    "name": "F\u00e9mur c\u00f3ndilo",
                     "width": "20"
                 },
                 {
-                    "name": "Rótula",
+                    "name": "R\u00f3tula",
                     "width": "20"
                 },
                 {
@@ -1085,15 +1117,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
-                    "name": "Retináculo superf",
+                    "name": "Retin\u00e1culo superf",
                     "width": "20"
                 },
                 {
-                    "name": "Retináculo prof",
+                    "name": "Retin\u00e1culo prof",
                     "width": "20"
                 }
             ]
@@ -1103,7 +1135,7 @@
         "zones": [
             {
                 "value": "interlinea",
-                "label": "Interlínea"
+                "label": "Interl\u00ednea"
             },
             {
                 "value": "pataganso",
@@ -1122,19 +1154,19 @@
                 },
                 {
                     "name": "Menisco int",
-                    "width": "20"
+                    "width": "12"
                 },
                 {
                     "name": "Arteria geniculada superf",
-                    "width": "20"
+                    "width": "9"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "12"
                 },
                 {
                     "name": "Tibia",
-                    "width": "20"
+                    "width": "15"
                 }
             ],
             "pataganso": [
@@ -1176,39 +1208,39 @@
             "none": [
                 {
                     "name": "LLI superf",
-                    "width": "20"
+                    "width": "7"
                 },
                 {
                     "name": "LLI prof",
-                    "width": "20"
+                    "width": "9"
                 },
                 {
                     "name": "Receso medial sup",
-                    "width": "20"
+                    "width": "4"
                 },
                 {
-                    "name": "Líquido sinovial articular sup",
-                    "width": "20"
+                    "name": "L\u00edquido sinovial articular sup",
+                    "width": "3"
                 },
                 {
                     "name": "Receso medial inf",
-                    "width": "20"
+                    "width": "4"
                 },
                 {
-                    "name": "Líquido sinovial articular inf",
-                    "width": "20"
+                    "name": "L\u00edquido sinovial articular inf",
+                    "width": "4"
                 },
                 {
                     "name": "Menisco int",
-                    "width": "20"
+                    "width": "9"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "11"
                 },
                 {
                     "name": "Tibia",
-                    "width": "20"
+                    "width": "11"
                 }
             ]
         }
@@ -1224,23 +1256,23 @@
             "none": [
                 {
                     "name": "LLI superf",
-                    "width": "20"
+                    "width": "8"
                 },
                 {
                     "name": "LLI prof",
-                    "width": "20"
+                    "width": "7"
                 },
                 {
                     "name": "Menisco int",
-                    "width": "20"
+                    "width": "15"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "19"
                 },
                 {
                     "name": "Tibia",
-                    "width": "20"
+                    "width": "16"
                 }
             ]
         }
@@ -1249,11 +1281,11 @@
         "zones": [
             {
                 "value": "femur",
-                "label": "Fémur"
+                "label": "F\u00e9mur"
             },
             {
                 "value": "interlinea",
-                "label": "Interlínea"
+                "label": "Interl\u00ednea"
             },
             {
                 "value": "tibia",
@@ -1264,23 +1296,23 @@
             "femur": [
                 {
                     "name": "Vasto ext",
-                    "width": "20"
+                    "width": "15"
                 },
                 {
                     "name": "Cintilla iliotibial",
-                    "width": "20"
+                    "width": "13"
                 },
                 {
                     "name": "Bursa",
-                    "width": "20"
+                    "width": "5"
                 },
                 {
-                    "name": "Líquido sinovial bursa",
-                    "width": "20"
+                    "name": "L\u00edquido sinovial bursa",
+                    "width": "5"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "17"
                 }
             ],
             "interlinea": [
@@ -1289,7 +1321,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Tendón poplíteo",
+                    "name": "Tend\u00f3n popl\u00edteo",
                     "width": "20"
                 },
                 {
@@ -1297,7 +1329,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa",
+                    "name": "L\u00edquido sinovial bursa",
                     "width": "20"
                 },
                 {
@@ -1305,20 +1337,20 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula articular",
-                    "width": "20"
+                    "name": "C\u00e1psula articular",
+                    "width": "10"
                 },
                 {
                     "name": "Menisco ext",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "11"
                 },
                 {
                     "name": "Tibia",
-                    "width": "20"
+                    "width": "12"
                 }
             ],
             "tibia": [
@@ -1337,15 +1369,15 @@
         "zones": [
             {
                 "value": "femur",
-                "label": "Fémur"
+                "label": "F\u00e9mur"
             },
             {
                 "value": "interlinea",
-                "label": "Interlínea"
+                "label": "Interl\u00ednea"
             },
             {
                 "value": "perone",
-                "label": "Peroné"
+                "label": "Peron\u00e9"
             }
         ],
         "structures": {
@@ -1355,11 +1387,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula",
+                    "name": "C\u00e1psula",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón poplíteo",
+                    "name": "Tend\u00f3n popl\u00edteo",
                     "width": "20"
                 },
                 {
@@ -1367,11 +1399,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa",
+                    "name": "L\u00edquido sinovial bursa",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1385,11 +1417,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula",
+                    "name": "C\u00e1psula",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón poplíteo",
+                    "name": "Tend\u00f3n popl\u00edteo",
                     "width": "20"
                 },
                 {
@@ -1397,7 +1429,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial bursa",
+                    "name": "L\u00edquido sinovial bursa",
                     "width": "20"
                 },
                 {
@@ -1409,7 +1441,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1427,7 +1459,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Peroné",
+                    "name": "Peron\u00e9",
                     "width": "20"
                 }
             ]
@@ -1443,19 +1475,19 @@
         "structures": {
             "none": [
                 {
-                    "name": "Tendón bicipital",
+                    "name": "Tend\u00f3n bicipital",
                     "width": "20"
                 },
                 {
-                    "name": "Bíceps",
+                    "name": "B\u00edceps",
                     "width": "20"
                 },
                 {
-                    "name": "Peroné",
+                    "name": "Peron\u00e9",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 }
             ]
@@ -1471,11 +1503,11 @@
         "structures": {
             "none": [
                 {
-                    "name": "Cápsula",
+                    "name": "C\u00e1psula",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón poplíteo",
+                    "name": "Tend\u00f3n popl\u00edteo",
                     "width": "20"
                 },
                 {
@@ -1483,7 +1515,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
@@ -1491,7 +1523,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1511,19 +1543,19 @@
         "structures": {
             "none": [
                 {
-                    "name": "Cápsula",
+                    "name": "C\u00e1psula",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón poplíteo",
-                    "width": "20"
+                    "name": "Tend\u00f3n popl\u00edteo",
+                    "width": "9"
                 },
                 {
                     "name": "Receso",
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
@@ -1531,8 +1563,8 @@
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
-                    "width": "20"
+                    "name": "F\u00e9mur",
+                    "width": "11"
                 },
                 {
                     "name": "Tibia",
@@ -1559,39 +1591,39 @@
                     "width": "20"
                 },
                 {
-                    "name": "Arteria poplítea",
+                    "name": "Arteria popl\u00edtea",
                     "width": "20"
                 },
                 {
-                    "name": "Vena poplítea",
+                    "name": "Vena popl\u00edtea",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo semimembranoso",
+                    "name": "M\u00fasculo semimembranoso",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo gastrocnemio medial",
+                    "name": "M\u00fasculo gastrocnemio medial",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo poplíteo",
+                    "name": "M\u00fasculo popl\u00edteo",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón semimembranoso",
+                    "name": "Tend\u00f3n semimembranoso",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón semitendinoso",
+                    "name": "Tend\u00f3n semitendinoso",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago cóndilo medial",
+                    "name": "Cart\u00edlago c\u00f3ndilo medial",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1612,58 +1644,58 @@
             "none": [
                 {
                     "name": "Nervio CPI",
-                    "width": "20"
+                    "width": "10"
                 },
                 {
                     "name": "Nervio CPE",
-                    "width": "20"
+                    "width": "13"
                 },
                 {
                     "name": "Nervio sural medial",
-                    "width": "20"
+                    "width": "8"
                 },
                 {
                     "name": "Nervio sural lateral",
                     "width": "20"
                 },
                 {
-                    "name": "Arteria poplítea",
+                    "name": "Arteria popl\u00edtea",
+                    "width": "13"
+                },
+                {
+                    "name": "Vena popl\u00edtea",
+                    "width": "14"
+                },
+                {
+                    "name": "M\u00fasculos isquiosurales",
                     "width": "20"
                 },
                 {
-                    "name": "Vena poplítea",
-                    "width": "20)"
-                },
-                {
-                    "name": "Músculos isquiosurales",
+                    "name": "M\u00fasculo gastrocnemio medial",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo gastrocnemio medial",
+                    "name": "M\u00fasculo gastrocnemio lateral",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo gastrocnemio lateral",
+                    "name": "M\u00fasculo plantar",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo plantar",
+                    "name": "M\u00fasculo popl\u00edteo",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo poplíteo",
-                    "width": "20"
+                    "name": "Cart\u00edlago c\u00f3ndilo medial",
+                    "width": "6"
                 },
                 {
-                    "name": "Cartílago cóndilo medial",
-                    "width": "20"
+                    "name": "Cart\u00edlago c\u00f3ndilo lateral",
+                    "width": "8"
                 },
                 {
-                    "name": "Cartílago cóndilo lateral",
-                    "width": "20"
-                },
-                {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1691,31 +1723,31 @@
                     "width": "20"
                 },
                 {
-                    "name": "Arteria poplítea",
+                    "name": "Arteria popl\u00edtea",
                     "width": "20"
                 },
                 {
-                    "name": "Vena poplítea",
+                    "name": "Vena popl\u00edtea",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo bíceps femoral",
+                    "name": "M\u00fasculo b\u00edceps femoral",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo gastrocnemio lateral",
+                    "name": "M\u00fasculo gastrocnemio lateral",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo plantar",
+                    "name": "M\u00fasculo plantar",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo poplíteo",
+                    "name": "M\u00fasculo popl\u00edteo",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1735,23 +1767,23 @@
         "structures": {
             "none": [
                 {
-                    "name": "Músculo isquiosural",
+                    "name": "M\u00fasculo isquiosural",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo gastrocnemio",
+                    "name": "M\u00fasculo gastrocnemio",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo poplíteo",
+                    "name": "M\u00fasculo popl\u00edteo",
                     "width": "20"
                 },
                 {
-                    "name": "Cartílago cóndilo medial",
+                    "name": "Cart\u00edlago c\u00f3ndilo medial",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1775,23 +1807,23 @@
         "structures": {
             "none": [
                 {
-                    "name": "Músculo isquiosural",
+                    "name": "M\u00fasculo isquiosural",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo gastrocnemio",
+                    "name": "M\u00fasculo gastrocnemio",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo poplíteo",
+                    "name": "M\u00fasculo popl\u00edteo",
                     "width": "20)"
                 },
                 {
-                    "name": "Cartílago cóndilo lateral",
+                    "name": "Cart\u00edlago c\u00f3ndilo lateral",
                     "width": "20"
                 },
                 {
-                    "name": "Fémur",
+                    "name": "F\u00e9mur",
                     "width": "20"
                 },
                 {
@@ -1809,7 +1841,7 @@
         "zones": [
             {
                 "value": "metacarpofalangica",
-                "label": "Art metacarpofalángica"
+                "label": "Art metacarpofal\u00e1ngica"
             },
             {
                 "value": "falangeprox",
@@ -1817,7 +1849,7 @@
             },
             {
                 "value": "interfalangicaprox",
-                "label": "Art interfalángica prox"
+                "label": "Art interfal\u00e1ngica prox"
             },
             {
                 "value": "falangemedio",
@@ -1825,17 +1857,17 @@
             },
             {
                 "value": "interfalangicadistal",
-                "label": "Art interfalángica distal"
+                "label": "Art interfal\u00e1ngica distal"
             }
         ],
         "structures": {
             "metacarpofalangica": [
                 {
-                    "name": "Tendón flexor prof de los dedos",
+                    "name": "Tend\u00f3n flexor prof de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor superf de los dedos",
+                    "name": "Tend\u00f3n flexor superf de los dedos",
                     "width": "20"
                 },
                 {
@@ -1863,17 +1895,17 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 }
             ],
             "falangeprox": [
                 {
-                    "name": "Tendón flexor prof de los dedos",
+                    "name": "Tend\u00f3n flexor prof de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor superf de los dedos",
+                    "name": "Tend\u00f3n flexor superf de los dedos",
                     "width": "20"
                 },
                 {
@@ -1887,11 +1919,11 @@
             ],
             "interfalangicaprox": [
                 {
-                    "name": "Tendón flexor prof de los dedos",
+                    "name": "Tend\u00f3n flexor prof de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor superf de los dedos",
+                    "name": "Tend\u00f3n flexor superf de los dedos",
                     "width": "20"
                 },
                 {
@@ -1917,11 +1949,11 @@
             ],
             "falangemedio": [
                 {
-                    "name": "Tendón flexor prof de los dedos",
+                    "name": "Tend\u00f3n flexor prof de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor superf de los dedos",
+                    "name": "Tend\u00f3n flexor superf de los dedos",
                     "width": "20"
                 },
                 {
@@ -1935,7 +1967,7 @@
             ],
             "interfalangicadistal": [
                 {
-                    "name": "Tendón flexor prof de los dedos",
+                    "name": "Tend\u00f3n flexor prof de los dedos",
                     "width": "20"
                 },
                 {
@@ -1955,7 +1987,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial articular",
+                    "name": "L\u00edquido sinovial articular",
                     "width": "20"
                 },
                 {
@@ -1983,11 +2015,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor prof de los dedos",
+                    "name": "Tend\u00f3n flexor prof de los dedos",
                     "width": "20"
                 },
                 {
-                    "name": "Tendón flexor superf de los dedos",
+                    "name": "Tend\u00f3n flexor superf de los dedos",
                     "width": "20"
                 },
                 {
@@ -1995,7 +2027,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Líquido sinovial vaina",
+                    "name": "L\u00edquido sinovial vaina",
                     "width": "20"
                 },
                 {
@@ -2017,11 +2049,11 @@
         "zones": [
             {
                 "value": "interfalangicaprox",
-                "label": "Art interfalángica prox"
+                "label": "Art interfal\u00e1ngica prox"
             },
             {
                 "value": "interfalangicadistal",
-                "label": "Art interfalángica distal"
+                "label": "Art interfal\u00e1ngica distal"
             }
         ],
         "structures": {
@@ -2031,7 +2063,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula IFP",
+                    "name": "C\u00e1psula IFP",
                     "width": "20"
                 },
                 {
@@ -2049,7 +2081,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula IFD",
+                    "name": "C\u00e1psula IFD",
                     "width": "20"
                 },
                 {
@@ -2067,11 +2099,11 @@
         "zones": [
             {
                 "value": "interfalangicaprox",
-                "label": "Art interfalángica prox"
+                "label": "Art interfal\u00e1ngica prox"
             },
             {
                 "value": "interfalangicadistal",
-                "label": "Art interfalángica distal"
+                "label": "Art interfal\u00e1ngica distal"
             }
         ],
         "structures": {
@@ -2081,7 +2113,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula IFP",
+                    "name": "C\u00e1psula IFP",
                     "width": "20"
                 },
                 {
@@ -2099,7 +2131,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Cápsula IFD",
+                    "name": "C\u00e1psula IFD",
                     "width": "20"
                 },
                 {
@@ -2117,21 +2149,21 @@
         "zones": [
             {
                 "value": "metacarpofalangica",
-                "label": "Art metacarpofalángica"
+                "label": "Art metacarpofal\u00e1ngica"
             },
             {
                 "value": "interfalangicaprox",
-                "label": "Art interfalángica prox"
+                "label": "Art interfal\u00e1ngica prox"
             },
             {
                 "value": "interfalangicadistal",
-                "label": "Art interfalángica distal"
+                "label": "Art interfal\u00e1ngica distal"
             }
         ],
         "structures": {
             "metacarpofalangica": [
                 {
-                    "name": "Tendón extensor de los dedos",
+                    "name": "Tend\u00f3n extensor de los dedos",
                     "width": "20"
                 },
                 {
@@ -2149,7 +2181,7 @@
             ],
             "interfalangicaprox": [
                 {
-                    "name": "Tendón extensor de los dedos",
+                    "name": "Tend\u00f3n extensor de los dedos",
                     "width": "20"
                 },
                 {
@@ -2167,7 +2199,7 @@
             ],
             "interfalangicadistal": [
                 {
-                    "name": "Tendón extensor de los dedos",
+                    "name": "Tend\u00f3n extensor de los dedos",
                     "width": "20"
                 },
                 {
@@ -2185,7 +2217,7 @@
             ]
         }
     },
-    "nerves_STC":{
+    "nerves_STC": {
         "zones": [
             {
                 "value": "transversal",
@@ -2196,65 +2228,65 @@
                 "label": "Longitudinal"
             }
         ],
-        "structures":{
+        "structures": {
             "transversal": [
                 {
                     "name": "Ligamento transverso",
-                    "width":"20"
+                    "width": "5"
                 },
                 {
                     "name": "Nervio mediano",
-                    "width":"20"
+                    "width": "8"
                 },
                 {
                     "name": "Epineuro",
-                    "width":"20"
+                    "width": "5"
                 },
                 {
-                    "name": "Túnel carpiano",
-                    "width":"20"
+                    "name": "T\u00fanel carpiano",
+                    "width": "21"
                 },
                 {
                     "name": "Hueso pisiforme",
-                    "width":"20"
+                    "width": "11"
                 },
                 {
                     "name": "Hueso escafoides",
-                    "width":"20"
+                    "width": "10"
                 },
                 {
                     "name": "Hueso carpo",
-                    "width":"20"
+                    "width": "18"
                 }
             ],
             "longitudinal": [
                 {
                     "name": "Ligamento transverso",
-                    "width":"20"
+                    "width": "20"
                 },
                 {
                     "name": "Nervio mediano",
-                    "width":"20"
+                    "width": "20"
                 },
                 {
                     "name": "Epineuro",
-                    "width":"20"
+                    "width": "20"
                 },
                 {
                     "name": "Tendones flexores superficiales",
-                    "width":"20"
+                    "width": "20"
                 },
                 {
                     "name": "Tendones flexores profundos",
-                    "width":"20"
+                    "width": "20"
                 },
                 {
                     "name": "Hueso radio",
-                    "width":"20"
+                    "width": "20"
                 },
                 {
                     "name": "Hueso carpo",
-                    "width":"20"
+                    "width": "20"
                 }
             ]
         }
@@ -2273,27 +2305,27 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo recto abd dcho",
-                    "width": "20"
+                    "name": "M\u00fasculo recto abd dcho",
+                    "width": "16"
                 },
                 {
-                    "name": "Músculo recto abd izdo",
-                    "width": "20"
+                    "name": "M\u00fasculo recto abd izdo",
+                    "width": "11"
                 },
                 {
                     "name": "Fascia superf",
-                    "width": "20"
+                    "width": "14"
                 },
                 {
                     "name": "Fascia prof",
-                    "width": "20"
+                    "width": "12"
                 },
                 {
                     "name": "Peritoneo",
-                    "width": "20"
+                    "width": "18"
                 },
                 {
-                    "name": "Vísceras",
+                    "name": "V\u00edsceras",
                     "width": "20"
                 }
             ]
@@ -2310,15 +2342,15 @@
             "none": [
                 {
                     "name": "Grasa TCS",
-                    "width": "20"
+                    "width": "40"
                 },
                 {
-                    "name": "Músculo recto abd dcho",
+                    "name": "M\u00fasculo recto abd dcho",
                     "width": "20"
                 },
                 {
                     "name": "Fascia superf",
-                    "width": "20"
+                    "width": "23"
                 },
                 {
                     "name": "Fascia prof",
@@ -2326,10 +2358,10 @@
                 },
                 {
                     "name": "Peritoneo",
-                    "width": "20"
+                    "width": "11"
                 },
                 {
-                    "name": "Vísceras",
+                    "name": "V\u00edsceras",
                     "width": "20"
                 }
             ]
@@ -2349,19 +2381,19 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo recto abd",
+                    "name": "M\u00fasculo recto abd",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo ext",
+                    "name": "M\u00fasculo oblicuo ext",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo int",
+                    "name": "M\u00fasculo oblicuo int",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo trasnverso",
+                    "name": "M\u00fasculo trasnverso",
                     "width": "20"
                 },
                 {
@@ -2377,7 +2409,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Vísceras",
+                    "name": "V\u00edsceras",
                     "width": "20"
                 }
             ]
@@ -2405,19 +2437,19 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo recto abd",
+                    "name": "M\u00fasculo recto abd",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo ext",
+                    "name": "M\u00fasculo oblicuo ext",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo int",
+                    "name": "M\u00fasculo oblicuo int",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo trasnverso",
+                    "name": "M\u00fasculo trasnverso",
                     "width": "20"
                 },
                 {
@@ -2433,7 +2465,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Vísceras",
+                    "name": "V\u00edsceras",
                     "width": "20"
                 }
             ],
@@ -2443,15 +2475,15 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo ext",
+                    "name": "M\u00fasculo oblicuo ext",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo int",
+                    "name": "M\u00fasculo oblicuo int",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo trasnverso",
+                    "name": "M\u00fasculo trasnverso",
                     "width": "20"
                 },
                 {
@@ -2467,7 +2499,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Vísceras",
+                    "name": "V\u00edsceras",
                     "width": "20"
                 }
             ],
@@ -2477,19 +2509,19 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo ext",
+                    "name": "M\u00fasculo oblicuo ext",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo oblicuo int",
+                    "name": "M\u00fasculo oblicuo int",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo trasnverso",
+                    "name": "M\u00fasculo trasnverso",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo psoas ilíaco",
+                    "name": "M\u00fasculo psoas il\u00edaco",
                     "width": "20"
                 },
                 {
@@ -2497,11 +2529,11 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músuclo paravertebral",
+                    "name": "M\u00fasuclo paravertebral",
                     "width": "20"
                 },
                 {
-                    "name": "Músculo dorsal ancho",
+                    "name": "M\u00fasculo dorsal ancho",
                     "width": "20"
                 },
                 {
@@ -2521,7 +2553,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Vísceras",
+                    "name": "V\u00edsceras",
                     "width": "20"
                 }
             ]
@@ -2541,7 +2573,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Sínfisis púbica",
+                    "name": "S\u00ednfisis p\u00fabica",
                     "width": "20"
                 },
                 {
@@ -2549,7 +2581,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Útero",
+                    "name": "\u00datero",
                     "width": "20"
                 },
                 {
@@ -2557,7 +2589,7 @@
                     "width": "20"
                 },
                 {
-                    "name": "Músculo puborrectal",
+                    "name": "M\u00fasculo puborrectal",
                     "width": "20"
                 }
             ]

@@ -144,7 +144,8 @@
                 {"name": "Músculo sóleo", "color": "rgb(240, 60, 0)"},
                 {"name": "Músculo flexores prof", "color": "rgb(240, 50, 0)"},
                 {"name": "Paquete de Kager", "color": "rgb(252, 255, 170)"},
-                {"name": "Tibia", "color": "rgb(225, 255, 200)"}
+                {"name": "Tibia", "color": "rgb(225, 255, 200)"},
+                {"name": "Astrágalo", "color": "rgb(225, 255, 180)"}
             ],
             "entesis": [
                 {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
@@ -168,16 +169,14 @@
         ],
         "structures": {
             "umt": [
-                {"name": "Músculo gastrocnemio medial", "color": "rgb(240, 70, 0)"},
-                {"name": "Músculo gastrocnemio lat", "color": "rgb(240, 60, 0)"},
                 {"name": "Músculo sóleo", "color": "rgb(240, 50, 0)"},
                 {"name": "Músculo flexores prof", "color": "rgb(240, 40, 0)"},
                 {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
-                {"name": "Tendón delgado plantar", "color": "rgb(140, 180, 200)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 200)"},
                 {"name": "Peroné", "color": "rgb(225, 255, 190)"},
                 {"name": "N tibial", "color": "rgb(255, 255, 50)"},
-                {"name": "N sural", "color": "rgb(255, 255, 40)"}
+                {"name": "N sural", "color": "rgb(255, 255, 40)"},
+                {"name": "Vena safena menor", "color":"rgb(0, 30, 255)"}
             ],
             "cuerpo": [
                 {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
@@ -185,13 +184,22 @@
                 {"name": "Músculo flexores prof", "color": "rgb(240, 50, 0)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 200)"},
                 {"name": "Peroné", "color": "rgb(225, 255, 190)"},
+                {"name": "Astrágalo", "color": "rgb(225, 255, 180)"},
                 {"name": "N tibial", "color": "rgb(255, 255, 50)"},
                 {"name": "N sural", "color": "rgb(255, 255, 40)"},
-                {"name": "Paquete de Kager", "color": "rgb(252, 255, 170)"}
+                {"name": "Paquete de Kager", "color": "rgb(252, 255, 170)"},
+                {"name": "Bursa profunda", "color": "rgb(235, 175, 255)"},
+                {"name": "Bursa superficial", "color": "rgb(235, 185, 255)"},
+                {"name": "Líquido bursa prof", "color": "rgb(250, 255, 90)"},
+                {"name": "Líquido bursa superf", "color": "rgb(250, 255, 80)"}
             ],
             "entesis": [
                 {"name": "Tendón de Aquiles", "color": "rgb(140, 190, 200)"},
-                {"name": "Calcáneo", "color": "rgb(225, 255, 190)"}
+                {"name": "Calcáneo", "color": "rgb(225, 255, 190)"},
+                {"name": "Bursa profunda", "color": "rgb(235, 175, 255)"},
+                {"name": "Bursa superficial", "color": "rgb(235, 185, 255)"},
+                {"name": "Líquido bursa prof", "color": "rgb(250, 255, 90)"},
+                {"name": "Líquido bursa superf", "color": "rgb(250, 255, 80)"}
             ]
         }
     },
