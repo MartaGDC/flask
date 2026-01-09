@@ -149,6 +149,8 @@ def verifyUser(user, app_name):
         error = False
     elif (user == "pfm" and (app_name.startswith("knee") or app_name.startswith("hand"))):
         error = False
+    elif (user == "jmp" and app_name.startswith("knee")):
+        error = False
     elif(user == 'ebg' and app_name.startswith("nerves")):
         error = False
     elif (user == "ppa" and app_name.startswith("abd")):
