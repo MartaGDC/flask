@@ -60,6 +60,8 @@ APP_VIDEOS = {
     'abd_transversal_toracolum': '5_4_',
     'abd_suelo_pelvico': '5_5_',
 
+    'menisco': '6_',
+
     'rm': ''
 
 }
@@ -143,13 +145,13 @@ def update_brush_width():
 def verifyUser(user, app_name):
     if (user== "None" or user == None or user==""):
         error = True
-    if((user == "mmu" or user == "mgd") and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("nerves") or app_name.startswith("abd"))):
+    if((user == "mmu" or user == "mgd") and (app_name.startswith("base") or app_name.startswith("foot") or app_name.startswith("knee") or app_name.startswith("hand") or app_name.startswith("nerves") or app_name.startswith("abd") or app_name.startswith("menisco"))):
         error = False
     elif (user == "jpr" and app_name.startswith("foot")):
         error = False
     elif (user == "pfm" and (app_name.startswith("knee") or app_name.startswith("hand"))):
         error = False
-    elif (user == "jmp" and app_name.startswith("knee")):
+    elif (user == "jmp" and (app_name.startswith("knee") or app_name.startswith("menisco"))):
         error = False
     elif(user == 'ebg' and app_name.startswith("nerves")):
         error = False

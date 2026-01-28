@@ -2595,6 +2595,30 @@
             ]
         }
     },
+     "menisco": {
+        "zones": [
+            {
+                "value": "none",
+                "label": ""
+            }
+        ],
+        "structures": {
+            "none": [
+                {
+                    "name": "Menisco int", 
+                    "width": "20"
+                },
+                {
+                    "name": "Fémur",
+                    "width": "20"
+                },
+                {
+                    "name": "Tibia",
+                    "width": "20"
+                }
+            ]
+        }
+    },
     "rm": {
         "zones": [
             {
