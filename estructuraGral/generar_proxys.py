@@ -8,7 +8,8 @@ for filename in os.listdir(ORIG):
     if not filename.lower().endswith(".mp4"):
         continue
     orig_path = os.path.join(ORIG, filename)
-    proxy_name = filename.replace(".mp4", "_proxy.mp4")
+    name, _ = os.path.splitext(filename)
+    proxy_name = f"{name}_proxy.mp4"
     proxy_path = os.path.join(PROXY, proxy_name)
     os.makedirs(PROXY, exist_ok=True)
 
