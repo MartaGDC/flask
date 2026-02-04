@@ -265,6 +265,8 @@
                 {"name": "Cuadricipital prof", "color": "rgb(140, 170, 200)"},
                 {"name": "Grasa prefemoral", "color": "rgb(252, 255, 170)"},
                 {"name": "Grasa suprapatelar", "color": "rgb(252, 255, 150)"},
+                {"name": "Paquete adiposo pre-cuadricipital", "color": "rgb(252, 255, 140)"},
+                {"name": "Cartílago hialino", "color": "rgb(125, 250, 255)"},
                 {"name": "Receso articular", "color": "rgb(235, 175, 255)"},
                 {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
@@ -284,6 +286,7 @@
                 {"name": "Líquido sinovial bursa prof", "color": "rgb(250, 255, 90)"},
                 {"name": "Bursa infrarrotuliana superf", "color": "rgb(235, 185, 255)"},
                 {"name": "Líquido sinovial bursa superf", "color": "rgb(250, 255, 80)"},
+                {"name": "Cartílago hialino: tróclea", "color": "rgb(125, 250, 255)"},
                 {"name": "Fémur cóndilo", "color": "rgb(225, 255, 200)"},
                 {"name": "Rótula ápex", "color": "rgb(225, 255, 170)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 160)"}
@@ -307,6 +310,8 @@
                 {"name": "Cuadricipital prof", "color": "rgb(140, 170, 200)"},
                 {"name": "Grasa prefemoral", "color": "rgb(252, 255, 170)"},
                 {"name": "Grasa suprapatelar", "color": "rgb(252, 255, 160)"},
+                {"name": "Paquete adiposo pre-cuadricipital", "color": "rgb(252, 255, 140)"},
+                {"name": "Cartílago hialino", "color": "rgb(125, 250, 255)"},
                 {"name": "Receso articular", "color": "rgb(235, 175, 255)"},
                 {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
@@ -326,6 +331,7 @@
                 {"name": "Líquido sinovial bursa prof", "color": "rgb(250, 255, 90)"},
                 {"name": "Bursa infrarrotuliana superf", "color": "rgb(235, 185, 255)"},
                 {"name": "Líquido sinovial bursa superf", "color": "rgb(250, 255, 80)"},
+                {"name": "Cartílago hialino: tróclea", "color": "rgb(125, 250, 255)"},
                 {"name": "Fémur cóndilo", "color": "rgb(225, 255, 200)"},
                 {"name": "Rótula ápex", "color": "rgb(225, 255, 170)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 160)"}
@@ -338,12 +344,6 @@
         ],
         "structures": {
             "none": [
-                {"name": "Cuadricipital superf", "color": "rgb(140, 190, 200)"},
-                {"name": "Cuadricipital interm", "color": "rgb(140, 180, 200)"},
-                {"name": "Cuadricipital prof", "color": "rgb(140, 170, 200)"},
-                {"name": "Grasa suprapatelar", "color": "rgb(252, 255, 150)"},
-                {"name": "Receso articular", "color": "rgb(235, 175, 255)"},
-                {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
                 {"name": "Cartílago Trólea femoral", "color": "rgb(125, 250, 255)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"}
             ]
@@ -355,12 +355,6 @@
         ],
         "structures": {
             "none": [
-                {"name": "Cuadricipital superf", "color": "rgb(140, 190, 200)"},
-                {"name": "Cuadricipital interm", "color": "rgb(140, 180, 200)"},
-                {"name": "Cuadricipital prof", "color": "rgb(140, 170, 200)"},
-                {"name": "Grasa suprapatelar", "color": "rgb(252, 255, 150)"},
-                {"name": "Receso articular", "color": "rgb(235, 175, 255)"},
-                {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
                 {"name": "Cartílago Trólea femoral", "color": "rgb(125, 250, 255)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"}
             ]
@@ -369,6 +363,7 @@
     "knee_anterior_parasagittal": {
         "zones": [
             {"value": "medial", "label": "Medial"},
+            {"value": "central", "label": "Central"},
             {"value": "lateral", "label": "Lateral"}
         ],
         "structures": {
@@ -382,6 +377,12 @@
                 {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
                 {"name": "Retináculo superf", "color": "rgb(170, 230, 255)"},
                 {"name": "Retináculo prof", "color": "rgb(170, 220, 255)"}
+            ],
+            "central": [
+                {"name": "Cuadricipital superf", "color": "rgb(140, 190, 200)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgb(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgb(250, 255, 90)"},
+                {"name": "Rótula centro", "color": "rgb(225, 255, 180)"}
             ],
             "lateral": [
                 {"name": "Cuadricipital superf", "color": "rgb(140, 190, 200)"},
@@ -405,6 +406,10 @@
             "interlinea": [
                 {"name": "LLI superf", "color": "rgb(170, 230, 255)"},
                 {"name": "LLI prof", "color": "rgb(170, 220, 255)"},
+                {"name": "Membrana sinovial proximal", "color": "rgb(235, 175, 255)"},
+                {"name": "Membrana sinovial distal", "color": "rgb(235, 185, 255)"},
+                {"name": "Líquido sinovial proximal", "color": "rgb(250, 255, 90)"},
+                {"name": "Líquido sinovial distal", "color": "rgb(250, 255, 80)"},
                 {"name": "Menisco int", "color": "rgb(150, 255, 200)"},
                 {"name": "Arteria geniculada superf", "color": "rgb(230, 30, 0)"},                
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
@@ -416,7 +421,8 @@
                 {"name": "Pata de ganso superf", "color": "rgb(140, 190, 200)"},
                 {"name": "Pata de ganso prof", "color": "rgb(140, 180, 200)"},
                 {"name": "Arteria geniculada inf", "color": "rgb(230, 30, 0)"},                
-                {"name": "Ramas n. geniculadas inf", "color": "rgb(255, 255, 50)"}
+                {"name": "Ramas n. geniculadas inf", "color": "rgb(255, 255, 50)"},
+                {"name": "Tibia", "color": "rgb(225, 255, 190)"}
             ]
         }
     },
@@ -433,6 +439,7 @@
                 {"name": "Receso medial inf", "color": "rgb(235, 185, 255)"},
                 {"name": "Líquido sinovial articular inf", "color": "rgb(250, 255, 80)"},
                 {"name": "Menisco int", "color": "rgb(150, 255, 200)"},
+                {"name": "Arteria geniculada superf", "color": "rgb(230, 30, 0)"},                
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 190)"}
             ]
@@ -444,9 +451,11 @@
         ],
         "structures": {
             "none": [
+                {"name": "Pata de ganso", "color": "rgb(140, 190, 200)"},
                 {"name": "LLI superf", "color": "rgb(170, 230, 255)"},
                 {"name": "LLI prof", "color": "rgb(170, 220, 255)"},
                 {"name": "Menisco int", "color": "rgb(150, 255, 200)"},
+                {"name": "Arteria geniculada inf", "color": "rgb(230, 30, 0)"},                
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 190)"}
             ]
@@ -461,16 +470,22 @@
         "structures": {
             "femur": [
                 {"name": "Vasto ext", "color": "rgb(240, 70, 0)"},
+                {"name": "Vasto interm", "color": "rgb(240, 50, 0)"},
                 {"name": "Cintilla iliotibial", "color": "rgb(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgb(235, 175, 255)"},
                 {"name": "Líquido sinovial bursa", "color": "rgb(250, 255, 90)"},
-                {"name": "Fémur", "color": "rgb(225, 255, 200)"}
+                {"name": "Fémur", "color": "rgb(225, 255, 200)"},
+                {"name": "Retináculo externo", "color": "rgb(170, 230, 255)"}
             ],
             "interlinea": [
                 {"name": "Cintilla iliotibial", "color": "rgb(140, 190, 200)"},
                 {"name": "Tendón poplíteo", "color": "rgb(140, 180, 200)"},
                 {"name": "Bursa", "color": "rgb(235, 175, 255)"},
                 {"name": "Líquido sinovial bursa", "color": "rgb(250, 255, 90)"},
+                {"name": "Membrana sinovial proximal", "color": "rgb(235, 185, 255)"},
+                {"name": "Membrana sinovial distal", "color": "rgb(235, 195, 255)"},
+                {"name": "Líquido sinovial proximal", "color": "rgb(250, 255, 80)"},
+                {"name": "Líquido sinovial distal", "color": "rgb(250, 255, 70)"},
                 {"name": "Arteria geniculada superf", "color": "rgb(230, 30, 0)"},                
                 {"name": "Cápsula articular", "color": "rgb(170, 230, 255)"},
                 {"name": "Menisco ext", "color": "rgb(150, 255, 200)"},
@@ -485,35 +500,24 @@
     },
     "knee_lateral_LLE": {
         "zones": [
-            {"value": "femur", "label": "Fémur"},
-            {"value": "interlinea", "label": "Interlínea"},
-            {"value": "perone", "label": "Peroné"}
+            {"value": "none", "label": ""}
         ],
         "structures": {
-            "femur": [
+            "none": [
                 {"name": "Ligamento lat ext", "color": "rgb(170, 230, 255)"},
                 {"name": "Cápsula", "color": "rgb(170, 220, 255)"},
                 {"name": "Tendón poplíteo", "color": "rgb(140, 190, 200)"},
                 {"name": "Bursa", "color": "rgb(235, 175, 255)"},
                 {"name": "Líquido sinovial bursa", "color": "rgb(250, 255, 90)"},
-                {"name": "Fémur", "color": "rgb(225, 255, 190)"},
-                {"name": "Tibia", "color": "rgb(225, 255, 180)"}
-            ],
-            "interlinea": [
-                {"name": "Ligamento lat ext", "color": "rgb(170, 230, 255)"},
-                {"name": "Cápsula", "color": "rgb(170, 220, 255)"},
-                {"name": "Tendón poplíteo", "color": "rgb(140, 190, 200)"},
-                {"name": "Bursa", "color": "rgb(235, 175, 255)"},
-                {"name": "Líquido sinovial bursa", "color": "rgb(250, 255, 90)"},
+                {"name": "Membrana sinovial proximal", "color": "rgb(235, 185, 255)"},
+                {"name": "Membrana sinovial distal", "color": "rgb(235, 195, 255)"},
+                {"name": "Líquido sinovial proximal", "color": "rgb(250, 255, 80)"},
+                {"name": "Líquido sinovial distal", "color": "rgb(250, 255, 70)"},
                 {"name": "Arteria geniculada superf", "color": "rgb(230, 30, 0)"},                
                 {"name": "Menisco ext", "color": "rgb(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 190)"},
-                {"name": "Tibia", "color": "rgb(225, 255, 180)"}
-            ],
-            "perone": [
-                {"name": "Ligamento lat ext", "color": "rgb(170, 230, 255)"},
-                {"name": "Tibia", "color": "rgb(225, 255, 190)"},
-                {"name": "Peroné", "color": "rgb(225, 255, 180)"}
+                {"name": "Tibia", "color": "rgb(225, 255, 180)"},
+                {"name": "Peroné", "color": "rgb(225, 255, 170)"}
             ]
         }
     }, 
@@ -536,10 +540,13 @@
         ],
         "structures": {
             "none": [
-                {"name": "Cápsula", "color": "rgb(170, 230, 255)"},
-                {"name": "Tendón poplíteo", "color": "rgb(140, 190, 200)"},
+                {"name": "Cintilla iliotibial", "color": "rgb(140, 190, 200)"},
+                {"name": "Ligamento lat ext", "color": "rgb(170, 230, 255)"},
+                {"name": "Cápsula", "color": "rgb(170, 220, 255)"},
+                {"name": "Tendón poplíteo", "color": "rgb(140, 180, 200)"},
                 {"name": "Receso", "color": "rgb(235, 175, 255)"},
                 {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
+                {"name": "Arteria geniculada externa", "color": "rgb(230, 30, 0)"},                
                 {"name": "Menisco ext", "color": "rgb(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 190)"}
@@ -552,10 +559,11 @@
         ],
         "structures": {
             "none": [
-                {"name": "Cápsula", "color": "rgb(170, 230, 255)"},
-                {"name": "Tendón poplíteo", "color": "rgb(140, 190, 200)"},
-                {"name": "Receso", "color": "rgb(235, 175, 255)"},
-                {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
+                {"name": "Cintilla iliotibial", "color": "rgb(140, 190, 200)"},
+                {"name": "Ligamento lat ext", "color": "rgb(170, 230, 255)"},
+                {"name": "Cápsula", "color": "rgb(170, 220, 255)"},
+                {"name": "Tendón poplíteo", "color": "rgb(140, 180, 200)"},
+                {"name": "Arteria geniculada externa", "color": "rgb(230, 30, 0)"},
                 {"name": "Menisco ext", "color": "rgb(150, 255, 200)"},
                 {"name": "Fémur", "color": "rgb(225, 255, 200)"},
                 {"name": "Tibia", "color": "rgb(225, 255, 190)"}
