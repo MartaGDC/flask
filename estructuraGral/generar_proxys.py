@@ -5,7 +5,7 @@ ORIG = "/srv/data"
 PROXY = "/srv/data/proxy"
 
 for filename in os.listdir(ORIG):
-    if not filename.lower().endswith(".mp4"):
+    if not filename.lower().endswith((".mp4", ".mpeg")):
         continue
     orig_path = os.path.join(ORIG, filename)
     name, _ = os.path.splitext(filename)
