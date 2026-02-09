@@ -150,28 +150,52 @@ async function getVideos(){
 
 async function selectVideo(appName, filename, frame){
     if (filename) {
-        videoWindow.classList.add("hidden");
-        content.classList.remove("disabled");
-        const videoURL = `/media/${appName}/${filename}`;
-        fileName.textContent = filename;
-        videoPlayer.src = videoURL;
-        videoContainer.style.display = "block";
-        videoPlayer.load();
-        if (frame && !isNaN(frame)){
-            const currentTime = frame / 30;
-            videoPlayer.currentTime =currentTime;
+        if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".mha")) {
+            videoWindow.classList.add("hidden");
+            content.classList.remove("disabled");
+            const imageURL = `/media/${appName}/${filename}`;
+            fileName.textContent = filename;
+            const img = new Image();
+            img.src = imageURL;
+            img.onload = function() {
+                framePlaceholder.width = img.width;
+                framePlaceholder.height = img.height;
+                ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
+                savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+            };
+            submitBtn.classList.remove("hidden");
+            fileBtn.disabled = true;
+            fileBtn.classList.add("disabled");
+            aceptado = true;
+            sidebar.classList.remove("hidden");
+            content.style.marginRight = "21vw";
+            validar();
+
+
+        } else {
+            videoWindow.classList.add("hidden");
+            content.classList.remove("disabled");
+            const videoURL = `/media/${appName}/${filename}`;
+            fileName.textContent = filename;
+            videoPlayer.src = videoURL;
+            videoContainer.style.display = "block";
+            videoPlayer.load();
+            if (frame && !isNaN(frame)){
+                const currentTime = frame / 30;
+                videoPlayer.currentTime =currentTime;
+            }
+            else{
+                videoPlayer.currentTime = 0; // Reset to the start of the video
+            }
+            await countFramesPerEval(evaluatorName);
+            researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
+            pausado = true;
+            drawFrame();
+            acceptFrameBtn.classList.remove("hidden");
+            acceptFramesBtn.classList.remove("hidden");
+            fileBtn.disabled = true;
+            fileBtn.classList.add("disabled");
         }
-        else{
-            videoPlayer.currentTime = 0; // Reset to the start of the video
-        }
-        await countFramesPerEval(evaluatorName);
-        researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
-        pausado = true;
-        drawFrame();
-        acceptFrameBtn.classList.remove("hidden");
-        acceptFramesBtn.classList.remove("hidden");
-        fileBtn.disabled = true;
-        fileBtn.classList.add("disabled");
     } else {
         fileName.textContent = "No video selected.";
         videoContainer.style.display = "none";
@@ -876,7 +900,12 @@ function saveDrawing(){
     .then(data => {
         console.log('Drawing saved successfully:', data);
         alert('Drawing saved successfully.');
-        recargarVideo(appName, fileName.textContent);
+        const name = fileName.textContent.toLowerCase();
+        if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".mha")) {
+            location.reload();
+        } else {
+            recargarVideo(appName, fileName.textContent);
+        }
     })
     .catch(error => {
         console.error('Error saving drawing:', error);

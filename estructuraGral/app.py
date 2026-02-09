@@ -188,6 +188,8 @@ def list_files(app_name):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
+    elif(app_name.startswith("hand")):
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
     else:
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
     return jsonify(videos)
