@@ -1,19 +1,44 @@
-import json
-import os, io, shutil
+#import json
+import os, io, shutil, base64
 from flask import Flask, render_template, request, jsonify, session, send_file, send_from_directory, render_template_string
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+import jwt
+from functools import wraps
 from filelock import FileLock
-#from flask_cors import CORS
-import base64
 from PIL import Image
 import SimpleITK as sitk
 import numpy as np
-from datetime import datetime
+from filelock import FileLock
+from config import SECRET_KEY, DATABASE_URI, BASE_DIR
+from models import db, User, Metadata, BrushSetting
+#from flask_cors import CORS
+
 
 app = Flask(__name__)
-app.secret_key = "secret_key"
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = SECRET_KEY
+
+db.init_app(app)
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.cookies.get('token') or request.headers.get('Authorization')
+        if not token:
+            return jsonify({"error": "Token missing"}), 401
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            user = payload["username"]
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token expired"}), 401
+        return f(user, *args, **kwargs)
+    return decorated
+
 
 # CORS(app)
-BASE_DIR = "/srv/data" #cambiar acceso del usuario ubuntu para que sea como admin (chown y chmod 755)
 APP_VIDEOS = {
     "base_tejidos":"",
     "base_artefactos" : "",
@@ -69,31 +94,6 @@ APP_VIDEOS = {
 def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
-def save_json(path, data):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
-
-@app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
-def index(app_name):
-    user = request.args.get('user')
-    # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
-    #                                                return render_template(template_name, title=app_name)
-
-    #Para que las zonas y las estructuras, y el ancho de los pinceles, puedan ser definidas dinámicamente para el html:
-    structures = load_json("structures.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
-    brush = load_json("settings_brush.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
-    for zone, structs in structures["structures"].items():
-        for structure in structs:
-            s_name = structure["name"]
-            for b in brush["structures"].get(zone, []):
-                if b["name"] == s_name:
-                    structure["width"] = b["width"]
-                    break
-
-    return render_template('index.html', user = user, title=app_name, data=structures)
-
-
-
 def load_json_safe(path):
     """Carga JSON, restaurando backup si hay error."""
     try:
@@ -115,7 +115,44 @@ def save_json_atomic_safe(path, data):
             json.dump(data, f, indent=4)
         os.replace(temp_path, path)
 
+
+'''def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+'''
+
+@app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
+@token_required
+def index(username, app_name):
+    #user = request.args.get('user')
+    # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
+    #                                                return render_template(template_name, title=app_name)
+
+    #Para que las zonas y las estructuras, y el ancho de los pinceles, puedan ser definidas dinámicamente para el html:
+    structures = load_json("structures.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
+    '''brush = load_json("settings_brush.json").get(app_name, {}) #elementos dentro del elemento de la app concreta
+    for zone, structs in structures["structures"].items():
+        for structure in structs:
+            s_name = structure["name"]
+            for b in brush["structures"].get(zone, []):
+                if b["name"] == s_name:
+                    structure["width"] = b["width"]
+                    break'''
+    brush_settings = BrushSetting.query.filter_by(app_name=app_name).all()
+    brush_map = {}
+    for b in brush_settings:
+        brush_map[(b.zone, b.structure_name)] = b.width
+    for zone, structs in structures.get("structures", {}).items():
+        for s in structs:
+            key = (zone, s["name"])
+            if key in brush_map:
+                s["width"] = brush_map[key]
+
+    return render_template('index.html', user = username, title=app_name, data=structures)
+
+
 @app.route("/update_brush", methods=["POST"])
+@token_required
 def update_brush_width():
     req = request.json
     appName = req["appName"]
@@ -123,7 +160,7 @@ def update_brush_width():
     zone = req["zone"]
     width = req["width"]
 
-    brush = load_json_safe("settings_brush.json")
+    '''brush = load_json_safe("settings_brush.json")
 
     if appName not in brush:
         brush[appName] = {"zones": [{"value": zone, "label": ""}],
@@ -137,11 +174,19 @@ def update_brush_width():
     if not found:
         brush[appName]["structures"][zone].append({"name": name, "width": width})
 
-    save_json_atomic_safe("settings_brush.json", brush)
+    save_json_atomic_safe("settings_brush.json", brush)'''
+    brush = BrushSetting.query.filter_by(app_name=app_name, zone=zone, structure_name=name).first()
+    if brush:
+        brush.width = width
+    else:
+        brush = BrushSetting(app_name=app_name, zone=zone, structure_name=name, width=width)
+        db.session.add(brush)
+    db.session.commit()
+
     return jsonify({"status": "ok", "updated": name})
 
 
-@app.route('/verifyUser/<user>/<app_name>')
+'''@app.route('/verifyUser/<user>/<app_name>')
 def verifyUser(user, app_name):
     if (user== "None" or user == None or user==""):
         error = True
@@ -169,58 +214,46 @@ def verifyUser(user, app_name):
         })
     else:
         return jsonify({"error": False})
-
-
-@app.after_request
-def add_header(response): #Con los cambios en el html, había problemas de cache al usar el boton Reload
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
-
-
-#Acceso a carpetas de videos según la app_name
-@app.route("/select/<app_name>", methods=["GET"])
-def list_files(app_name):
-    app_num = APP_VIDEOS[app_name]
-    dir_path = BASE_DIR
-    if(app_name.startswith("base")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
-    elif(app_name.startswith("rm")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
-    elif(app_name.startswith("hand")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
-    else:
-        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
-    return jsonify(videos)
-#Acceso al video de la carpeta
-@app.route("/media/<app_name>/<filename>", methods=["GET"])
-def play_video(app_name, filename):
-    name, extension = os.path.splitext(filename)
-    if extension.lower() == ".mha":
-        file_path = os.path.join(BASE_DIR, filename)
-        try:
-            image = sitk.ReadImage(file_path)
-            array = sitk.GetArrayFromImage(image)
-            array = ((array - np.min(array)) / (np.max(array) - np.min(array)) * 255).astype(np.uint8)
-            img = Image.fromarray(array)
-            buf = io.BytesIO()
-            img.save(buf, format="PNG")
-            buf.seek(0)
-            return send_file(buf, mimetype="image/png")
-        
-        except Exception as e:
-            print(f"[ERROR] No se pudo convertir {filename}: {e}")
-            return "Error processing MHA file", 500
-    elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
-        filename = f"{name}_proxy{extension}"
-        dir_path = BASE_DIR + "/proxy"
-    else:
-        dir_path = BASE_DIR
-    return send_from_directory(directory=dir_path, path=filename)
-
+'''
 
 @app.route('/save', methods=['POST'])
+@token_required
+def save(username):
+    data = request.json
+    if isinstance(data, dict):
+        data = [data]  # normalizar a lista
+    for frame in data:
+        extra = {k: v for k, v in frame.items() if k not in ["video","frame","frameoriginal","filesaved","quality","zone","evaluator","originalImage","imageEdited"]}
+        
+        os.makedirs("static/DATA", exist_ok=True)
+        os.makedirs("static/frames", exist_ok=True)
+
+        original_img = base64.b64decode(frame['originalImage'].split(",")[1])
+        edited_img = base64.b64decode(frame['imageEdited'].split(",")[1])
+
+        with open(f'static/frames/{frame["frameoriginal"]}', 'wb') as f:
+            f.write(original_img)
+        with open(f'static/DATA/{frame["filesaved"]}', 'wb') as f:
+            f.write(edited_img)
+
+        # Guardar en DB:
+        metadata = Metadata(
+            video=frame["video"],
+            frame=frame["frame"],
+            frameoriginal=frame["frameoriginal"],
+            filesaved=frame["filesaved"],
+            quality=frame["quality"],
+            zone=frame["zone"],
+            evaluator=username,
+            extra=extra
+        )
+        db.session.add(metadata)
+
+    db.session.commit()
+    return jsonify({"status": "success"})
+
+
+'''@app.route('/save', methods=['POST'])
 def save():
     #Cargar el json donde guardar la info
     os.makedirs("static/DATA", exist_ok=True)
@@ -333,7 +366,55 @@ def saveRM():
     with open(metadata_file, 'w', encoding='utf-8') as f:
         json.dump(metadata, f, indent=4, ensure_ascii=False)
 
-    return jsonify({"status": "success"})
+    return jsonify({"status": "success"})'''
+
+#Acceso a carpetas de videos según la app_name
+@app.route("/select/<app_name>", methods=["GET"])
+def list_files(app_name):
+    app_num = APP_VIDEOS[app_name]
+    dir_path = BASE_DIR
+    if(app_name.startswith("base")):
+        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
+    elif(app_name.startswith("rm")):
+        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
+    elif(app_name.startswith("hand")):
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
+    else:
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
+    return jsonify(videos)
+#Acceso al video de la carpeta
+@app.route("/media/<app_name>/<filename>", methods=["GET"])
+def play_video(app_name, filename):
+    name, extension = os.path.splitext(filename)
+    if extension.lower() == ".mha":
+        file_path = os.path.join(BASE_DIR, filename)
+        try:
+            image = sitk.ReadImage(file_path)
+            array = sitk.GetArrayFromImage(image)
+            array = ((array - np.min(array)) / (np.max(array) - np.min(array)) * 255).astype(np.uint8)
+            img = Image.fromarray(array)
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            buf.seek(0)
+            return send_file(buf, mimetype="image/png")
+        
+        except Exception as e:
+            print(f"[ERROR] No se pudo convertir {filename}: {e}")
+            return "Error processing MHA file", 500
+    elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
+        filename = f"{name}_proxy{extension}"
+        dir_path = BASE_DIR + "/proxy"
+    else:
+        dir_path = BASE_DIR
+    return send_from_directory(directory=dir_path, path=filename)
+
+
+@app.after_request
+def add_header(response): #Con los cambios en el html, había problemas de cache al usar el boton Reload
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 
 @app.route('/logout', methods=['POST'])
