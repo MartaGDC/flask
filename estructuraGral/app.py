@@ -1,6 +1,6 @@
-#import json
+import json
 import os, io, shutil, base64
-from flask import Flask, render_template, request, jsonify, session, send_file, send_from_directory, render_template_string
+from flask import Flask, redirect, render_template, request, jsonify, session, send_file, send_from_directory, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -12,7 +12,7 @@ import SimpleITK as sitk
 import numpy as np
 from filelock import FileLock
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
-from models import db, User, Metadata, BrushSetting
+from models import db, User, Metadata, MetadataRM, BrushSetting
 #from flask_cors import CORS
 
 
@@ -26,12 +26,18 @@ db.init_app(app)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.cookies.get('token') or request.headers.get('Authorization')
+        token = (
+            request.cookies.get('token') or 
+            request.args.get('token')
+        )
         if not token:
             return jsonify({"error": "Token missing"}), 401
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-            user = payload["username"]
+            username = payload["username"]
+            user = User.query.filter_by(username=username).first()
+            if not user:
+                return jsonify({"error": "User not found"}), 401
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Token expired"}), 401
         return f(user, *args, **kwargs)
@@ -91,6 +97,19 @@ APP_VIDEOS = {
 
 }
 
+PERMISSIONS = {
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm"],
+    "foot": ["foot"],
+    "knee_hand": ["knee", "hand"],
+    "knee_menisco": ["knee", "menisco"],
+    "nerves": ["nerves"],
+    "abd": ["abd"]
+}
+
+def user_can_access(user, app_name):
+    proyectos = PERMISSIONS.get(user.role, [])
+    return any(app_name.startswith(p) for p in proyectos)
+
 def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -123,8 +142,11 @@ def save_json_atomic_safe(path, data):
 
 @app.route('/<app_name>') #Cuando se accede a la ruta que sea, se ejecuta la función index
 @token_required
-def index(username, app_name):
+def index(user, app_name):
+    evaluator_name = user.username 
     #user = request.args.get('user')
+    if not user_can_access(user, app_name):
+        return redirect("http://localhost/index.php")
     # En caso de que haya diferentes archivos HTML: template_name = f"{app_name}.html" 
     #                                                return render_template(template_name, title=app_name)
 
@@ -148,11 +170,11 @@ def index(username, app_name):
             if key in brush_map:
                 s["width"] = brush_map[key]
 
-    return render_template('index.html', user = username, title=app_name, data=structures)
+    return render_template('index.html', user = evaluator_name, title=app_name, data=structures)
+
 
 
 @app.route("/update_brush", methods=["POST"])
-@token_required
 def update_brush_width():
     req = request.json
     appName = req["appName"]
@@ -183,7 +205,7 @@ def update_brush_width():
         db.session.add(brush)
     db.session.commit()
 
-    return jsonify({"status": "ok", "updated": name})
+    return jsonify({"status": "ok"})
 
 
 '''@app.route('/verifyUser/<user>/<app_name>')
@@ -216,42 +238,68 @@ def verifyUser(user, app_name):
         return jsonify({"error": False})
 '''
 
+@app.route("/count_frames/<username>/<app_name>/<video>")
+def count_frames(username, app_name, video):
+    count = Metadata.query.filter_by(
+        evaluator=username
+    ).filter(
+        Metadata.video.startswith(video)
+    ).count()
+    return jsonify({"count": count})
+
+
 @app.route('/save', methods=['POST'])
-@token_required
-def save(username):
+def save():
+    os.makedirs("static/DATA", exist_ok=True)
+    os.makedirs("static/frames", exist_ok=True)
     data = request.json
     if isinstance(data, dict):
-        data = [data]  # normalizar a lista
-    for frame in data:
-        extra = {k: v for k, v in frame.items() if k not in ["video","frame","frameoriginal","filesaved","quality","zone","evaluator","originalImage","imageEdited"]}
-        
-        os.makedirs("static/DATA", exist_ok=True)
-        os.makedirs("static/frames", exist_ok=True)
-
-        original_img = base64.b64decode(frame['originalImage'].split(",")[1])
-        edited_img = base64.b64decode(frame['imageEdited'].split(",")[1])
-
-        with open(f'static/frames/{frame["frameoriginal"]}', 'wb') as f:
-            f.write(original_img)
-        with open(f'static/DATA/{frame["filesaved"]}', 'wb') as f:
-            f.write(edited_img)
-
-        # Guardar en DB:
+        data = [data]  # para tratar guardado de un frame (dict) y guardado de varios frames de la misma manera.
+    for i in data:
+        extra = {k: v for k, v in i.items() if k not in ["video","frame","frameoriginal","filesaved","quality","zone","evaluator","originalImage","imageEdited"]}
         metadata = Metadata(
-            video=frame["video"],
-            frame=frame["frame"],
-            frameoriginal=frame["frameoriginal"],
-            filesaved=frame["filesaved"],
-            quality=frame["quality"],
-            zone=frame["zone"],
-            evaluator=username,
+            video=i["video"],
+            frame=i["frame"],
+            frameoriginal=i["frameoriginal"],
+            filesaved=i["filesaved"],
+            quality=i["quality"],
+            zone=i["zone"],
+            evaluator=i["evaluator"],
             extra=extra
         )
         db.session.add(metadata)
 
+        original_img = base64.b64decode(i['originalImage'].split(",")[1])
+        edited_img = base64.b64decode(i['imageEdited'].split(",")[1])
+        with open(f'static/frames/{i["frameoriginal"]}', 'wb') as f:
+            f.write(original_img)
+        with open(f'static/DATA/{i["filesaved"]}', 'wb') as f:
+            f.write(edited_img)
+
     db.session.commit()
     return jsonify({"status": "success"})
 
+
+@app.route('/save', methods=['POST'])
+def saveRM():
+    os.makedirs("static/DATA", exist_ok=True)
+    os.makedirs("static/frames", exist_ok=True)
+    data = request.json
+    metadata = Metadata(
+        imageoriginal=data["image"],
+        filesaved=data["filesaved"],
+        zone=data["zone"],
+        evaluator=data["evaluator"],
+    )
+    db.session.add(metadata)
+
+    imageEdited = base64.b64decode(data['imageEdited'].split(",")[1])
+    with open(f'static/DATA/{data["filesaved"]}', 'wb') as f:
+        f.write(imageEdited)
+
+    db.session.commit()
+    return jsonify({"status": "success"})
+    
 
 '''@app.route('/save', methods=['POST'])
 def save():

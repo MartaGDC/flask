@@ -21,9 +21,16 @@ class Metadata(db.Model):
     filesaved = db.Column(db.String(200), nullable=False)
     quality = db.Column(db.String(50))
     zone = db.Column(db.String(50))
-    evaluator = db.Column(db.String(100), nullable=False)  # el nombre del evaluador
+    evaluator = db.Column(db.String(100), nullable=False)
     extra = db.Column(JSONB)  # campos flexibles
 
+class MetadataRM(db.Model):
+    __tablename__ = "metadataRM"
+    id = db.Column(db.Integer, primary_key=True)
+    imageoriginal = db.Column(db.String(200), nullable=False)
+    filesaved = db.Column(db.String(200), nullable=False)
+    zone = db.Column(db.String(50))
+    evaluator = db.Column(db.String(100), nullable=False)
 
 class BrushSetting(db.Model):
     __tablename__ = "brush_settings"
@@ -31,4 +38,7 @@ class BrushSetting(db.Model):
     app_name = db.Column(db.String(100), nullable=False)
     zone = db.Column(db.String(50), nullable=False)
     structure_name = db.Column(db.String(100), nullable=False)
-    width = db.Column(db.Integer, nullable=False, default=20)
+    width = db.Column(db.String(3), nullable=False, default="20")
+    __table_args__ = (
+        db.UniqueConstraint('app_name', 'zone', 'structure_name'),
+    )
