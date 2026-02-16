@@ -24,6 +24,18 @@ class Metadata(db.Model):
     evaluator = db.Column(db.String(100), nullable=False)
     extra = db.Column(JSONB)  # campos flexibles
 
+class MetadataRecuperado(db.Model):
+    __tablename__ = "metadataRecuperado"
+    id = db.Column(db.Integer, primary_key=True)
+    video = db.Column(db.String(200), nullable=False)
+    frame = db.Column(db.Integer, nullable=False)
+    frameoriginal = db.Column(db.String(200), nullable=False)
+    filesaved = db.Column(db.String(200), nullable=False)
+    quality = db.Column(db.String(50))
+    zone = db.Column(db.String(50))
+    evaluator = db.Column(db.String(100), nullable=False)
+    extra = db.Column(JSONB)  # campos flexibles
+
 class MetadataRM(db.Model):
     __tablename__ = "metadataRM"
     id = db.Column(db.Integer, primary_key=True)
