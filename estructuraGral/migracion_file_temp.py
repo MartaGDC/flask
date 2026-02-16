@@ -5,6 +5,11 @@ from models import db, Metadata, MetadataRecuperado, MetadataRM
 with app.app_context():
     db.create_all()
 
+    Metadata.query.delete()
+    MetadataRecuperado.query.delete()
+    MetadataRM.query.delete()
+    db.session.commit()
+
     with open("static/DATA/file_info.json", encoding="utf-8") as f:
         data = json.load(f)
 
