@@ -64,7 +64,7 @@ const structures = document.querySelectorAll(".structure-item");
 let selectedStructure = null;
 let currentIndex = null;
 const sliders = Array.from(document.querySelectorAll('.brush-slider'));
-const widths = sliders.map(slider => parseInt(slider.value));
+const  widths = Array.from(document.querySelectorAll(".brush-slider")).map(slider => parseInt(slider.value));
 const colors = Array.from(structures).map(div => div.dataset.color);
 const deleteDrawings = document.querySelectorAll(".delete");
 let invisibleStructures = {};
