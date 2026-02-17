@@ -81,7 +81,8 @@ reloadBtn.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () =>{
     appName = body.dataset.appname;
     evaluatorName = researcherInfo.dataset.user;
-
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
     if (!token || token === "undefined" || token === "") {
         alert("You must enter a valid user for this project.\nEnter new credentials.");
         window.location.href = "http://localhost/index.php";
