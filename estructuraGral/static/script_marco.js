@@ -2,16 +2,15 @@ const body = document.body;
 const content = document.querySelector(".content");
 
 const reloadBtn = document.getElementById("reloadBtn");
-
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
-//const videoFileInput = document.getElementById("videoFileInput");
 let appName = "";
+let evaluatorName = "";
+let token = "";
 let nbFile = "";
+
 const videoWindow = document.getElementById("videoWindow");
 const videoList = document.getElementById("videoList");
-let evaluatorName = "";
-
 const videoContainer = document.getElementById("video-container");
 const videoPlayer = document.getElementById("video-player");
 const progress = document.getElementById("progress");
@@ -26,6 +25,7 @@ const framePlaceholder = document.getElementById("frame-placeholder");
 const overlay = document.getElementById("canvas-overlay");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
 const ctxOverlay = overlay.getContext("2d");
+
 let firstValue = null;
 let firstFrame = null;
 let lastValue = null;
@@ -82,15 +82,11 @@ document.addEventListener("DOMContentLoaded", () =>{
     appName = body.dataset.appname;
     evaluatorName = researcherInfo.dataset.user;
 
-    fetch(`/verifyUser/${evaluatorName}/${appName}`)
-    .then(res => res.json())
-    .then(data => {
-        if (data.error) {
-            alert(data.message);
-            window.location.href = data.redirect;
-        } else {}
-    })
-    .catch();
+    if (!token || token === "undefined" || token === "") {
+        alert("You must enter a valid user for this project.\nEnter new credentials.");
+        window.location.href = "http://localhost/index.php";
+        return;
+    }
 });
 
 if(sessionStorage.getItem('reloadAfterSave') === 'true'){
@@ -165,16 +161,16 @@ async function selectVideo(appName, filename, frame){
     }
 }
 
-async function countFramesPerEval(evaluatorName) {
+async function countFramesPerEval() {
     try {
-        const response = await fetch('static/DATA/file_info.json');
+        const video = fileName.textContent;
+        const response = await fetch(`/count_frames/${evaluatorName}/${appName}/${video}`);
         if (!response.ok) {
             numFramesEval = 0;
             return;
         }
         const data = await response.json();
-        numFramesEval = data.filter(item => item.evaluator === evaluatorName && item.video.startsWith(fileName.textContent)).length;
-        console.log(data);
+        numFramesEval = data.count;
     } catch (e) {
         numFramesEval = 0;
     }
