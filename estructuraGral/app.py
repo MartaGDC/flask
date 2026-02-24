@@ -13,6 +13,10 @@ import numpy as np
 from filelock import FileLock
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 from models import db, User, Metadata, MetadataRM, BrushSetting
+
+import skimage.io
+import pyfeats as pf
+import pywt as pw
 #from flask_cors import CORS
 
 
@@ -93,12 +97,14 @@ APP_VIDEOS = {
 
     'menisco': '6_',
 
-    'rm': ''
+    'rm': '',
+
+    'electrolysis': '2_'
 
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm"],
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm", "electrolysis"],
     "foot": ["foot"],
     "knee_hand": ["knee", "hand"],
     "knee_menisco": ["knee", "menisco"],
@@ -169,6 +175,9 @@ def index(user, app_name):
             key = (zone, s["name"])
             if key in brush_map:
                 s["width"] = brush_map[key]
+    
+    if app_name.startswith("electrolysis"):
+        return render_template('index_electrolysis.html', user = evaluator_name, title=app_name)
 
     return render_template('index.html', user = evaluator_name, title=app_name, data=structures)
 
@@ -280,7 +289,7 @@ def save():
     return jsonify({"status": "success"})
 
 
-@app.route('/save', methods=['POST'])
+@app.route('/saveRM', methods=['POST'])
 def saveRM():
     os.makedirs("static/DATA", exist_ok=True)
     os.makedirs("static/frames", exist_ok=True)
@@ -469,6 +478,87 @@ def add_header(response): #Con los cambios en el html, había problemas de cache
 def logout():
     session.clear()
     return '', 200
+
+#Calculos tissue-quality (electrolysis)
+@app.route('/tissue-quality', methods=['POST'])
+def tissue_quality():
+    try:
+        data = request.json
+        
+        # Debug: Print types to understand the issue
+        print("Data type:", type(data))
+        if isinstance(data, str):
+            print("Data is string, attempting to parse as JSON")
+            data = json.loads(data)
+        
+        timestamp  = data['timestamp']
+        video = data['video']
+        frameoriginal = data['frameoriginal']
+        originalImage = data['originalImage']
+        evaluator = data['evaluator']
+        startPoint = data['startPoint']
+        endPoint = data['endPoint']
+        dimensions = data['dimensions']
+
+        _x1 = startPoint['x']
+        _y1 = startPoint['y']
+        _x2 = endPoint['x']
+        _y2 = endPoint['y']
+        _width = dimensions['width']
+        _height = dimensions['height']
+
+        image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])))
+        image = (image * 255).astype(np.uint8)
+        
+        if len(image.shape) >= 2:
+            height, width = image.shape[:2]
+        else:
+            height, width = image.shape
+        
+        x1 = int(_x1 * width / _width)
+        x2 = int(_x2 * width / _width)
+        y1 = int(_y1 * height / _height)
+        y2 = int(_y2 * height / _height)
+        ROI = image[y1:y2, x1:x2]
+        
+        features_GLCM, _, labels_GLCM, _ = pf.glcm_features(ROI, ignore_zeros=True)
+        glcm_ind = [1,5,3,9,2,4]
+        glcm = [features_GLCM[i] for i in glcm_ind]
+
+        aux = ROI.astype(np.float32)
+        cA, (_, _, _) = pw.dwt2(aux, 'haar')
+        haar_mean = np.mean(cA)
+        haar_variance = np.var(cA)
+
+        if len(ROI.shape) > 2:
+            if ROI.ndim == 3:
+                ROI_for_glds = ROI[:,:,0] if ROI.shape[2] > 0 else ROI
+            else:
+                ROI_for_glds = ROI
+        else:
+            ROI_for_glds = ROI
+                mask = np.ones(ROI_for_glds.shape)
+        
+        features_GLDS, labels_GLDS = pf.glds_features(ROI_for_glds, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
+
+        Point = [[x1,y1],[x2,y2]]
+
+        # Convert numpy values to Python native types for JSON serialization
+        save_var = [
+            timestamp,
+            video,
+            frameoriginal,
+            evaluator,
+            *[float(x) if isinstance(x, np.number) else x for x in glcm],
+            *[float(x) if isinstance(x, np.number) else x for x in features_GLDS],
+            float(haar_mean) if isinstance(haar_mean, np.number) else haar_mean,
+            float(haar_variance) if isinstance(haar_variance, np.number) else haar_variance,
+            Point
+        ]
+        return jsonify({"status": "success", "features": save_var})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5004)

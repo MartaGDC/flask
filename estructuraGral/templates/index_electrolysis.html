@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo a otros dipositivos -->
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+</head>
+<body data-appname="{{title}}">
+    <!-- Barra superior -->
+    <header class="top-bar">
+        <a href="http://localhost/menu.php">
+            <button>Home</button>
+        </a>
+        <button id = "reloadBtn">Reload</button>
+    </header>
+
+    <!-- Área central -->
+    <main class="content">
+        <div class="selector">
+            <button id="fileBtn">Select video</button>
+            <p id="fileName">No video selected.</p>
+            <p class="researcher-info" id="researcherInfo" data-user="{{user}}"></p>
+        </div>
+        <div class="frame-viewer">
+            <div style="position: relative; display: inline-block;">
+                <canvas id="frame-placeholder"></canvas>
+                <canvas id="canvas-overlay"
+                    style="position: absolute; top: 0; left: 0;"></canvas>
+            </div>
+            <div id="resultado" style="margin-top: 20px;"></div>
+            <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
+            <button id="scaleSave" class="hidden" disabled>Select a rectangle of 1cm to set the scale</button>
+            <button id="qualitySave" class="hidden" disabled>Select one rectangle representative of the tissue quality</button>
+            <button id="submitBtn" class="hidden" disabled>Submit</button>
+        </div>
+    </main>
+    <div id="videoWindow" class="window hidden">
+        <ul id="videoList" class="videoList"></ul>
+    </div>
+    <div id="video-container" style="display:none;">
+        <video id="video-player"></video>
+        <div class="progress-bar">
+            <input type="range" id="progress" min="0" max="100" value="0" step="0.1">
+        </div>
+        <div id="range"></div>
+        <div class="frame-controls">
+            <button id="prev-frame">⏮</button>
+            <button id="play">►</button>
+            <button id="pause" class="hidden">⏸</button>
+            <button id="next-frame">⏭</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script_electrolysis.js') }}"></script>
+</body>
+</html>
