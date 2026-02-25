@@ -29,10 +29,16 @@
                 <canvas id="canvas-overlay"
                     style="position: absolute; top: 0; left: 0;"></canvas>
             </div>
-            <div id="resultado" style="margin-top: 20px;"></div>
+            <div id="resultado" style="margin-top: 10px;"></div>
+            <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
+                <label for="boneSlider" id="boneSliderLabel" class="hidden" disabled>Set the threshold so that you see barely anything else than bone in the region</label>
+                <input type="range" style="margin-top: 10px;" id="boneSlider" min="1" max="256" value="95" step="1" class="hidden" disabled></input>
+                <button id="acceptThresholdBtn" style="margin-top: 10px;" class="hidden" disabled>Accept threshold</button>
+            </div>
             <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
             <button id="scaleSave" class="hidden" disabled>Select a rectangle of 1cm to set the scale</button>
             <button id="qualitySave" class="hidden" disabled>Select one rectangle representative of the tissue quality</button>
+            <button id="boneSave" class="hidden" disabled> Draw a rectangle that include the bone region</button>
             <button id="submitBtn" class="hidden" disabled>Submit</button>
         </div>
     </main>

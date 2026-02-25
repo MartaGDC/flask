@@ -474,6 +474,20 @@ body {
     opacity: 0.7;
 }
 
+#boneSlider {
+    width: 30vw;
+    accent-color: #333333;
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    background: rgb(0,0,0,0.5);
+    height: 0.5vw;
+    border-radius: 3px;
+    box-sizing: border-box;
+    bottom: 0.75vw;
+    left: 0;
+}
+
 .hidden { display: none; }
 
 .disabled {

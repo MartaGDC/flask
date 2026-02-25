@@ -34,7 +34,7 @@ let startTime = null;
 let endTime = null;
 let frame = null;
 let savedFrame = null;
-let savedFrames = [];
+let originalFrameData = null;
 let pausado = false; //mostrar el frame solo si está pausado
 
 const researcherInfo = document.getElementById("researcherInfo");
@@ -46,7 +46,12 @@ let aceptado = false;
 let dibujoHecho = false;
 
 const scaleSave = document.getElementById("scaleSave");
+let scaleInfo = null;
 const qualitySave = document.getElementById("qualitySave");
+const boneSlider = document.getElementById("boneSlider");
+const boneSliderLabel = document.getElementById("boneSliderLabel");
+let threshold = null;
+const boneSave = document.getElementById("boneSave");
 
 let drawing = false;
 let startX, startY;
@@ -253,6 +258,7 @@ acceptFrameBtn.addEventListener("click", () => {
     activarListeners(true);
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
+    originalFrameData = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
 });
 
 
@@ -274,7 +280,7 @@ function activarListeners(bool){
 
 scaleSave.addEventListener('click', () => {
     if(dibujoHecho){
-        const scaleInfo = calculateScale();
+        scaleInfo = calculateScale();
         if (scaleInfo) {
             console.log("Scale info:", scaleInfo);
         }
@@ -337,7 +343,7 @@ function calculateScale() {
     const imageHeight = framePlaceholder.height;
     const scale = rectHeight / imageHeight; // pixels per pixel
         
-    return {scale: scale};
+    return scale;
 }
 
 
@@ -352,8 +358,17 @@ qualitySave.addEventListener('click', () => {
         saveQualityData();
         qualitySave.disabled = true;
         qualitySave.classList.add("hidden");
+        boneSlider.disabled = false;
+        boneSlider.classList.remove("hidden");
+        boneSliderLabel.disabled = false;
+        boneSliderLabel.classList.remove("hidden");
+        acceptThresholdBtn.disabled = false;
+        acceptThresholdBtn.classList.remove("hidden");
+        threshold = parseInt(boneSlider.value, 10);
+
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
+        activarListeners(false);
     } else{
         alert('Draw something on canvas before saving.');
     }
@@ -396,5 +411,116 @@ function saveQualityData() {
     .catch((error) => {
         console.error('Error:', error);
     });
+};
 
+/*Bone threshold:
+- Slider para marcar el umbral de hueso
+- Modificar los colores del frame de acuerdo al threshold
+*/
+/*-------------------------MARCAR UMBRAL DE HUESO-------------------------*/
+boneSlider.addEventListener('input', () => {
+    threshold = parseInt(boneSlider.value, 10);
+    applyThreshold(originalFrameData, threshold);
+});
+
+function applyThreshold(image, threshold) {
+    var canvasElement = document.createElement("canvas");
+    var contextElement = canvasElement.getContext("2d");
+    canvasElement.width = image.width;
+    canvasElement.height = image.height;
+    contextElement.putImageData(image, 0, 0);
+    var imageData = contextElement.getImageData(0, 0, canvasElement.width, canvasElement.height);
+    var data = imageData.data;
+    var len = data.length;
+    for (var i = 0; i < len; i += 4) {
+        var gray = data[i];
+        var color = gray < threshold ? 0 : 255;
+        data[i] = color; // red
+        data[i + 1] = color; // green
+        data[i + 2] = color; // blue
+    }
+    contextElement.putImageData(imageData, 0, 0);
+    var imgElement = new Image();
+    imgElement.src = canvasElement.toDataURL();
+    imgElement.onload = function() {
+        ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
+        ctx.drawImage(imgElement, 0, 0);
+        savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+    };
+}
+acceptThresholdBtn.addEventListener('click', () => {
+    boneSlider.disabled = true;
+    boneSlider.classList.add("hidden");
+    boneSliderLabel.disabled = true;
+    boneSliderLabel.classList.add("hidden");
+    acceptThresholdBtn.disabled = true;
+    acceptThresholdBtn.classList.add("hidden");
+    boneSave.disabled = false;
+    boneSave.classList.remove("hidden");
+    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
+    ctx.putImageData(originalFrameData, 0, 0);
+    activarListeners(true);
+});
+
+
+/*Bone region:
+- Dibujar rectángulo para marcar el hueso
+- Boton de guardar
+- fetch a app.py calculos tissue-quality
+*/
+/*-------------------------REGION DE HUESO-------------------------*/
+boneSave.addEventListener('click', () => {
+    if(dibujoHecho){
+        saveBoneData();
+        boneSave.disabled = true;
+        boneSave.classList.add("hidden");
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("hidden");
+        dibujoHecho=false;
+        ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
+        activarListeners(false);
+    } else{
+        alert('Draw something on canvas before saving.');
+    }
+});
+
+function saveBoneData() {
+    const maskOriginalCanvas = document.createElement("canvas");
+    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
+    maskOriginalCanvas.width = savedFrame.width;
+    maskOriginalCanvas.height = savedFrame.height;
+    maskOriginalCtx.putImageData(originalFrameData, 0, 0);
+    const imageURL = maskOriginalCanvas.toDataURL();
+    const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
+    objectJS = {
+        timestamp: timestamp,
+        video: fileName.textContent, 
+        frameoriginal: `${fileName.textContent}_${frame}.png`, 
+        originalImage: imageURL,
+        evaluator: evaluatorName,
+        startPoint: { x: startX, y: startY },
+        endPoint: { x: endX, y: endY },
+        dimensions:{width: maskOriginalCanvas.width, height: maskOriginalCanvas.height},
+        threshold: threshold,
+        scale: scaleInfo
+    };
+    fetch('/bone-region', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(objectJS)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 };

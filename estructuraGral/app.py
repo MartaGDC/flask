@@ -15,6 +15,7 @@ from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 from models import db, User, Metadata, MetadataRM, BrushSetting
 
 import skimage.io
+from skimage import feature, measure, morphology
 import pyfeats as pf
 import pywt as pw
 #from flask_cors import CORS
@@ -537,7 +538,7 @@ def tissue_quality():
                 ROI_for_glds = ROI
         else:
             ROI_for_glds = ROI
-                mask = np.ones(ROI_for_glds.shape)
+        mask = np.ones(ROI_for_glds.shape)
         
         features_GLDS, labels_GLDS = pf.glds_features(ROI_for_glds, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
 
@@ -558,7 +559,100 @@ def tissue_quality():
         return jsonify({"status": "success", "features": save_var})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
-    
+
+#Calculos zona de hueso (electrolysis)
+@app.route('/bone-region', methods=['POST'])
+def bone_region():
+    try:
+        data = request.json
+        timestamp  = data['timestamp']
+        video = data['video']
+        frameoriginal = data['frameoriginal']
+        originalImage = data['originalImage']
+        evaluator = data['evaluator']
+        startPoint = data['startPoint']
+        endPoint = data['endPoint']
+        dimensions = data['dimensions']
+        threshold = data['threshold']
+        scale = data['scale']
+
+        _x1 = startPoint['x']
+        _y1 = startPoint['y']
+        _x2 = endPoint['x']
+        _y2 = endPoint['y']
+        _width = dimensions['width']
+        _height = dimensions['height']
+
+        image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])))
+        image = (image * 255).astype(np.uint8)
+        
+        if len(image.shape) >= 2:
+            height, width = image.shape[:2]
+        else:
+            height, width = image.shape
+        
+        x1 = int(_x1 * width / _width)
+        x2 = int(_x2 * width / _width)
+        y1 = int(_y1 * height / _height)
+        y2 = int(_y2 * height / _height)
+        ROI = image[y1:y2, x1:x2]
+        binary_img = ROI > threshold
+        print("binary_img")
+        erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
+        print("erosion")
+        dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
+        print("dilation")
+        hueso = ROI * dilation #Bone mask
+        print("hueso")
+        #GUARDAR IMAGEN HUESO io.imsave('folder/'+Name[:-4]+'-Bone.png',hueso)
+        
+        contours = measure.find_contours(dilation, 0.5)
+        print("contours")
+        cnt = [c for c in contours if len(c) > 4]
+        print("cnt")
+
+        A = measure.moments(dilation)[0,0]
+        print("A")
+        Area = A / scale ** 2
+        print("Area")
+        Per = measure.perimeter(dilation)/scale
+        print("Per")
+
+        hull = morphology.convex_hull_image(dilation)
+        print("hull")
+        Convex = A/measure.moments(hull)[0,0]
+        print("Convex")
+
+        glcm = feature.graycomatrix(hueso, distances=[1], angles=[0, np.pi / 4, np.pi / 2, 3 * np.pi / 4], levels=256, symmetric=True, normed=True)
+        print("glcm")
+        homogeneity = feature.graycoprops(glcm, 'homogeneity')[0].mean()
+        print("homogeneity")
+        contrast = feature.graycoprops(glcm, 'contrast')[0].mean()
+        print("contrast")
+        correlation = feature.graycoprops(glcm, 'correlation')[0].mean()
+        print("correlation")
+        
+        Point = [[x1, y1], [x2, y2]]
+        print("Point")
+
+        save_var = [
+            timestamp,
+            video,
+            frameoriginal,
+            evaluator,
+            len(cnt),
+            Area,
+            Per,
+            Convex,
+            homogeneity,
+            contrast,
+            correlation,
+            Point
+        ]
+        print(save_var)
+        return jsonify({"status": "success", "features": save_var})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5004)
