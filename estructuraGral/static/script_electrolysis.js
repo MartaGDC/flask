@@ -48,10 +48,12 @@ let dibujoHecho = false;
 const scaleSave = document.getElementById("scaleSave");
 let scaleInfo = null;
 const qualitySave = document.getElementById("qualitySave");
+let objectJSQuality = null;
 const boneSlider = document.getElementById("boneSlider");
 const boneSliderLabel = document.getElementById("boneSliderLabel");
 let threshold = null;
 const boneSave = document.getElementById("boneSave");
+let objectJSBone = null;
 
 let drawing = false;
 let startX, startY;
@@ -119,44 +121,67 @@ async function getVideos(){
 
 async function selectVideo(appName, filename, frame){
     if (filename) {
-        videoWindow.classList.add("hidden");
-        content.classList.remove("disabled");
-        const videoURL = `/media/${appName}/${filename}`;
-        fileName.textContent = filename;
-        videoPlayer.src = videoURL;
-        videoContainer.style.display = "block";
-        videoPlayer.load();
-        if (frame && !isNaN(frame)){
-            const currentTime = frame / 30;
-            videoPlayer.currentTime =currentTime;
+        if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".mha")) {
+            videoWindow.classList.add("hidden");
+            content.classList.remove("disabled");
+            const imageURL = `/media/${appName}/${filename}`;
+            fileName.textContent = filename;
+            const img = new Image();
+            img.src = imageURL;
+            img.onload = function() {
+                framePlaceholder.width = img.width;
+                framePlaceholder.height = img.height;
+                overlay.width = img.width;
+                overlay.height = img.height;
+                ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
+                savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+                originalFrameData = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+            };
+            activarListeners(true);
+            scaleSave.disabled = false;
+            scaleSave.classList.remove("hidden");
+            fileBtn.disabled = true;
+            fileBtn.classList.add("disabled");
+            aceptado = true;
+        } else {
+            videoWindow.classList.add("hidden");
+            content.classList.remove("disabled");
+            const videoURL = `/media/${appName}/${filename}`;
+            fileName.textContent = filename;
+            videoPlayer.src = videoURL;
+            videoContainer.style.display = "block";
+            videoPlayer.load();
+            if (frame && !isNaN(frame)){
+                const currentTime = frame / 30;
+                videoPlayer.currentTime =currentTime;
+            }
+            else{
+                videoPlayer.currentTime = 0; // Reset to the start of the video
+            }
+            await countFramesPerEval(evaluatorName);
+            if(numFramesEval===0){
+                researcherInfo.textContent = `Evaluator ${evaluatorName} hasn't studied this video.`;
+            }
+            else{
+                researcherInfo.textContent = `Evaluator ${evaluatorName} has already studied this video.`;
+            }
+            pausado = true;
+            drawFrame();
+            acceptFrameBtn.classList.remove("hidden");
+            fileBtn.disabled = true;
+            fileBtn.classList.add("disabled");
         }
-        else{
-            videoPlayer.currentTime = 0; // Reset to the start of the video
-        }
-        await countFramesPerEval(evaluatorName);
-        if(numFramesEval===0){
-            researcherInfo.textContent = `Evaluator ${evaluatorName} hasn't studied this video.`;
-        }
-        else{
-            researcherInfo.textContent = `Evaluator ${evaluatorName} has already studied this video.`;
-        }
-        pausado = true;
-        drawFrame();
-        acceptFrameBtn.classList.remove("hidden");
-        fileBtn.disabled = true;
-        fileBtn.classList.add("disabled");
     } else {
         fileName.textContent = "No video selected.";
         videoContainer.style.display = "none";
         acceptFrameBtn.disabled = true;
-        acceptFramesBtn.disabled = true;
     }
 }
 
 async function countFramesPerEval() {
     try {
         const video = fileName.textContent;
-        const response = await fetch(`/count_frames/${evaluatorName}/${appName}/${video}`);
+        const response = await fetch(`/count_frames/${evaluatorName}/${video}`);
         if (!response.ok) {
             numFramesEval = 0;
             return;
@@ -365,6 +390,8 @@ qualitySave.addEventListener('click', () => {
         acceptThresholdBtn.disabled = false;
         acceptThresholdBtn.classList.remove("hidden");
         threshold = parseInt(boneSlider.value, 10);
+        applyThreshold(originalFrameData, threshold);
+
 
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
@@ -382,7 +409,7 @@ function saveQualityData() {
     maskOriginalCtx.putImageData(savedFrame, 0, 0);
     const imageURL = maskOriginalCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
-    objectJS = {
+    objectJSQuality = {
         timestamp: timestamp,
         video: fileName.textContent, 
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
@@ -392,25 +419,6 @@ function saveQualityData() {
         endPoint: { x: endX, y: endY },
         dimensions:{width: maskOriginalCanvas.width, height: maskOriginalCanvas.height}
     };
-    fetch('/tissue-quality', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(objectJS)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
 };
 
 /*Bone threshold:
@@ -492,7 +500,7 @@ function saveBoneData() {
     maskOriginalCtx.putImageData(originalFrameData, 0, 0);
     const imageURL = maskOriginalCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
-    objectJS = {
+    objectJSBone = {
         timestamp: timestamp,
         video: fileName.textContent, 
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
@@ -504,12 +512,20 @@ function saveBoneData() {
         threshold: threshold,
         scale: scaleInfo
     };
-    fetch('/bone-region', {
+    
+};
+
+submitBtn.addEventListener('click', () => {
+    saveData();
+});
+
+function saveData() {
+    fetch('/tissue-quality', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(objectJS)
+        body: JSON.stringify(objectJSQuality)
     })
     .then(response => {
         if (!response.ok) {
@@ -523,4 +539,41 @@ function saveBoneData() {
     .catch((error) => {
         console.error('Error:', error);
     });
-};
+
+    fetch('/bone-region', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(objectJSBone)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        const name = fileName.textContent.toLowerCase();
+        if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".mha")) {
+            location.reload();
+        } else {
+            recargarVideo(appName, fileName.textContent);
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+
+function recargarVideo(appName, filename){
+    // Guardar datos para usar después de la recarga
+    sessionStorage.setItem('reloadAfterSave', 'true');
+    sessionStorage.setItem('selectedApp', appName);
+    sessionStorage.setItem('selectedFile', filename);
+    sessionStorage.setItem('evaluator', evaluatorName);
+    sessionStorage.setItem('frame', frame);
+    location.reload();
+}

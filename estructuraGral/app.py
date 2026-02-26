@@ -12,7 +12,7 @@ import SimpleITK as sitk
 import numpy as np
 from filelock import FileLock
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
-from models import db, User, Metadata, MetadataRM, BrushSetting
+from models import ElectrolysisBone, ElectrolysisQuality, db, User, Metadata, MetadataRM, BrushSetting
 
 import skimage.io
 from skimage import feature, measure, morphology
@@ -100,7 +100,7 @@ APP_VIDEOS = {
 
     'rm': '',
 
-    'electrolysis': '2_'
+    'electrolysis': ''
 
 }
 
@@ -207,11 +207,11 @@ def update_brush_width():
         brush[appName]["structures"][zone].append({"name": name, "width": width})
 
     save_json_atomic_safe("settings_brush.json", brush)'''
-    brush = BrushSetting.query.filter_by(app_name=app_name, zone=zone, structure_name=name).first()
+    brush = BrushSetting.query.filter_by(app_name=appName, zone=zone, structure_name=name).first()
     if brush:
         brush.width = width
     else:
-        brush = BrushSetting(app_name=app_name, zone=zone, structure_name=name, width=width)
+        brush = BrushSetting(app_name=appName, zone=zone, structure_name=name, width=width)
         db.session.add(brush)
     db.session.commit()
 
@@ -248,8 +248,8 @@ def verifyUser(user, app_name):
         return jsonify({"error": False})
 '''
 
-@app.route("/count_frames/<username>/<app_name>/<video>")
-def count_frames(username, app_name, video):
+@app.route("/count_frames/<username>/<video>")
+def count_frames(username, video):
     count = Metadata.query.filter_by(
         evaluator=username
     ).filter(
@@ -435,7 +435,7 @@ def list_files(app_name):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
-    elif(app_name.startswith("hand")):
+    elif(app_name.startswith("hand") or app_name.startswith("electrolysis")):
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
     else:
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
@@ -486,12 +486,6 @@ def tissue_quality():
     try:
         data = request.json
         
-        # Debug: Print types to understand the issue
-        print("Data type:", type(data))
-        if isinstance(data, str):
-            print("Data is string, attempting to parse as JSON")
-            data = json.loads(data)
-        
         timestamp  = data['timestamp']
         video = data['video']
         frameoriginal = data['frameoriginal']
@@ -501,20 +495,16 @@ def tissue_quality():
         endPoint = data['endPoint']
         dimensions = data['dimensions']
 
-        _x1 = startPoint['x']
-        _y1 = startPoint['y']
-        _x2 = endPoint['x']
-        _y2 = endPoint['y']
-        _width = dimensions['width']
-        _height = dimensions['height']
+        _x1 = int(startPoint['x'])
+        _y1 = int(startPoint['y'])
+        _x2 = int(endPoint['x'])
+        _y2 = int(endPoint['y'])
+        _width = int(dimensions['width'])
+        _height = int(dimensions['height'])
 
-        image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])))
+        image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
         image = (image * 255).astype(np.uint8)
-        
-        if len(image.shape) >= 2:
-            height, width = image.shape[:2]
-        else:
-            height, width = image.shape
+        height, width = image.shape
         
         x1 = int(_x1 * width / _width)
         x2 = int(_x2 * width / _width)
@@ -528,41 +518,42 @@ def tissue_quality():
 
         aux = ROI.astype(np.float32)
         cA, (_, _, _) = pw.dwt2(aux, 'haar')
-        haar_mean = np.mean(cA)
-        haar_variance = np.var(cA)
+        haar_mean = float(np.mean(cA))
+        haar_variance = float(np.var(cA))
 
-        if len(ROI.shape) > 2:
-            if ROI.ndim == 3:
-                ROI_for_glds = ROI[:,:,0] if ROI.shape[2] > 0 else ROI
-            else:
-                ROI_for_glds = ROI
-        else:
-            ROI_for_glds = ROI
-        mask = np.ones(ROI_for_glds.shape)
-        
-        features_GLDS, labels_GLDS = pf.glds_features(ROI_for_glds, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
+        mask = np.ones(ROI.shape)
+        features_GLDS, labels_GLDS = pf.glds_features(ROI, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
 
         Point = [[x1,y1],[x2,y2]]
+        db.create_all()
 
-        # Convert numpy values to Python native types for JSON serialization
-        save_var = [
-            timestamp,
-            video,
-            frameoriginal,
-            evaluator,
-            *[float(x) if isinstance(x, np.number) else x for x in glcm],
-            *[float(x) if isinstance(x, np.number) else x for x in features_GLDS],
-            float(haar_mean) if isinstance(haar_mean, np.number) else haar_mean,
-            float(haar_variance) if isinstance(haar_variance, np.number) else haar_variance,
-            Point
-        ]
-        return jsonify({"status": "success", "features": save_var})
+        new_quality = ElectrolysisQuality(
+            timestamp=timestamp,
+            video=video,
+            frameoriginal=frameoriginal,
+            evaluator=evaluator,
+            glcm=glcm,
+            features_GLDS=list(features_GLDS),
+            haar_mean=haar_mean,
+            haar_variance=haar_variance,
+            point=Point
+        )
+        db.session.add(new_quality)
+        db.session.commit()
+        return jsonify({"status": "success", "message": "Quality data saved"})
     except Exception as e:
+        db.session.rollback()
+        import traceback
+        print(f"[ERROR] tissue_quality: {str(e)}")
+        traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
 #Calculos zona de hueso (electrolysis)
 @app.route('/bone-region', methods=['POST'])
 def bone_region():
+    os.makedirs("static/DATA", exist_ok=True)
+    os.makedirs("static/frames", exist_ok=True)
+
     try:
         data = request.json
         timestamp  = data['timestamp']
@@ -574,84 +565,76 @@ def bone_region():
         endPoint = data['endPoint']
         dimensions = data['dimensions']
         threshold = data['threshold']
-        scale = data['scale']
+        
+        _scale = float(data['scale'])
+        _x1 = int(startPoint['x'])
+        _y1 = int(startPoint['y'])
+        _x2 = int(endPoint['x'])
+        _y2 = int(endPoint['y'])
+        _width = int(dimensions['width'])
+        _height = int(dimensions['height'])
 
-        _x1 = startPoint['x']
-        _y1 = startPoint['y']
-        _x2 = endPoint['x']
-        _y2 = endPoint['y']
-        _width = dimensions['width']
-        _height = dimensions['height']
-
-        image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])))
+        image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
         image = (image * 255).astype(np.uint8)
-        
-        if len(image.shape) >= 2:
-            height, width = image.shape[:2]
-        else:
-            height, width = image.shape
-        
+
+        height, width = image.shape
+        scale = _scale * height
+
         x1 = int(_x1 * width / _width)
         x2 = int(_x2 * width / _width)
         y1 = int(_y1 * height / _height)
         y2 = int(_y2 * height / _height)
+
         ROI = image[y1:y2, x1:x2]
         binary_img = ROI > threshold
-        print("binary_img")
         erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
-        print("erosion")
         dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
-        print("dilation")
         hueso = ROI * dilation #Bone mask
-        print("hueso")
-        #GUARDAR IMAGEN HUESO io.imsave('folder/'+Name[:-4]+'-Bone.png',hueso)
-        
-        contours = measure.find_contours(dilation, 0.5)
-        print("contours")
-        cnt = [c for c in contours if len(c) > 4]
-        print("cnt")
 
-        A = measure.moments(dilation)[0,0]
-        print("A")
-        Area = A / scale ** 2
-        print("Area")
-        Per = measure.perimeter(dilation)/scale
-        print("Per")
+        #GUARDAR IMAGEN HUESO io.imsave('folder/'+Name[:-4]+'-Bone.png',hueso)
+        with open(f'static/frames/{frameoriginal}', 'wb') as f:
+            f.write(base64.b64decode(originalImage.split(",")[1]))
+        skimage.io.imsave(f'static/DATA/{timestamp}_bone.png', hueso)
+
+        contours = measure.find_contours(dilation, 0.5)
+        cnt = [c for c in contours if len(c) > 4]
+
+        A = measure.moments(dilation.astype(np.uint8))[0,0]
+        Area = float(A / scale ** 2)
+        Per = float(measure.perimeter(dilation)/scale)
 
         hull = morphology.convex_hull_image(dilation)
-        print("hull")
-        Convex = A/measure.moments(hull)[0,0]
-        print("Convex")
-
+        Convex = float(A / measure.moments(hull.astype(np.uint8))[0,0])
+        
         glcm = feature.graycomatrix(hueso, distances=[1], angles=[0, np.pi / 4, np.pi / 2, 3 * np.pi / 4], levels=256, symmetric=True, normed=True)
-        print("glcm")
-        homogeneity = feature.graycoprops(glcm, 'homogeneity')[0].mean()
-        print("homogeneity")
-        contrast = feature.graycoprops(glcm, 'contrast')[0].mean()
-        print("contrast")
-        correlation = feature.graycoprops(glcm, 'correlation')[0].mean()
-        print("correlation")
+        homogeneity = float(feature.graycoprops(glcm, 'homogeneity')[0].mean())
+        contrast = float(feature.graycoprops(glcm, 'contrast')[0].mean())
+        correlation = float(feature.graycoprops(glcm, 'correlation')[0].mean())
         
         Point = [[x1, y1], [x2, y2]]
-        print("Point")
 
-        save_var = [
-            timestamp,
-            video,
-            frameoriginal,
-            evaluator,
-            len(cnt),
-            Area,
-            Per,
-            Convex,
-            homogeneity,
-            contrast,
-            correlation,
-            Point
-        ]
-        print(save_var)
-        return jsonify({"status": "success", "features": save_var})
+        new_bone = ElectrolysisBone(
+            timestamp=timestamp,
+            video=video,
+            frameoriginal=frameoriginal,
+            evaluator=evaluator,
+            contours=len(cnt),
+            area=Area,
+            perimeter=Per,
+            convex=Convex,
+            homogeneity=homogeneity,
+            contrast=contrast,
+            correlation=correlation,
+            point=Point
+        )
+        db.session.add(new_bone)
+        db.session.commit()
+        return jsonify({"status": "success", "message": "Bone region data saved"})
     except Exception as e:
+        db.session.rollback()
+        import traceback
+        print(f"[ERROR] bone: {str(e)}")
+        traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':

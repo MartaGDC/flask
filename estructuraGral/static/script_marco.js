@@ -165,7 +165,7 @@ async function selectVideo(appName, filename, frame){
 async function countFramesPerEval() {
     try {
         const video = fileName.textContent;
-        const response = await fetch(`/count_frames/${evaluatorName}/${appName}/${video}`);
+        const response = await fetch(`/count_frames/${evaluatorName}/${video}`);
         if (!response.ok) {
             numFramesEval = 0;
             return;
