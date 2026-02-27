@@ -47,12 +47,11 @@ let dibujoHecho = false;
 
 const scaleSave = document.getElementById("scaleSave");
 let scaleInfo = null;
-const qualitySave = document.getElementById("qualitySave");
 let objectJSQuality = null;
 const boneSlider = document.getElementById("boneSlider");
 const boneSliderLabel = document.getElementById("boneSliderLabel");
+const acceptThresholdBtn = document.getElementById("acceptThresholdBtn");
 let threshold = null;
-const boneSave = document.getElementById("boneSave");
 let objectJSBone = null;
 
 let drawing = false;
@@ -311,10 +310,17 @@ scaleSave.addEventListener('click', () => {
         }
         scaleSave.disabled = true;
         scaleSave.classList.add("hidden");
-        qualitySave.disabled = false;
-        qualitySave.classList.remove("hidden");
+        boneSlider.disabled = false;
+        boneSlider.classList.remove("hidden");
+        boneSliderLabel.disabled = false;
+        boneSliderLabel.classList.remove("hidden");
+        acceptThresholdBtn.disabled = false;
+        acceptThresholdBtn.classList.remove("hidden");
+        threshold = parseInt(boneSlider.value, 10);
+        applyThreshold(originalFrameData, threshold); 
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
+        activarListeners(false);
     }
     else{
         alert('Draw something on canvas before saving.');
@@ -372,60 +378,11 @@ function calculateScale() {
 }
 
 
-/*Tissue quality:
-- Dibujar rectángulo para marcar la zona de interés
-- Boton de guardar
-- fetch a app.py calculos tissue-quality
-*/
-/*-------------------------DIBUJAR Y GUARDAR CALIDAD DE TEJIDO-------------------------*/
-qualitySave.addEventListener('click', () => {
-    if(dibujoHecho){
-        saveQualityData();
-        qualitySave.disabled = true;
-        qualitySave.classList.add("hidden");
-        boneSlider.disabled = false;
-        boneSlider.classList.remove("hidden");
-        boneSliderLabel.disabled = false;
-        boneSliderLabel.classList.remove("hidden");
-        acceptThresholdBtn.disabled = false;
-        acceptThresholdBtn.classList.remove("hidden");
-        threshold = parseInt(boneSlider.value, 10);
-        applyThreshold(originalFrameData, threshold);
-
-
-        dibujoHecho=false;
-        ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
-        activarListeners(false);
-    } else{
-        alert('Draw something on canvas before saving.');
-    }
-});
-
-function saveQualityData() {
-    const maskOriginalCanvas = document.createElement("canvas");
-    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
-    maskOriginalCanvas.width = savedFrame.width;
-    maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(savedFrame, 0, 0);
-    const imageURL = maskOriginalCanvas.toDataURL();
-    const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
-    objectJSQuality = {
-        timestamp: timestamp,
-        video: fileName.textContent, 
-        frameoriginal: `${fileName.textContent}_${frame}.png`, 
-        originalImage: imageURL,
-        evaluator: evaluatorName,
-        startPoint: { x: startX, y: startY },
-        endPoint: { x: endX, y: endY },
-        dimensions:{width: maskOriginalCanvas.width, height: maskOriginalCanvas.height}
-    };
-};
-
-/*Bone threshold:
-- Slider para marcar el umbral de hueso
+/*"Bone" threshold:
+- Slider para marcar el umbral de tejido quemado
 - Modificar los colores del frame de acuerdo al threshold
 */
-/*-------------------------MARCAR UMBRAL DE HUESO-------------------------*/
+/*-------------------------MARCAR UMBRAL DE TEJIDO QUEMADO-------------------------*/
 boneSlider.addEventListener('input', () => {
     threshold = parseInt(boneSlider.value, 10);
     applyThreshold(originalFrameData, threshold);
@@ -463,34 +420,50 @@ acceptThresholdBtn.addEventListener('click', () => {
     boneSliderLabel.classList.add("hidden");
     acceptThresholdBtn.disabled = true;
     acceptThresholdBtn.classList.add("hidden");
-    boneSave.disabled = false;
-    boneSave.classList.remove("hidden");
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("hidden");
     ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
     ctx.putImageData(originalFrameData, 0, 0);
     activarListeners(true);
 });
 
 
-/*Bone region:
-- Dibujar rectángulo para marcar el hueso
-- Boton de guardar
+/*Parametros de calidad de tejido y region quemada:
+- Dibujar rectángulo para marcar la zona de interés
 - fetch a app.py calculos tissue-quality
+- fetch a app.py calculos region quemada
 */
-/*-------------------------REGION DE HUESO-------------------------*/
-boneSave.addEventListener('click', () => {
+/*-------------------------PARÁMETROS-------------------------*/
+submitBtn.addEventListener('click', () => {
     if(dibujoHecho){
-        saveBoneData();
-        boneSave.disabled = true;
-        boneSave.classList.add("hidden");
-        submitBtn.disabled = false;
-        submitBtn.classList.remove("hidden");
-        dibujoHecho=false;
-        ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
-        activarListeners(false);
+        objectJSQuality = saveQualityData();
+        objectJSBone = saveBoneData();
+        saveData(objectJSQuality, objectJSBone);
     } else{
         alert('Draw something on canvas before saving.');
     }
 });
+
+function saveQualityData() {
+    const maskOriginalCanvas = document.createElement("canvas");
+    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
+    maskOriginalCanvas.width = savedFrame.width;
+    maskOriginalCanvas.height = savedFrame.height;
+    maskOriginalCtx.putImageData(savedFrame, 0, 0);
+    const imageURL = maskOriginalCanvas.toDataURL();
+    const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
+    const quality = {
+        timestamp: timestamp,
+        video: fileName.textContent, 
+        frameoriginal: `${fileName.textContent}_${frame}.png`, 
+        originalImage: imageURL,
+        evaluator: evaluatorName,
+        startPoint: { x: startX, y: startY },
+        endPoint: { x: endX, y: endY },
+        dimensions:{width: maskOriginalCanvas.width, height: maskOriginalCanvas.height}
+    };
+    return quality;
+};
 
 function saveBoneData() {
     const maskOriginalCanvas = document.createElement("canvas");
@@ -500,7 +473,7 @@ function saveBoneData() {
     maskOriginalCtx.putImageData(originalFrameData, 0, 0);
     const imageURL = maskOriginalCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
-    objectJSBone = {
+    const bone = {
         timestamp: timestamp,
         video: fileName.textContent, 
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
@@ -512,20 +485,19 @@ function saveBoneData() {
         threshold: threshold,
         scale: scaleInfo
     };
-    
+    return bone;
 };
 
-submitBtn.addEventListener('click', () => {
-    saveData();
-});
-
-function saveData() {
-    fetch('/tissue-quality', {
+function saveData(objectJSQuality, objectJSBone) {
+    fetch('/save-parametres', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(objectJSQuality)
+        body: JSON.stringify({
+            qualityData: objectJSQuality,
+            boneData: objectJSBone
+        })
     })
     .then(response => {
         if (!response.ok) {
@@ -534,39 +506,109 @@ function saveData() {
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-
-    fetch('/bone-region', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(objectJSBone)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        console.log('Success:', data
+        );
+        const summarySection = document.getElementById('saveSummary');
+        if (summarySection) {
+            summarySection.style.display = 'none';
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-        const name = fileName.textContent.toLowerCase();
-        if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".mha")) {
-            location.reload();
-        } else {
-            recargarVideo(appName, fileName.textContent);
-        }
+        showSummary(data);
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 }
 
+function showSummary(data) {
+    submitBtn.disabled = true;
+    submitBtn.classList.add("hidden");
+    framePlaceholder.style.display = 'none';
+    overlay.style.display = 'none';
+    const saveSummary = document.getElementById('saveSummary');
+    const summaryContent = document.getElementById('summaryContent');
+    saveSummary.classList.remove('hidden');
+    summaryContent.classList.remove('hidden');
+    const refreshBtn = document.getElementById('refreshVideoBtn');
+    refreshBtn.classList.remove('hidden');
+    refreshBtn.disabled = false;
+    saveSummary.style.display = 'block';
+    videoContainer.style.display = 'none';
+    
+    function addRow(label, value, decimals = 4) {
+        const formatted = typeof value === 'number'? value.toFixed(decimals) : value;
+        return `<tr> <td colspan="2">${label}</td> <td>${formatted}</td> </tr>`;
+    }
+    function addArrayRows(label, items, labels = null) {
+        if (!items || items.length === 0) return '';
+        let html = '';
+        items.forEach((item, index) => {
+            const num = parseFloat(item);
+            const formatted = isNaN(num) ? item : num.toFixed(4);
+            const subLabel = labels ? labels[index] : `Item ${index + 1}`;
+            if (index === 0) {
+                html += `
+                    <tr style="border: 1px solid #ddd; text-align: left; vertical-align: top;">
+                        <td rowspan="${items.length}" class="group-title">${label}</td>
+                        <td>${subLabel}</td>
+                        <td class="value-cell">${formatted}</td>
+                    </tr>
+                `;
+            } else {
+                html += `
+                    <tr>
+                        <td>${subLabel}</td>
+                        <td class="value-cell">${formatted}</td>
+                    </tr>
+                `;
+            }
+        });
+        return html;
+    }
+
+    summaryContent.innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <table style="width: 70vw; border: 1px solid #ddd; text-align: left;">
+            <thead><tr><th colspan="2">Quality Metrics:</th></tr></thead>
+            <tbody>
+                ${addArrayRows('GLCM', data.newQuality.glcm, data.newQuality.glcm_label)}
+                ${addArrayRows('Features GLDS', data.newQuality.features_GLDS, data.newQuality.labels_GLDS)}
+                ${addRow('Haar Mean', data.newQuality.haar_mean)}
+                ${addRow('Haar Variance', data.newQuality.haar_variance)}
+            </tbody>
+        </table>
+        <div style="height: 20px;"></div>
+        <table style="width: 30vw; border: 1px solid #ddd; text-align: left;">
+            <thead><tr><th colspan="2">Bone Region Metrics:</th></tr></thead>
+            <tbody>
+                ${addRow('Contours', data.newBone.contours, 0)}
+                ${addRow('Area', data.newBone.area)}
+                ${addRow('Perimeter', data.newBone.perimeter)}
+                ${addRow('Convex', data.newBone.convex)}
+                ${addRow('Homogeneity', data.newBone.homogeneity)}
+                ${addRow('Contrast', data.newBone.contrast)}
+                ${addRow('Correlation', data.newBone.correlation)}
+            </tbody>
+        </table>
+    </div>
+    `;
+    
+    refreshBtn.onclick = () => {
+        recargarVideo(appName, fileName.textContent);
+    };
+}
+
+function format(arr) {
+    arr = JSON.parse(arr);
+    return arr
+        .map(item => {
+            const num = parseFloat(item);
+            if (!isNaN(num)) {
+                return num.toFixed(4);
+            }
+            return String(item);
+        })
+        .join(' ');
+}
 
 function recargarVideo(appName, filename){
     // Guardar datos para usar después de la recarga

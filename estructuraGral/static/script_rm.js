@@ -116,22 +116,18 @@ async function getImage(){
         return;
     }
     const images = await res.json(); //Listado de imagenes disponibles
-
-    const resp = await fetch('static/DATA/file_info_RM.json'); //json de imagenes ya evaluadas
-    try{
+    try {
+        const resp = await fetch(`/unanalysed-images/${appName}/${evaluatorName}`);
         if (resp.ok) { 
-            const analysedImages = await resp.json();
-            const analysedEvaluatorImages = analysedImages
-                .filter(item => item.evaluator === evaluatorName)
-                .map(item => item.imageoriginal);
-            unanalysedImages = images.filter(image => !analysedEvaluatorImages.includes(image));
+            unanalysedImages = await resp.json();
         }
         else { //No hay imagenes evaluadas
             unanalysedImages = images;
         }
     } catch(e){
-            unanalysedImages = images;
+        unanalysedImages = images;
     }
+
     if (unanalysedImages.length === 0){
         fileName.textContent = "Analaysis finished.";
         fileBtn.disabled = true;
