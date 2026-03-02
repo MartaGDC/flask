@@ -149,7 +149,7 @@ async function selectVideo(appName, filename, frame){
         if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".mha")) {
             videoWindow.classList.add("hidden");
             content.classList.remove("disabled");
-            const imageURL = `/media/${appName}/${filename}`;
+            const imageURL = `/media/${filename}`;
             fileName.textContent = filename;
             const img = new Image();
             img.src = imageURL;
@@ -171,7 +171,7 @@ async function selectVideo(appName, filename, frame){
         } else {
             videoWindow.classList.add("hidden");
             content.classList.remove("disabled");
-            const videoURL = `/media/${appName}/${filename}`;
+            const videoURL = `/media/${filename}`;
             fileName.textContent = filename;
             videoPlayer.src = videoURL;
             videoContainer.style.display = "block";

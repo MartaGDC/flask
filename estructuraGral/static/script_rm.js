@@ -139,7 +139,7 @@ async function getImage(){
     else{
         aceptado = true;
         fileName.textContent = unanalysedImages[0];
-        const imageURL = `/media/${appName}/${unanalysedImages[0]}`;
+        const imageURL = `/media/${unanalysedImages[0]}`;
         const img = new Image();
         img.src = imageURL;
         img.onload = function() {

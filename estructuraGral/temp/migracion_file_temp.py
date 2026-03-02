@@ -10,7 +10,7 @@ with app.app_context():
     MetadataRM.query.delete()
     db.session.commit()
 
-    with open("static/DATA/file_info.json", encoding="utf-8") as f:
+    with open("../static/DATA/file_info.json", encoding="utf-8") as f:
         data = json.load(f)
 
     for i in data:
@@ -28,7 +28,7 @@ with app.app_context():
         db.session.add(row)
     
 
-    with open("static/DATA/file_info_recuperado.json", encoding="utf-8") as f:
+    with open("../static/DATA/file_info_recuperado.json", encoding="utf-8") as f:
         data_recuperado = json.load(f)
     
     for i in data_recuperado:
@@ -46,7 +46,7 @@ with app.app_context():
         db.session.add(row)
 
     
-    with open("static/DATA/file_info_RM.json", encoding="utf-8") as f:
+    with open("../static/DATA/file_info_RM.json", encoding="utf-8") as f:
         data_RM = json.load(f)
     
     for i in data_RM:

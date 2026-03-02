@@ -93,7 +93,7 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     sessionStorage.removeItem('selectedFile');
     sessionStorage.removeItem('frame');
     sessionStorage.removeItem('evaluator');
-    selectVideo(appName, nbFile, frame);
+    selectVideo(nbFile, frame);
 } else {
     fileBtn.addEventListener("click", () => {
         getVideos();
@@ -113,17 +113,17 @@ async function getVideos(){
     videos.forEach(video => {
         const li = document.createElement("li");
         li.textContent = video;
-        li.addEventListener("click", () => selectVideo(appName, video, frame));
+        li.addEventListener("click", () => selectVideo(video, frame));
         videoList.appendChild(li);
     }); 
 }
 
-async function selectVideo(appName, filename, frame){
+async function selectVideo(filename, frame){
     if (filename) {
         if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".mha")) {
             videoWindow.classList.add("hidden");
             content.classList.remove("disabled");
-            const imageURL = `/media/${appName}/${filename}`;
+            const imageURL = `/media/${filename}`;
             fileName.textContent = filename;
             const img = new Image();
             img.src = imageURL;
@@ -145,7 +145,7 @@ async function selectVideo(appName, filename, frame){
         } else {
             videoWindow.classList.add("hidden");
             content.classList.remove("disabled");
-            const videoURL = `/media/${appName}/${filename}`;
+            const videoURL = `/media/${filename}`;
             fileName.textContent = filename;
             videoPlayer.src = videoURL;
             videoContainer.style.display = "block";
@@ -158,12 +158,7 @@ async function selectVideo(appName, filename, frame){
                 videoPlayer.currentTime = 0; // Reset to the start of the video
             }
             await countFramesPerEval(evaluatorName);
-            if(numFramesEval===0){
-                researcherInfo.textContent = `Evaluator ${evaluatorName} hasn't studied this video.`;
-            }
-            else{
-                researcherInfo.textContent = `Evaluator ${evaluatorName} has already studied this video.`;
-            }
+            researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`;
             pausado = true;
             drawFrame();
             acceptFrameBtn.classList.remove("hidden");
@@ -180,7 +175,7 @@ async function selectVideo(appName, filename, frame){
 async function countFramesPerEval() {
     try {
         const video = fileName.textContent;
-        const response = await fetch(`/count_frames/${evaluatorName}/${video}`);
+        const response = await fetch(`/electrolysis/count_frames/${evaluatorName}/${video}`);
         if (!response.ok) {
             numFramesEval = 0;
             return;
@@ -430,8 +425,8 @@ acceptThresholdBtn.addEventListener('click', () => {
 
 /*Parametros de calidad de tejido y region quemada:
 - Dibujar rectángulo para marcar la zona de interés
-- fetch a app.py calculos tissue-quality
-- fetch a app.py calculos region quemada
+- fetch calculos tissue-quality
+- fetch calculos region quemada
 */
 /*-------------------------PARÁMETROS-------------------------*/
 submitBtn.addEventListener('click', () => {
@@ -489,7 +484,7 @@ function saveBoneData() {
 };
 
 function saveData(objectJSQuality, objectJSBone) {
-    fetch('/save-parametres', {
+    fetch('/electrolysis/save-parametres', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

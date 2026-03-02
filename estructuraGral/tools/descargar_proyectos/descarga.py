@@ -76,7 +76,7 @@ for key, value in proyectos_dict.items():
     if value == proyecto:
         app_nombre= key
         break
-structures = load_json("../structures.json").get(app_nombre, {})
+structures = load_json("../../structures.json").get(app_nombre, {})
 with open(f'proyecto_{proyecto}_colores.json', "w", encoding="utf-8") as f:
     json.dump(structures, f, indent=4, ensure_ascii=False)
 
@@ -100,14 +100,14 @@ df_actual = pd.read_sql(query_actual, engine, params={"proyecto": f"{proyecto}%"
 #lista_videosActual = df_actual['video'].tolist()
 lista_imgOriginalesActual = df_actual['frameoriginal'].tolist()
 for img in lista_imgOriginalesActual:
-    src = f"../static/frames/{img}"
+    src = f"../../static/frames/{img}"
     dst = f"{rutaActual}originales/{img}"
     if os.path.exists(src):
         shutil.copy2(src, dst)
 
 lista_imgMaskActual = df_actual['filesaved'].tolist()
 for img in lista_imgMaskActual:
-    src = f"../static/DATA/{img}"
+    src = f"../../static/DATA/{img}"
     dst = f"{rutaActual}mascaras/{img}"
     if os.path.exists(src):
         shutil.copy2(src, dst)
@@ -120,14 +120,14 @@ df_recuperado = pd.read_sql(query_recuperado, engine, params={"proyecto": f"{pro
 #lista_videosRecuperado = df_recuperado['video'].tolist()
 lista_imgOriginalesRecuperado = df_recuperado['frameoriginal'].tolist()
 for img in lista_imgOriginalesRecuperado:
-    src = f"../static/frames/{img}"
+    src = f"../../static/frames/{img}"
     dst = f"{rutaRecuperada}originales/{img}"
     if os.path.exists(src):
         shutil.copy2(src, dst)
 
 lista_imgMaskRecuperado = df_recuperado['filesaved'].tolist()
 for img in lista_imgMaskRecuperado:
-    src = f"../static/DATA/{img}"
+    src = f"../../static/DATA/{img}"
     dst = f"{rutaRecuperada}mascaras/{img}"
     if os.path.exists(src):
         shutil.copy2(src, dst)

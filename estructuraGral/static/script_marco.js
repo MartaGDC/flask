@@ -129,7 +129,7 @@ async function selectVideo(appName, filename, frame){
     if (filename) {
         videoWindow.classList.add("hidden");
         content.classList.remove("disabled");
-        const videoURL = `/media/${appName}/${filename}`;
+        const videoURL = `/media/${filename}`;
         fileName.textContent = filename;
         videoPlayer.src = videoURL;
         videoContainer.style.display = "block";
