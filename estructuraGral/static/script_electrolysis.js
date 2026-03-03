@@ -444,7 +444,7 @@ function saveQualityData() {
     const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
     maskOriginalCanvas.width = savedFrame.width;
     maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(savedFrame, 0, 0);
+    maskOriginalCtx.putImageData(originalFrameData, 0, 0);
     const imageURL = maskOriginalCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
     const quality = {

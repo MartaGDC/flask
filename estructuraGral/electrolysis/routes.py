@@ -78,7 +78,6 @@ def tissue_quality(data):
     y1 = int(_y1 * height / _height)
     y2 = int(_y2 * height / _height)
     ROI = image[y1:y2, x1:x2]
-    
     features_GLCM, _, labels_GLCM, _ = pf.glcm_features(ROI, ignore_zeros=True)
     glcm_ind = [1,5,3,9,2,4]
     glcm = [features_GLCM[i] for i in glcm_ind]
@@ -146,9 +145,14 @@ def bone_region(data):
     y2 = int(_y2 * height / _height)
 
     ROI = image[y1:y2, x1:x2]
-    binary_img = ROI > threshold
+    binary_img = (ROI > threshold).astype(bool)
+    print("Shape ROI:", ROI.shape)
+    print("Sum binary:", np.sum(binary_img))
+    print("First True coord:", np.argwhere(binary_img)[0])
     erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
+    print(f"[INFO] bone_region: erosion sum = {np.sum(erosion)}")
     dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
+    print(f"[INFO] bone_region: dilation sum = {np.sum(dilation)}")
     hueso = ROI * dilation #Bone mask
 
     #GUARDAR IMAGEN HUESO io.imsave('folder/'+Name[:-4]+'-Bone.png',hueso)
