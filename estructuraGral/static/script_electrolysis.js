@@ -6,7 +6,6 @@ const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 let appName = "";
 let evaluatorName = "";
-let token = "";
 let nbFile = "";
 
 const videoWindow = document.getElementById("videoWindow");
@@ -19,22 +18,13 @@ const prevFrameBtn = document.getElementById("prev-frame");
 const nextFrameBtn = document.getElementById("next-frame");
 const playBtn = document.getElementById("play");
 const pauseBtn = document.getElementById("pause");
-const startFrame = document.getElementById("mark-start");
-const endFrame = document.getElementById("mark-end");
 const framePlaceholder = document.getElementById("frame-placeholder");
 const overlay = document.getElementById("canvas-overlay");
 const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
 const ctxOverlay = overlay.getContext("2d");
 
-let firstValue = null;
-let firstFrame = null;
-let lastValue = null;
-let lastFrame = null;
-let startTime = null;
-let endTime = null;
 let frame = null;
 let savedFrame = null;
-let originalFrameData = null;
 let pausado = false; //mostrar el frame solo si está pausado
 
 const researcherInfo = document.getElementById("researcherInfo");
@@ -134,7 +124,6 @@ async function selectVideo(filename, frame){
                 overlay.height = img.height;
                 ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
                 savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
-                originalFrameData = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
             };
             activarListeners(true);
             scaleSave.disabled = false;
@@ -201,13 +190,6 @@ videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la re
 
 videoPlayer.addEventListener("timeupdate", () => {
     progress.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-    if (lastValue !== null && firstValue !== null) {
-        ctx.drawImage(videoPlayer, 0, 0);
-        if (videoPlayer.currentTime >= lastValue) {
-            videoPlayer.currentTime = firstValue;
-            pausar();
-        }
-    }
 });
 progress.addEventListener("input", () => {
     drawFrame();
@@ -277,7 +259,7 @@ acceptFrameBtn.addEventListener("click", () => {
     activarListeners(true);
     //Si ya se ha aceptado el frame, no quiero que cambie el frame al mover el video. A menos que se haya finalizado el form de aside (if form terminado y submitted true, aceptado = false).
     frame = Math.floor(videoPlayer.currentTime * 30) //Si 30 fps por segundo.
-    originalFrameData = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
+    savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
 });
 
 
@@ -312,7 +294,7 @@ scaleSave.addEventListener('click', () => {
         acceptThresholdBtn.disabled = false;
         acceptThresholdBtn.classList.remove("hidden");
         threshold = parseInt(boneSlider.value, 10);
-        applyThreshold(originalFrameData, threshold); 
+        applyThreshold(savedFrame, threshold); 
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
         activarListeners(false);
@@ -348,6 +330,9 @@ function stopDrawing(e) {
     endY = pos.y;
     drawing = false;
     dibujoHecho=true;
+    const rectCoordinates = document.getElementById('rectangle-coordinates');
+    rectCoordinates.innerHTML = `Rectangle Coordinates: x=${startX}, y=${startY}, width=${endX-startX}, height=${endY-startY}`;
+
 }
 
 function getPos(canvas, e) {
@@ -380,7 +365,7 @@ function calculateScale() {
 /*-------------------------MARCAR UMBRAL DE TEJIDO QUEMADO-------------------------*/
 boneSlider.addEventListener('input', () => {
     threshold = parseInt(boneSlider.value, 10);
-    applyThreshold(originalFrameData, threshold);
+    applyThreshold(savedFrame, threshold);
 });
 
 function applyThreshold(image, threshold) {
@@ -405,7 +390,6 @@ function applyThreshold(image, threshold) {
     imgElement.onload = function() {
         ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
         ctx.drawImage(imgElement, 0, 0);
-        savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
     };
 }
 acceptThresholdBtn.addEventListener('click', () => {
@@ -418,7 +402,7 @@ acceptThresholdBtn.addEventListener('click', () => {
     submitBtn.disabled = false;
     submitBtn.classList.remove("hidden");
     ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-    ctx.putImageData(originalFrameData, 0, 0);
+    ctx.putImageData(savedFrame, 0, 0);
     activarListeners(true);
 });
 
@@ -444,7 +428,7 @@ function saveQualityData() {
     const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
     maskOriginalCanvas.width = savedFrame.width;
     maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(originalFrameData, 0, 0);
+    maskOriginalCtx.putImageData(savedFrame, 0, 0);
     const imageURL = maskOriginalCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
     const quality = {
@@ -465,7 +449,7 @@ function saveBoneData() {
     const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
     maskOriginalCanvas.width = savedFrame.width;
     maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(originalFrameData, 0, 0);
+    maskOriginalCtx.putImageData(savedFrame, 0, 0);
     const imageURL = maskOriginalCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
     const bone = {

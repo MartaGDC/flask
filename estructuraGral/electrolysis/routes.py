@@ -48,7 +48,6 @@ def save_parametres():
     except Exception as e:
         db.session.rollback()
         import traceback
-        print(f"[ERROR] save_parametres: {str(e)}")
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -146,13 +145,8 @@ def bone_region(data):
 
     ROI = image[y1:y2, x1:x2]
     binary_img = (ROI > threshold).astype(bool)
-    print("Shape ROI:", ROI.shape)
-    print("Sum binary:", np.sum(binary_img))
-    print("First True coord:", np.argwhere(binary_img)[0])
     erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
-    print(f"[INFO] bone_region: erosion sum = {np.sum(erosion)}")
     dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
-    print(f"[INFO] bone_region: dilation sum = {np.sum(dilation)}")
     hueso = ROI * dilation #Bone mask
 
     #GUARDAR IMAGEN HUESO io.imsave('folder/'+Name[:-4]+'-Bone.png',hueso)
