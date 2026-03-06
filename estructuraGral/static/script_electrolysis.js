@@ -2,6 +2,7 @@ const body = document.body;
 const content = document.querySelector(".content");
 
 const reloadBtn = document.getElementById("reloadBtn");
+const downloadBtn = document.getElementById("downloadBtn");
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 let appName = "";
@@ -39,7 +40,8 @@ const scaleSave = document.getElementById("scaleSave");
 let scaleInfo = null;
 let objectJSQuality = null;
 const boneSlider = document.getElementById("boneSlider");
-const boneSliderLabel = document.getElementById("boneSliderLabel");
+const boneSliderSpan = document.getElementById("boneSliderSpan");
+const boneSliderLabel = document.getElementById("boneSliderLabel")
 const acceptThresholdBtn = document.getElementById("acceptThresholdBtn");
 let threshold = null;
 let objectJSBone = null;
@@ -48,11 +50,15 @@ let drawing = false;
 let startX, startY;
 let endX, endY;
 
-/*Botones reload y home:*/
+/*Botones reload y download:*/
 /*-------------------------BOTONES LOGOUT Y HOME-------------------------*/
 reloadBtn.addEventListener("click", () => {
     location.reload();
-})
+});
+
+downloadBtn.addEventListener("click", ()=> {
+    window.location.href = "/electrolysis/download";
+});
 
 /*Seleccion del video:
 - Se abre un diálogo para seleccionar un archivo de video.
@@ -289,11 +295,12 @@ scaleSave.addEventListener('click', () => {
         scaleSave.classList.add("hidden");
         boneSlider.disabled = false;
         boneSlider.classList.remove("hidden");
-        boneSliderLabel.disabled = false;
+        boneSliderSpan.classList.remove("hidden");
         boneSliderLabel.classList.remove("hidden");
         acceptThresholdBtn.disabled = false;
         acceptThresholdBtn.classList.remove("hidden");
         threshold = parseInt(boneSlider.value, 10);
+        boneSliderLabel.textContent += threshold;
         applyThreshold(savedFrame, threshold); 
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
@@ -330,9 +337,6 @@ function stopDrawing(e) {
     endY = pos.y;
     drawing = false;
     dibujoHecho=true;
-    const rectCoordinates = document.getElementById('rectangle-coordinates');
-    rectCoordinates.innerHTML = `Rectangle Coordinates: x=${startX}, y=${startY}, width=${endX-startX}, height=${endY-startY}`;
-
 }
 
 function getPos(canvas, e) {
@@ -365,6 +369,7 @@ function calculateScale() {
 /*-------------------------MARCAR UMBRAL DE TEJIDO QUEMADO-------------------------*/
 boneSlider.addEventListener('input', () => {
     threshold = parseInt(boneSlider.value, 10);
+    boneSliderLabel.textContent = "Value: " + threshold; 
     applyThreshold(savedFrame, threshold);
 });
 
@@ -395,7 +400,7 @@ function applyThreshold(image, threshold) {
 acceptThresholdBtn.addEventListener('click', () => {
     boneSlider.disabled = true;
     boneSlider.classList.add("hidden");
-    boneSliderLabel.disabled = true;
+    boneSliderSpan.classList.add("hidden");
     boneSliderLabel.classList.add("hidden");
     acceptThresholdBtn.disabled = true;
     acceptThresholdBtn.classList.add("hidden");
@@ -492,6 +497,15 @@ function saveData(objectJSQuality, objectJSBone) {
             summarySection.style.display = 'none';
         }
         showSummary(data);
+        function hasNull(obj) {
+            if (obj === null) return true;
+            if (Array.isArray(obj)) return obj.some(hasNull);
+            if (typeof obj === 'object') return Object.values(obj).some(hasNull);
+            return false;
+        }
+        if (hasNull(data)) {
+            alert("Atención: algunos valores no pudieron calcularse correctamente.");
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -568,6 +582,7 @@ function showSummary(data) {
                 ${addRow('Correlation', data.newBone.correlation)}
             </tbody>
         </table>
+        <div style="height: 20px;"></div>
     </div>
     `;
     

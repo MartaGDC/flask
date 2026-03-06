@@ -14,6 +14,9 @@
             <button>Home</button>
         </a>
         <button id = "reloadBtn">Reload</button>
+        <div style="position: absolute; top: 0; right: 0;">
+            <button id = "downloadBtn">Downlad CSV</button>
+        </div>
     </header>
 
     <!-- Área central -->
@@ -30,8 +33,11 @@
                     style="position: absolute; top: 0; left: 0;"></canvas>
             </div>
             <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
-                <label for="boneSlider" id="boneSliderLabel" class="hidden" disabled>Set the threshold so that you see barely anything else than electrolysed tissue</label>
-                <input type="range" style="margin-top: 10px;" id="boneSlider" min="1" max="256" value="95" step="1" class="hidden" disabled></input>
+                <span id="boneSliderSpan" class="hidden">Set the threshold so that you see barely anything else than electrolysed tissue</span>
+                <div style="margin-top: 10px; display: flex; flex-direction: row;">
+                    <input type="range" style="margin-top: 10px;" id="boneSlider" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
+                    <label for="boneSlider" id="boneSliderLabel" class="hidden" style="margin-left: 30px">Value: </label> 
+                </div>
                 <button id="acceptThresholdBtn" style="margin-top: 10px;" class="hidden" disabled>Accept threshold</button>
             </div>
             <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>

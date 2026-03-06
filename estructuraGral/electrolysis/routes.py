@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, jsonify
+from flask import render_template, redirect, request, jsonify, send_file
 from flask import current_app as app
 import os, io, base64
 import skimage.io
@@ -6,9 +6,15 @@ from skimage import feature, measure, morphology
 import pyfeats as pf
 import pywt as pw
 import numpy as np
+import math
+from sqlalchemy import text
+import csv, zipfile
+from io import StringIO, BytesIO
+from datetime import datetime
 from models import db, ElectrolysisBone, ElectrolysisQuality
 from utils import token_required, user_can_access
 from . import electrolysis_bp
+
 
 PERMISSIONS = {
     "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm", "electrolysis"],
@@ -134,10 +140,9 @@ def bone_region(data):
 
     image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
     image = (image * 255).astype(np.uint8)
-
     height, width = image.shape
-    scale = _scale * height
 
+    scale = _scale * height
     x1 = int(_x1 * width / _width)
     x2 = int(_x2 * width / _width)
     y1 = int(_y1 * height / _height)
@@ -158,16 +163,16 @@ def bone_region(data):
     cnt = [c for c in contours if len(c) > 4]
 
     A = measure.moments(dilation.astype(np.uint8))[0,0]
-    Area = float(A / scale ** 2)
-    Per = float(measure.perimeter(dilation)/scale)
+    Area = nan_null(A / scale ** 2)
+    Per = nan_null(measure.perimeter(dilation)/scale)
 
     hull = morphology.convex_hull_image(dilation)
-    Convex = float(A / measure.moments(hull.astype(np.uint8))[0,0])
+    Convex = nan_null(A / measure.moments(hull.astype(np.uint8))[0,0])
     
     glcm = feature.graycomatrix(hueso, distances=[1], angles=[0, np.pi / 4, np.pi / 2, 3 * np.pi / 4], levels=256, symmetric=True, normed=True)
-    homogeneity = float(feature.graycoprops(glcm, 'homogeneity')[0].mean())
-    contrast = float(feature.graycoprops(glcm, 'contrast')[0].mean())
-    correlation = float(feature.graycoprops(glcm, 'correlation')[0].mean())
+    homogeneity = nan_null(feature.graycoprops(glcm, 'homogeneity')[0].mean())
+    contrast = nan_null(feature.graycoprops(glcm, 'contrast')[0].mean())
+    correlation = nan_null(feature.graycoprops(glcm, 'correlation')[0].mean())
     
     Point = [[x1, y1], [x2, y2]]
 
@@ -187,3 +192,51 @@ def bone_region(data):
     )
     db.session.add(new_bone)
     return {"contours": len(cnt), "area": Area, "perimeter": Per, "convex": Convex, "homogeneity": homogeneity, "contrast": contrast, "correlation": correlation}
+
+def nan_null(x):
+    try:
+        f = float(x)
+        if math.isnan(f):
+            return None
+        return f
+    except:
+        return None
+
+@electrolysis_bp.route('/download')
+def download():
+    date = datetime.now().strftime("%Y-%m-%d")
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w') as zf:
+        conn = db.engine.connect()
+        result = conn.execute(text("SELECT * FROM electrolysis_bone"))
+        columns = result.keys()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(columns)
+        for row in result:
+            writer.writerow(row)
+        result.close()
+        conn.close()
+
+        zf.writestr(f"electrolysis_bone_{date}.csv", output.getvalue())
+
+        conn = db.engine.connect()
+        result = conn.execute(text("SELECT * FROM electrolysis_quality"))
+        columns = result.keys()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(columns)
+        for row in result:
+            writer.writerow(row)
+        result.close()
+        conn.close()
+
+        zf.writestr(f"electrolysis_quality_{date}.csv", output.getvalue())
+
+    zip_buffer.seek(0)
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        download_name=f"electrolysis_data_{date}.zip",
+        as_attachment=True
+    )
