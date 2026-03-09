@@ -57,7 +57,7 @@ reloadBtn.addEventListener("click", () => {
 });
 
 downloadBtn.addEventListener("click", ()=> {
-    window.location.href = "/electrolysis/download";
+    window.location.href = "/download";
 });
 
 /*Seleccion del video:
@@ -170,7 +170,7 @@ async function selectVideo(filename, frame){
 async function countFramesPerEval() {
     try {
         const video = fileName.textContent;
-        const response = await fetch(`/electrolysis/count_frames/${evaluatorName}/${video}`);
+        const response = await fetch(`/count_frames/${evaluatorName}/${video}`);
         if (!response.ok) {
             numFramesEval = 0;
             return;
@@ -473,7 +473,7 @@ function saveBoneData() {
 };
 
 function saveData(objectJSQuality, objectJSBone) {
-    fetch('/electrolysis/save-parametres', {
+    fetch('/save-parametres', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

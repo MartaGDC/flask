@@ -94,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () =>{
     evaluatorName = researcherInfo.dataset.user;
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
-
     if (!token || token === "undefined" || token === "") {
         alert("You must enter a valid user for this project.\nEnter new credentials.");
         window.location.href = "http://localhost/index.php";
@@ -119,7 +118,7 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     sessionStorage.removeItem('selectedFile');
     sessionStorage.removeItem('frame');
     sessionStorage.removeItem('evaluator');
-    selectVideo(appName, nbFile, frame);
+    selectVideo(nbFile, frame);
 } else {
     fileBtn.addEventListener("click", () => {
         getVideos();
@@ -139,12 +138,12 @@ async function getVideos(){
     videos.forEach(video => {
         const li = document.createElement("li");
         li.textContent = video;
-        li.addEventListener("click", () => selectVideo(appName, video, frame));
+        li.addEventListener("click", () => selectVideo(video, frame));
         videoList.appendChild(li);
     }); 
 }
 
-async function selectVideo(appName, filename, frame){
+async function selectVideo(filename, frame){
     if (filename) {
         if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".mha")) {
             videoWindow.classList.add("hidden");
@@ -166,7 +165,6 @@ async function selectVideo(appName, filename, frame){
             sidebar.classList.remove("hidden");
             content.style.marginRight = "21vw";
             validar();
-
 
         } else {
             videoWindow.classList.add("hidden");
@@ -200,7 +198,7 @@ async function selectVideo(appName, filename, frame){
     }
 }
 
-async function countFramesPerEval() {
+async function countFramesPerEval(evaluatorName) {
     try {
         const video = fileName.textContent;
         const response = await fetch(`/count_frames/${evaluatorName}/${video}`);
@@ -216,26 +214,6 @@ async function countFramesPerEval() {
 }
 
 
-/*
-videoFileInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        fileName.textContent = file.name;
-        const videoURL = URL.createObjectURL(file);
-        videoPlayer.src = videoURL;
-        videoContainer.style.display = "block";
-        videoPlayer.load();
-        videoPlayer.currentTime = 0; // Reset to the start of the video
-        researcherInfo.textContent = `Evaluator ${evaluatorName} studied X frames from this video.`; //Modificar cuando tenga como recoger los frames guardados
-        pausado = true;
-        drawFrame();
-    } else {
-        fileName.textContent = "No video selected.";
-        videoContainer.style.display = "none";
-        acceptFrameBtn.disabled = true;
-    }
-});
-*/
 videoPlayer.addEventListener("loadedmetadata", () => { //Mejora muchísimo la resolución de la imagen del frame
     framePlaceholder.width = videoPlayer.videoWidth;
     framePlaceholder.height = videoPlayer.videoHeight;
@@ -277,13 +255,7 @@ function pausar(){
     pauseBtn.classList.add("hidden");
     playBtn.classList.remove("hidden")
 }
-/*videoPlayer.addEventListener("pause", () => {
-    pausado = true;
-    drawFrame();
-});
-videoPlayer.addEventListener("play", () => {
-    pausado = false;
-});*/
+
 function drawFrame() {
     if (pausado && !aceptado) {
         ctx.drawImage(videoPlayer, 0, 0);
@@ -838,7 +810,7 @@ function saveDrawing(){
                 }
             });
         }
-         else if (appName==="base_ROIS"){
+        else if (appName==="base_ROIS"){
             objectJS = {
                 video: fileName.textContent, 
                 frame: frame,
@@ -875,9 +847,6 @@ function saveDrawing(){
                 }
             });
         }
-
-        
-
     }
 
 

@@ -1,6 +1,11 @@
-from flask import render_template, redirect, request, jsonify, send_file
-from flask import current_app as app
+
+from flask import Flask, render_template, redirect, request, jsonify, session, send_file, send_from_directory
+from functools import wraps
+import jwt
+import json
 import os, io, base64
+from PIL import Image
+import SimpleITK as sitk
 import skimage.io
 from skimage import feature, measure, morphology
 import pyfeats as pf
@@ -11,21 +16,63 @@ from sqlalchemy import text
 import csv, zipfile
 from io import StringIO, BytesIO
 from datetime import datetime
-from models import db, ElectrolysisBone, ElectrolysisQuality
-from utils import token_required, user_can_access
-from . import electrolysis_bp
+from models import db, User, ElectrolysisBone, ElectrolysisQuality
+from config import SECRET_KEY, DATABASE_URI, BASE_DIR
+
+
+#from flask_cors import CORS
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+app.config['SECRET_KEY'] = SECRET_KEY
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+
+
+# CORS(app)
+APP_VIDEOS = {
+    'electrolysis': ''
+}
 
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm", "electrolysis"],
-    "foot": ["foot"],
-    "knee_hand": ["knee", "hand"],
-    "knee_menisco": ["knee", "menisco"],
-    "nerves": ["nerves"],
-    "abd": ["abd"]
+    "admin": ["electrolysis"]
 }
 
-@electrolysis_bp.route('/')
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = (
+            request.cookies.get('token') or 
+            request.args.get('token')
+        )
+        if not token:
+            return jsonify({"error": "Token missing"}), 401
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            username = payload["username"]
+            user = User.query.filter_by(username=username).first()
+            if not user:
+                return jsonify({"error": "User not found"}), 401
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token expired"}), 401
+        return f(user, *args, **kwargs)
+    return decorated
+
+
+def user_can_access(user, app_name, permissions):
+    proyectos = permissions.get(user.role, [])
+    return any(app_name.startswith(p) for p in proyectos)
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+@app.route('/electrolysis')
 @token_required
 def index(user):
     if not user_can_access(user, "electrolysis", PERMISSIONS):
@@ -33,7 +80,7 @@ def index(user):
     return render_template('index_electrolysis.html', user=user.username, title='electrolysis') 
 
 
-@electrolysis_bp.route("/count_frames/<username>/<video>")
+@app.route("/count_frames/<username>/<video>")
 def count_frames_electrolysis(username, video):
     count = ElectrolysisBone.query.filter_by(
         evaluator=username
@@ -42,8 +89,44 @@ def count_frames_electrolysis(username, video):
     ).count()
     return jsonify({"count": count})
 
-#Parámetros electrolysis
-@electrolysis_bp.route('/save-parametres', methods=['POST'])
+
+#Acceso a carpetas de videos según la app_name
+@app.route("/select/<app_name>", methods=["GET"])
+def list_files(app_name):
+    app_num = APP_VIDEOS[app_name]
+    dir_path = BASE_DIR
+    videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
+    return jsonify(videos)
+
+
+#Acceso al video de la carpeta
+@app.route("/media/<filename>", methods=["GET"])
+def play_video(filename):
+    name, extension = os.path.splitext(filename)
+    if extension.lower() == ".mha":
+        file_path = os.path.join(BASE_DIR, filename)
+        try:
+            image = sitk.ReadImage(file_path)
+            array = sitk.GetArrayFromImage(image)
+            array = ((array - np.min(array)) / (np.max(array) - np.min(array)) * 255).astype(np.uint8)
+            img = Image.fromarray(array)
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            buf.seek(0)
+            return send_file(buf, mimetype="image/png")
+        
+        except Exception as e:
+            print(f"[ERROR] No se pudo convertir {filename}: {e}")
+            return "Error processing MHA file", 500
+    elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
+        filename = f"{name}_proxy{extension}"
+        dir_path = BASE_DIR + "/proxy"
+    else:
+        dir_path = BASE_DIR
+    return send_from_directory(directory=dir_path, path=filename)
+
+
+@app.route('/save-parametres', methods=['POST'])
 def save_parametres():
     data = request.json
     try:
@@ -202,7 +285,7 @@ def nan_null(x):
     except:
         return None
 
-@electrolysis_bp.route('/download')
+@app.route('/download')
 def download():
     date = datetime.now().strftime("%Y-%m-%d")
     zip_buffer = BytesIO()
@@ -240,3 +323,22 @@ def download():
         download_name=f"electrolysis_data_{date}.zip",
         as_attachment=True
     )
+
+
+
+@app.after_request
+def add_header(response): #Con los cambios en el html, había problemas de cache al usar el boton Reload
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return '', 200
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='127.0.0.1',port=5005)

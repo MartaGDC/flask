@@ -100,7 +100,7 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     sessionStorage.removeItem('selectedFile');
     sessionStorage.removeItem('frame');
     sessionStorage.removeItem('evaluator');
-    selectVideo(appName, nbFile, frame);
+    selectVideo(nbFile, frame);
 } else {
     fileBtn.addEventListener("click", () => {
         getVideos();
@@ -120,12 +120,12 @@ async function getVideos(){
     videos.forEach(video => {
         const li = document.createElement("li");
         li.textContent = video;
-        li.addEventListener("click", () => selectVideo(appName, video, frame));
+        li.addEventListener("click", () => selectVideo(video, frame));
         videoList.appendChild(li);
     }); 
 }
 
-async function selectVideo(appName, filename, frame){
+async function selectVideo(filename, frame){
     if (filename) {
         videoWindow.classList.add("hidden");
         content.classList.remove("disabled");
