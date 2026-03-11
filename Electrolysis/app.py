@@ -90,6 +90,36 @@ def count_frames_electrolysis(username, video):
     return jsonify({"count": count})
 
 
+#Subir archivo y guardarlo. Tambien procesarlos y es un video
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "Empty filename"}), 400
+    filename = file.filename
+    name, extension = os.path.splitext(filename)
+    extension = extension.lower()
+    allowed_extensions = [".jpg", ".jpeg", ".png", ".mp4", ".mha"]
+    if extension not in allowed_extensions:
+        return jsonify({"error": "File type not allowed"}), 400
+
+    save_path = os.path.join(BASE_DIR, filename)
+    file.save(save_path)
+
+    import sys
+    tools_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../tools"))
+    sys.path.insert(0, tools_path)
+    if extension == ".mp4" or extension == ".mpeg":
+        from generar_proxys import process_one  # importa tu función
+        process_one(file.filename)
+
+    return jsonify({
+        "success": True,
+        "filename": filename
+    })
+
 #Acceso a carpetas de videos según la app_name
 @app.route("/select/<app_name>", methods=["GET"])
 def list_files(app_name):
@@ -165,7 +195,11 @@ def tissue_quality(data):
     x2 = int(_x2 * width / _width)
     y1 = int(_y1 * height / _height)
     y2 = int(_y2 * height / _height)
-    ROI = image[y1:y2, x1:x2]
+    x_min = min(x1, x2)
+    x_max = max(x1, x2)
+    y_min = min(y1, y2)
+    y_max = max(y1, y2)
+    ROI = image[y_min:y_max, x_min:x_max]
     features_GLCM, _, labels_GLCM, _ = pf.glcm_features(ROI, ignore_zeros=True)
     glcm_ind = [1,5,3,9,2,4]
     glcm = [features_GLCM[i] for i in glcm_ind]
@@ -179,15 +213,24 @@ def tissue_quality(data):
     mask = np.ones(ROI.shape)
     features_GLDS, labels_GLDS = pf.glds_features(ROI, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
 
-    Point = [[x1,y1],[x2,y2]]
+    Point = [[x_min, y_min], [x_max, y_max]]
 
     new_quality = ElectrolysisQuality(
-        timestamp=timestamp,
-        video=video,
-        frameoriginal=frameoriginal,
-        evaluator=evaluator,
-        glcm=glcm,
-        features_GLDS=list(features_GLDS),
+        timestamp = timestamp,
+        video = video,
+        frameoriginal = frameoriginal,
+        evaluator = evaluator,
+        glcm_contrast = float(glcm[0]),
+        glcm_sumAvg = float(glcm[1]),
+        glcm_sumOfVar2 = float(glcm[2]),
+        glcm_diffVar = float(glcm[3]),
+        glcm_correlation = float(glcm[4]),
+        glcm_invDiffMoment = float(glcm[5]),
+        glds_homogeneity = float(features_GLDS[0]),
+        glds_contrast = float(features_GLDS[1]),
+        glds_asm = float(features_GLDS[2]),
+        glds_entropy = float(features_GLDS[3]),
+        glds_mean = float(features_GLDS[4]),
         haar_mean=haar_mean,
         haar_variance=haar_variance,
         point=Point
@@ -230,8 +273,12 @@ def bone_region(data):
     x2 = int(_x2 * width / _width)
     y1 = int(_y1 * height / _height)
     y2 = int(_y2 * height / _height)
+    x_min = min(x1, x2)
+    x_max = max(x1, x2)
+    y_min = min(y1, y2)
+    y_max = max(y1, y2)
 
-    ROI = image[y1:y2, x1:x2]
+    ROI = image[y_min:y_max, x_min:x_max]
     binary_img = (ROI > threshold).astype(bool)
     erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
     dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
@@ -257,13 +304,14 @@ def bone_region(data):
     contrast = nan_null(feature.graycoprops(glcm, 'contrast')[0].mean())
     correlation = nan_null(feature.graycoprops(glcm, 'correlation')[0].mean())
     
-    Point = [[x1, y1], [x2, y2]]
+    Point = [[x_min, y_min], [x_max, y_max]]
 
     new_bone = ElectrolysisBone(
         timestamp=timestamp,
         video=video,
         frameoriginal=frameoriginal,
         evaluator=evaluator,
+        threshold=threshold,
         contours=len(cnt),
         area=Area,
         perimeter=Per,
@@ -274,7 +322,7 @@ def bone_region(data):
         point=Point
     )
     db.session.add(new_bone)
-    return {"contours": len(cnt), "area": Area, "perimeter": Per, "convex": Convex, "homogeneity": homogeneity, "contrast": contrast, "correlation": correlation}
+    return {"threshold": threshold, "contours": len(cnt), "area": Area, "perimeter": Per, "convex": Convex, "homogeneity": homogeneity, "contrast": contrast, "correlation": correlation}
 
 def nan_null(x):
     try:

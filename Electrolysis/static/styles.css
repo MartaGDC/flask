@@ -60,6 +60,7 @@ body {
 }
 
 .selector button,
+.selector input,
 .botones_frame button,
 .frame-viewer button {
     padding: 0.75vw 0;
@@ -94,6 +95,21 @@ body {
 .window {
     position: fixed;
     top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    max-height: 70%;
+    background-color: #F5F5F5;
+    border: 1px solid #1A1A1A;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: auto;
+    z-index: 1000;
+}
+#uploadWindow {
+    position: fixed;
+    top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;

@@ -22,6 +22,7 @@
     <!-- Área central -->
     <main class="content">
         <div class="selector">
+            <button id="uploadBtn">Upload file</button>
             <button id="fileBtn">Select video</button>
             <p id="fileName">No video selected.</p>
             <p class="researcher-info" id="researcherInfo" data-user="{{user}}"></p>
@@ -50,6 +51,9 @@
             </div>
         </div>
     </main>
+    <div id= "uploadWindow" class="window hidden">
+        <input type="file" id="uploadedFile">
+    </div>
     <div id="videoWindow" class="window hidden">
         <ul id="videoList" class="videoList"></ul>
     </div>

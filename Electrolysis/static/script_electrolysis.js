@@ -3,6 +3,9 @@ const content = document.querySelector(".content");
 
 const reloadBtn = document.getElementById("reloadBtn");
 const downloadBtn = document.getElementById("downloadBtn");
+const uploadBtn = document.getElementById("uploadBtn");
+const uploadWindow = document.getElementById("uploadWindow");
+const uploadedFile = document.getElementById("uploadedFile");
 const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 let appName = "";
@@ -92,9 +95,44 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     selectVideo(nbFile, frame);
 } else {
     fileBtn.addEventListener("click", () => {
+        uploadBtn.classList.add("hidden");
         getVideos();
     });
+    uploadBtn.addEventListener("click", () => {
+        fileBtn.classList.add("hidden");
+        uploadWindow.classList.remove("hidden");
+    })
 }
+
+uploadedFile.addEventListener("change", async() => {
+    const file = uploadedFile.files[0];
+    const filename = file.name.toLowerCase();
+    if (!file) return;
+    const permitidos = [".jpg", ".jpeg", ".png", ".mp4", ".mpeg", ".mha"];
+    if(!permitidos.some(ext => filename.endsWith(ext))) {
+    alert("Only JPG, PNG, MP4 or MHA files are allowed.");
+        return;
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+        const res = await fetch(`/upload`, {
+            method: "POST",
+            body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            alert(data.error || "Upload failed");
+            return;
+        }
+        uploadWindow.classList.add("hidden");
+        selectVideo(data.filename, null);
+    } catch (err) {
+        console.error(err);
+        alert("Error uploading file");
+    }
+})
+
 
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 async function getVideos(){
@@ -131,7 +169,6 @@ async function selectVideo(filename, frame){
                 ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
                 savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
             };
-            activarListeners(true);
             scaleSave.disabled = false;
             scaleSave.classList.remove("hidden");
             fileBtn.disabled = true;
@@ -276,12 +313,11 @@ acceptFrameBtn.addEventListener("click", () => {
 /*-------------------------DIBUJAR Y GUARDAR ESCALA-------------------------*/
 function activarListeners(bool){
     const activo = bool ? 'addEventListener' : 'removeEventListener';
-    overlay[activo]("mousedown", startDrawing); //overlay["addEventListener"]("mousedown", startDrawing) es lo mismo que overlay.addEventListener("mousedown", startDrawing)
-    overlay[activo]("mousemove", draw);
-    overlay[activo]("mouseup", stopDrawing);
-    overlay[activo]("touchstart", startDrawing);
-    overlay[activo]("touchmove", draw);
-    overlay[activo]("touchend", stopDrawing);
+    overlay.style.touchAction = "none";
+    overlay[activo]("pointerdown", startDrawing); //overlay["addEventListener"]("mousedown", startDrawing) es lo mismo que overlay.addEventListener("mousedown", startDrawing)
+    overlay[activo]("pointermove", draw);
+    overlay[activo]("pointerup", stopDrawing);
+    overlay[activo]("pointercancel", stopDrawing);
     overlay.style.cursor= bool ? "crosshair" : "";
 }
 
@@ -312,6 +348,7 @@ scaleSave.addEventListener('click', () => {
 });
 //Dibujar rectangulos
 function startDrawing(e) {
+    overlay.setPointerCapture(e.pointerId);
     const pos = getPos(overlay, e);
     startX = pos.x;
     startY = pos.y;
@@ -332,6 +369,7 @@ function draw(e) {
 
 function stopDrawing(e) {
     if (!drawing) return;
+    overlay.releasePointerCapture(e.pointerId);
     const pos = getPos(overlay, e);
     endX = pos.x;
     endY = pos.y;
@@ -531,13 +569,13 @@ function showSummary(data) {
         const formatted = typeof value === 'number'? value.toFixed(decimals) : value;
         return `<tr> <td colspan="2">${label}</td> <td>${formatted}</td> </tr>`;
     }
-    function addArrayRows(label, items, labels = null) {
+    function addArrayRows(label, items, labels) {
         if (!items || items.length === 0) return '';
         let html = '';
         items.forEach((item, index) => {
             const num = parseFloat(item);
             const formatted = isNaN(num) ? item : num.toFixed(4);
-            const subLabel = labels ? labels[index] : `Item ${index + 1}`;
+            const subLabel = labels[index];
             if (index === 0) {
                 html += `
                     <tr style="border: 1px solid #ddd; text-align: left; vertical-align: top;">
@@ -573,6 +611,7 @@ function showSummary(data) {
         <table style="width: 30vw; border: 1px solid #ddd; text-align: left;">
             <thead><tr><th colspan="2">Bone Region Metrics:</th></tr></thead>
             <tbody>
+                ${addRow('Threshold', data.newBone.threshold, 0)}
                 ${addRow('Contours', data.newBone.contours, 0)}
                 ${addRow('Area', data.newBone.area)}
                 ${addRow('Perimeter', data.newBone.perimeter)}
