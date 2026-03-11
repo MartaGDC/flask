@@ -36,7 +36,7 @@ def process_one(filename):
     proxy_path = os.path.join(PROXY, proxy_name)
     os.makedirs(PROXY, exist_ok=True)
 
-    if not os.path.exists(proxy_path) or os.path.getmtime(orig_path) > os.path.getmtime(proxy_path): #Comprobar si el archivo proxy para un original de una fecha determinada (por si ha habido sobreescrituras)
+    if not os.path.exists(proxy_path): #Comprobar si el archivo proxy para un original de una fecha determinada (por si ha habido sobreescrituras)
         subprocess.run([
             "ffmpeg", #comando para ejecutar ffmpeg (instalado previamente en el sistema)
             "-i", orig_path, #-i: Archivo de entrada

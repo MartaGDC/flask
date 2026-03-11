@@ -43,16 +43,12 @@
             </div>
             <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
             <button id="scaleSave" class="hidden" disabled>Select a rectangle of 1cm to set the scale</button>
-            <button id="submitBtn" class="hidden" disabled>Select a rectangle that includes the needle path</button>
-
-            <div id="saveSummary" class="hidden" style="display: flex; flex-direction: column; align-items: center;">
-                <div id="summaryContent" class="hidden"></div>
-                <button id="refreshVideoBtn" class="hidden" disabled>Reload page</button>
-            </div>
+            <button id="submitBtn" class="hidden" disabled>Select a rectangle that includes the needle path and submit</button>
         </div>
     </main>
     <div id= "uploadWindow" class="window hidden">
         <input type="file" id="uploadedFile">
+        <p id="uploadStatus" class="hidden" style="text-align: center;">Processing video, please wait...</p>
     </div>
     <div id="videoWindow" class="window hidden">
         <ul id="videoList" class="videoList"></ul>

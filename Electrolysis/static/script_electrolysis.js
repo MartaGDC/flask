@@ -107,6 +107,7 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
 uploadedFile.addEventListener("change", async() => {
     const file = uploadedFile.files[0];
     const filename = file.name.toLowerCase();
+    fileName.textContent=filename;
     if (!file) return;
     const permitidos = [".jpg", ".jpeg", ".png", ".mp4", ".mpeg", ".mha"];
     if(!permitidos.some(ext => filename.endsWith(ext))) {
@@ -115,6 +116,7 @@ uploadedFile.addEventListener("change", async() => {
     }
     const formData = new FormData();
     formData.append("file", file);
+    document.getElementById("uploadStatus").classList.remove("hidden");
     try {
         const res = await fetch(`/upload`, {
             method: "POST",
@@ -125,6 +127,7 @@ uploadedFile.addEventListener("change", async() => {
             alert(data.error || "Upload failed");
             return;
         }
+        document.getElementById("uploadStatus").classList.add("hidden");
         uploadWindow.classList.add("hidden");
         selectVideo(data.filename, null);
     } catch (err) {
@@ -169,10 +172,10 @@ async function selectVideo(filename, frame){
                 ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
                 savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
             };
-            scaleSave.disabled = false;
-            scaleSave.classList.remove("hidden");
             fileBtn.disabled = true;
             fileBtn.classList.add("disabled");
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add("disabled");
             aceptado = true;
         } else {
             videoWindow.classList.add("hidden");
@@ -196,6 +199,8 @@ async function selectVideo(filename, frame){
             acceptFrameBtn.classList.remove("hidden");
             fileBtn.disabled = true;
             fileBtn.classList.add("disabled");
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add("disabled");
         }
     } else {
         fileName.textContent = "No video selected.";
@@ -528,119 +533,12 @@ function saveData(objectJSQuality, objectJSBone) {
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data
-        );
-        const summarySection = document.getElementById('saveSummary');
-        if (summarySection) {
-            summarySection.style.display = 'none';
-        }
-        showSummary(data);
-        function hasNull(obj) {
-            if (obj === null) return true;
-            if (Array.isArray(obj)) return obj.some(hasNull);
-            if (typeof obj === 'object') return Object.values(obj).some(hasNull);
-            return false;
-        }
-        if (hasNull(data)) {
-            alert("Atención: algunos valores no pudieron calcularse correctamente.");
-        }
+        console.log('Success:', data);
+        recargarVideo(appName, fileName.textContent);
     })
     .catch((error) => {
         console.error('Error:', error);
     });
-}
-
-function showSummary(data) {
-    submitBtn.disabled = true;
-    submitBtn.classList.add("hidden");
-    framePlaceholder.style.display = 'none';
-    overlay.style.display = 'none';
-    const saveSummary = document.getElementById('saveSummary');
-    const summaryContent = document.getElementById('summaryContent');
-    saveSummary.classList.remove('hidden');
-    summaryContent.classList.remove('hidden');
-    const refreshBtn = document.getElementById('refreshVideoBtn');
-    refreshBtn.classList.remove('hidden');
-    refreshBtn.disabled = false;
-    saveSummary.style.display = 'block';
-    videoContainer.style.display = 'none';
-    
-    function addRow(label, value, decimals = 4) {
-        const formatted = typeof value === 'number'? value.toFixed(decimals) : value;
-        return `<tr> <td colspan="2">${label}</td> <td>${formatted}</td> </tr>`;
-    }
-    function addArrayRows(label, items, labels) {
-        if (!items || items.length === 0) return '';
-        let html = '';
-        items.forEach((item, index) => {
-            const num = parseFloat(item);
-            const formatted = isNaN(num) ? item : num.toFixed(4);
-            const subLabel = labels[index];
-            if (index === 0) {
-                html += `
-                    <tr style="border: 1px solid #ddd; text-align: left; vertical-align: top;">
-                        <td rowspan="${items.length}" class="group-title">${label}</td>
-                        <td>${subLabel}</td>
-                        <td class="value-cell">${formatted}</td>
-                    </tr>
-                `;
-            } else {
-                html += `
-                    <tr>
-                        <td>${subLabel}</td>
-                        <td class="value-cell">${formatted}</td>
-                    </tr>
-                `;
-            }
-        });
-        return html;
-    }
-
-    summaryContent.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center;">
-        <table style="width: 70vw; border: 1px solid #ddd; text-align: left;">
-            <thead><tr><th colspan="2">Quality Metrics:</th></tr></thead>
-            <tbody>
-                ${addArrayRows('GLCM', data.newQuality.glcm, data.newQuality.glcm_label)}
-                ${addArrayRows('Features GLDS', data.newQuality.features_GLDS, data.newQuality.labels_GLDS)}
-                ${addRow('Haar Mean', data.newQuality.haar_mean)}
-                ${addRow('Haar Variance', data.newQuality.haar_variance)}
-            </tbody>
-        </table>
-        <div style="height: 20px;"></div>
-        <table style="width: 30vw; border: 1px solid #ddd; text-align: left;">
-            <thead><tr><th colspan="2">Bone Region Metrics:</th></tr></thead>
-            <tbody>
-                ${addRow('Threshold', data.newBone.threshold, 0)}
-                ${addRow('Contours', data.newBone.contours, 0)}
-                ${addRow('Area', data.newBone.area)}
-                ${addRow('Perimeter', data.newBone.perimeter)}
-                ${addRow('Convex', data.newBone.convex)}
-                ${addRow('Homogeneity', data.newBone.homogeneity)}
-                ${addRow('Contrast', data.newBone.contrast)}
-                ${addRow('Correlation', data.newBone.correlation)}
-            </tbody>
-        </table>
-        <div style="height: 20px;"></div>
-    </div>
-    `;
-    
-    refreshBtn.onclick = () => {
-        recargarVideo(appName, fileName.textContent);
-    };
-}
-
-function format(arr) {
-    arr = JSON.parse(arr);
-    return arr
-        .map(item => {
-            const num = parseFloat(item);
-            if (!isNaN(num)) {
-                return num.toFixed(4);
-            }
-            return String(item);
-        })
-        .join(' ');
 }
 
 function recargarVideo(appName, filename){

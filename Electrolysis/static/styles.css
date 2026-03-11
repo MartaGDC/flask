@@ -60,7 +60,6 @@ body {
 }
 
 .selector button,
-.selector input,
 .botones_frame button,
 .frame-viewer button {
     padding: 0.75vw 0;
