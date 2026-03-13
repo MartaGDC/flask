@@ -147,7 +147,7 @@ else: #proyecto rm
 
     lista_imgOriginalesActual = df_actual['imageoriginal'].tolist()
     for img in lista_imgOriginalesActual:
-        src = f"../../static/frames/{img}"
+        src = f"/srv/data/{img}"
         dst = f"{rutaActual}originales/{img}"
         if os.path.exists(src):
             shutil.copy2(src, dst)
