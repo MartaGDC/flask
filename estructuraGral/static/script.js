@@ -457,12 +457,10 @@ structures.forEach((structure, index) => {
     structure.addEventListener('click', () => {
         widths[index] = parseInt(sliders[index].value);
         currentIndex = index;
-        console.log(structure.querySelector('.structure-name').textContent.trim(), index);
     });
 });
 sliders.forEach((slider, index) => {
     slider.addEventListener('input', async e => {
-        console.log(index);
         widths[index] = parseInt(slider.value);
         await fetch("/update_brush", {
             method:"POST",
