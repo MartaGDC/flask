@@ -172,6 +172,8 @@ async function selectVideo(filename, frame){
                 ctx.drawImage(img, 0, 0, framePlaceholder.width, framePlaceholder.height);
                 savedFrame = ctx.getImageData(0, 0, framePlaceholder.width, framePlaceholder.height);
             };
+            scaleSave.disabled = false;
+            scaleSave.classList.remove("hidden");
             fileBtn.disabled = true;
             fileBtn.classList.add("disabled");
             uploadBtn.disabled = true;

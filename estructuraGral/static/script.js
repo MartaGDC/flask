@@ -457,23 +457,23 @@ structures.forEach((structure, index) => {
     structure.addEventListener('click', () => {
         widths[index] = parseInt(sliders[index].value);
         currentIndex = index;
+        console.log(structure.querySelector('.structure-name').textContent.trim(), index);
     });
 });
 sliders.forEach((slider, index) => {
     slider.addEventListener('input', async e => {
+        console.log(index);
         widths[index] = parseInt(slider.value);
         await fetch("/update_brush", {
             method:"POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 appName: appName,
-                name: activeStructures[index].querySelector('.structure-name').textContent.trim(),
+                name: structures[index].querySelector('.structure-name').textContent.trim(),
                 zone: selectedZone,
                 width: parseInt(slider.value)
             })
         });
-        console.log(parseInt(slider.value));
-
     });
 });
 

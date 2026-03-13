@@ -213,7 +213,7 @@ sliders.forEach((slider, index) => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 appName: appName,
-                name: activeStructures[index].querySelector('.structure-name').textContent.trim(),
+                name: structures[index].querySelector('.structure-name').textContent.trim(),
                 zone: selectedZone,
                 width: parseInt(slider.value)
             })
