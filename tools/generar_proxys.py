@@ -6,7 +6,7 @@ PROXY = "/srv/data/proxy"
 
 def process_all():
     for filename in os.listdir(ORIG):
-        if not filename.lower().endswith((".mp4", ".mpeg")):
+        if not filename.lower().endswith((".mp4", ".mpeg", ".wmv")):
             continue
         orig_path = os.path.join(ORIG, filename)
         name, _ = os.path.splitext(filename)
@@ -22,9 +22,9 @@ def process_all():
                 "-vsync", "cfr", #contant frame rate
                 "-c:v", "libx264", #asegura formato de video compatible con web, libx264 es el codec de video H.264
                 "-preset", "veryfast", #optimiza velocidad de codificación
-                "-tune", "zerolatency", #minimiza la latencia del streaming
                 "-x264-params", "keyint=1:min-keyint=1:scenecut=0", #paramtros del video H.264 para separar los frames rápidamente
                 "-b:v", "2M", #tasa de bits de 2Mbps, video pequeñito
+                "-c:a", "aac",
                 "-movflags", "+faststart", #permite reproducir el video antes de que se haya descargado completamente
                 proxy_path #guardado de salida
             ], check=True)
