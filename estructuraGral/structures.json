@@ -1005,5 +1005,32 @@
                 {"name": "Calcáneo", "color":"rgba(225, 255, 200)"}
             ]
         }
+    },
+
+    "stc_transversal": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Nervio", "color":"rgba(255, 255, 50)"},
+                {"name": "Perineuro", "color":"rgba(245, 255, 200)"},
+                {"name": "Ligamento transverso", "color":"rgba(170, 230, 255)"},
+                {"name": "Semilunar", "color":"rgba(225, 255, 200)"}
+            ]
+        }
+    },
+    "stc_longitudinal": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Nervio", "color":"rgba(255, 255, 50)"},
+                {"name": "Perineuro", "color":"rgba(245, 255, 200)"},
+                {"name": "Ligamento transverso", "color":"rgba(170, 230, 255)"},
+                {"name": "Semilunar", "color":"rgba(225, 255, 200)"}
+            ]
+        }
     }
 }

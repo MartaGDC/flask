@@ -70,15 +70,18 @@ APP_VIDEOS = {
     'rm': '',
 
     'aquiles_longitudinal': '1_3_',
-    'aquiles_transversal': '1_4_'
+    'aquiles_transversal': '1_4_',
+
+    'stc_transversal': "10_1_",
+    'stc_longitudinal': '10_2_'
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm", "aquiles"],
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm", "aquiles", "stc"],
     "foot": ["foot", "aquiles"],
     "knee_hand": ["knee", "hand"],
     "knee_menisco": ["knee", "menisco"],
-    "nerves": ["nerves"],
+    "nerves": ["nerves", "stc"],
     "abd": ["abd"]
 }
 
