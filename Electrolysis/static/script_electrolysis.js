@@ -465,6 +465,8 @@ acceptThresholdBtn.addEventListener('click', () => {
 /*-------------------------PARÁMETROS-------------------------*/
 submitBtn.addEventListener('click', () => {
     if(dibujoHecho){
+        submitBtn.disabled = true;
+
         objectJSQuality = saveQualityData();
         objectJSBone = saveBoneData();
         saveData(objectJSQuality, objectJSBone);

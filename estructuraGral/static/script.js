@@ -654,16 +654,19 @@ function validar() {
 submitBtn.addEventListener("click", () => {
     if (aceptado && submitted) {
         if (selectedQuality === "" && appName!=="base_artefactos") {
-                alert('Please select a quality (Good, Fair, or Bad) before saving.');
-                submitBtn.classList.remove("disabled");
+            alert('Please select a quality (Good, Fair, or Bad) before saving.');
+            submitBtn.classList.remove("disabled");
 
-                return;
-            }
-            saveDrawing();
+            return;
+        }
+        saveDrawing();
+
     }
 });
 
 function saveDrawing(){
+    submitBtn.disabled = true;
+
     let objectJS = [];
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
 

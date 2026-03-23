@@ -349,6 +349,8 @@ function validar() {
 submitBtn.addEventListener("click", () => { saveDrawing(); });
 
 function saveDrawing(){
+    submitBtn.disabled = true;
+
     /*running = false;
     elapsedTime += Date.now() - startTime;
     const seconds = (elapsedTime / 1000).toFixed(2);*/
