@@ -77,7 +77,7 @@ APP_VIDEOS = {
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "rm", "aquiles", "stc"],
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc"],
     "foot_aquiles": ["foot", "aquiles"],
     "aquiles": ["aquiles"],
     "knee_hand": ["knee", "hand"],
