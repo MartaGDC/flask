@@ -214,6 +214,8 @@ def play_video(filename):
     elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
         filename = f"{name}_proxy{extension}"
         dir_path = BASE_DIR + "/proxy"
+        if extension==".wmv":
+            filename=f"{name}_proxy.mp4"
     else:
         dir_path = BASE_DIR
     return send_from_directory(directory=dir_path, path=filename)

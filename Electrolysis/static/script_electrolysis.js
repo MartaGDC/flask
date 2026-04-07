@@ -109,9 +109,9 @@ uploadedFile.addEventListener("change", async() => {
     const filename = file.name.toLowerCase();
     fileName.textContent=filename;
     if (!file) return;
-    const permitidos = [".jpg", ".jpeg", ".png", ".mp4", ".mpeg", ".mha"];
+    const permitidos = [".jpg", ".jpeg", ".png", ".mp4", ".mpeg", ".mha", ".wmv"];
     if(!permitidos.some(ext => filename.endsWith(ext))) {
-    alert("Only JPG, PNG, MP4 or MHA files are allowed.");
+    alert("Only JPG, PNG, MP4, MHA or WMV files are allowed.");
         return;
     }
     const formData = new FormData();

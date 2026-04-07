@@ -101,19 +101,22 @@ def upload_file():
     filename = file.filename
     name, extension = os.path.splitext(filename)
     extension = extension.lower()
-    allowed_extensions = [".jpg", ".jpeg", ".png", ".mp4", ".mha"]
+    allowed_extensions = [".jpg", ".jpeg", ".png", ".mp4", ".mha", ".wmv"]
     if extension not in allowed_extensions:
         return jsonify({"error": "File type not allowed"}), 400
-
+    if extension == ".wmv":
+        name = name.replace(",", "_").replace(" ", "_")
+        name = f"electro{name}"
+        filename = name + extension
     save_path = os.path.join(BASE_DIR, filename)
     file.save(save_path)
 
     import sys
     tools_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../tools"))
     sys.path.insert(0, tools_path)
-    if extension == ".mp4" or extension == ".mpeg":
-        from generar_proxys import process_one  # importa tu función
-        process_one(file.filename)
+    if extension == ".mp4" or extension == ".mpeg" or extension == ".wmv":
+        from generar_proxys import process_one
+        process_one(filename)
 
     return jsonify({
         "success": True,
@@ -151,6 +154,8 @@ def play_video(filename):
     elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
         filename = f"{name}_proxy{extension}"
         dir_path = BASE_DIR + "/proxy"
+        if extension==".wmv":
+            filename=f"{name}_proxy.mp4"
     else:
         dir_path = BASE_DIR
     return send_from_directory(directory=dir_path, path=filename)
