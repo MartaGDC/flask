@@ -78,13 +78,13 @@ APP_VIDEOS = {
 
 PERMISSIONS = {
     "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc"],
-    "foot_aquiles": ["foot", "aquiles"],
-    "aquiles": ["aquiles"],
-    "knee_hand": ["knee", "hand"],
-    "knee_menisco": ["knee", "menisco"],
-    "nerves_stc": ["nerves", "stc"],
-    "abd": ["abd"],
-    "stc": ["stc"]
+    "foot_aquiles": ["foot", "aquiles"], #jpr
+    "aquiles": ["aquiles"], #iac
+    "knee_hand": ["knee", "hand"], #pfm
+    "knee_menisco": ["knee", "menisco"], #jmp
+    "nerves_stc": ["nerves", "stc"], #ebg
+    "abd": ["abd"], #ppa
+    "stc": ["stc"] #gcf
 }
 
 def token_required(f):
