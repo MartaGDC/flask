@@ -6,7 +6,6 @@ const downloadBtn = document.getElementById("downloadBtn");
 const uploadBtn = document.getElementById("uploadBtn");
 const uploadWindow = document.getElementById("uploadWindow");
 const uploadedFile = document.getElementById("uploadedFile");
-const fileBtn = document.getElementById("fileBtn");
 const fileName = document.getElementById("fileName");
 let appName = "";
 let evaluatorName = "";
@@ -94,12 +93,7 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
     sessionStorage.removeItem('evaluator');
     selectVideo(nbFile, frame);
 } else {
-    fileBtn.addEventListener("click", () => {
-        uploadBtn.classList.add("hidden");
-        getVideos();
-    });
     uploadBtn.addEventListener("click", () => {
-        fileBtn.classList.add("hidden");
         uploadWindow.classList.remove("hidden");
     })
 }
@@ -174,8 +168,6 @@ async function selectVideo(filename, frame){
             };
             scaleSave.disabled = false;
             scaleSave.classList.remove("hidden");
-            fileBtn.disabled = true;
-            fileBtn.classList.add("disabled");
             uploadBtn.disabled = true;
             uploadBtn.classList.add("disabled");
             aceptado = true;
@@ -199,8 +191,6 @@ async function selectVideo(filename, frame){
             pausado = true;
             drawFrame();
             acceptFrameBtn.classList.remove("hidden");
-            fileBtn.disabled = true;
-            fileBtn.classList.add("disabled");
             uploadBtn.disabled = true;
             uploadBtn.classList.add("disabled");
         }
