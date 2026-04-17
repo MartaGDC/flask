@@ -38,7 +38,8 @@ APP_VIDEOS = {
 
 PERMISSIONS = {
     "admin": ["electrolysis"],
-    "knee_menisco": ["electrolysis"] #jmp
+    "knee_menisco": ["electrolysis"], #jmp
+    "electrolysis": ["electrolysis"] #iag
 }
 
 
