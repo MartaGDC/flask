@@ -73,14 +73,16 @@ APP_VIDEOS = {
     'aquiles_transversal': '1_4_',
 
     'stc_transversal': "10_1_",
-    'stc_longitudinal': '10_2_'
+    'stc_longitudinal': '10_2_',
+
+    'polea_longitudinal': '3_1_'
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc"],
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea"],
     "foot_aquiles": ["foot", "aquiles"], #jpr
     "aquiles": ["aquiles"], #iac
-    "knee_hand": ["knee", "hand"], #pfm
+    "knee_hand": ["knee", "hand", "polea"], #pfm
     "knee_menisco": ["knee", "menisco"], #jmp
     "nerves_stc": ["nerves", "stc"], #ebg
     "abd": ["abd"], #ppa

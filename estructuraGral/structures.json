@@ -1032,5 +1032,18 @@
                 {"name": "Semilunar", "color":"rgba(225, 255, 200)"}
             ]
         }
+    },
+    
+    "polea_longitudinal": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Tendón", "color":"rgba(140, 190, 200)"},
+                {"name": "Hueso", "color":"rgba(225, 255, 200)"}
+            ]
+        }
     }
+
 }

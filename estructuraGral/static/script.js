@@ -778,6 +778,25 @@ function saveDrawing(){
                 });
                 objectJS.push(frameObject);
             }
+            else if(appName==="polea_longitudinal"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `12_1_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
             else {
                 const frameObject = {
                     video: fileName.textContent, 
@@ -893,6 +912,24 @@ function saveDrawing(){
                 originalImage: imageURL,
                 imageEdited: imageEditedURL,
                 frameoriginal: `11_2_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName,
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+        else if (appName==="polea_longitudinal"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `12_1_${fileName.textContent}_${frame}.png`, 
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
