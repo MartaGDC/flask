@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo a otros dipositivos -->
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+</head>
+<body data-appname="{{title}}">
+    <!-- Barra superior -->
+    <header class="top-bar">
+        <a href="http://localhost/menu.php">
+            <button>Home</button>
+        </a>
+        <div style="position: absolute; top: 0; right: 0;">
+            <button id = "downloadBtn">Downlad zip</button>
+        </div>
+    </header>
+    <main id="cuerpo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
+        <div id = "buttonContainer" style="display: flex; flex-direction: column; align-items: center;">
+            <button style="margin: 1vw;" id="btnEco">Aprendizaje Ecografía</button>
+            <button style="margin: 1vw;" id="btnFisio">Aprendizaje Fisiología</button>
+            <button style="margin: 1vw;" id="btnSimFisio">Simulación fisiológica</button>
+            <button style="margin: 1vw;" id="btnSimPatol">Simulación patológica</button>
+        </div>
+
+        <div id="contentSimFisio" style="display: none;">
+            <h1>Zonas disponibles en el mapa del cuerpo humano</h1>
+            <div id="zonasCuerpo">
+                {% for zona in zonas %}
+                    <div class="zonasBody" onClick="selectZona('{{zona.name}}')">
+                        {{ zona.name }}
+                    </div>
+                {% endfor %}  
+                <div id="btnAddZona" style="cursor: pointer;">
+                    Añadir
+                </div>
+            </div>
+            <div class="windowZona hidden">
+                <h1>Añadir nueva zona al mapa del cuerpo humano</h1>
+                <div class="form-row">
+                    <div class="form-label">Nombre</div>
+                    <input type="text" placeholder="zona nueva">
+                </div>
+                <div class="form-row">
+                    <div class="form-label">Cortes disponibles</div>
+                    <div class="form-input" style="display:flex; flex-direction: column; justify-content: start;">
+                        {% for corte in cortes %}
+                            <label><input type="checkbox" value="{{corte.name}}">{{corte.name}}</label>
+                        {% endfor %}
+                        <label><input type="checkbox" value="posterior"> Otro:</label>
+                    </div>
+                </div>
+                <div class="aceptarCancelar">
+                    <button>Aceptar</button>
+                    <button>Cancelar</button>
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </main>
+
+
+
+
+
+    <script src="{{ url_for('static', filename='script_UZSim.js') }}"></script>
+</body>
+</html>
