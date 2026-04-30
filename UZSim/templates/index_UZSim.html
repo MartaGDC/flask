@@ -27,16 +27,7 @@
 
         <div id="contentSimFisio" style="display: none;">
             <h1>Zonas disponibles en el mapa del cuerpo humano</h1>
-            <div id="zonasCuerpo">
-                {% for zona in zonas %}
-                    <div class="zonasBody" onClick="selectZona('{{zona.name}}')">
-                        {{ zona.name }}
-                    </div>
-                {% endfor %}  
-                <div id="btnAddZona" style="cursor: pointer;">
-                    Añadir
-                </div>
-            </div>
+            <div id="zonasCuerpo"></div>
             <div class="windowZona hidden">
                 <h1>Añadir nueva zona al mapa del cuerpo humano</h1>
                 <div class="form-row">
@@ -45,16 +36,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-label">Cortes disponibles</div>
-                    <div class="form-input" style="display:flex; flex-direction: column; justify-content: start;">
-                        {% for corte in cortes %}
-                            <label><input type="checkbox" value="{{corte.name}}">{{corte.name}}</label>
-                        {% endfor %}
-                        <label><input type="checkbox" value="posterior"> Otro:</label>
-                    </div>
+                    <div id="cortesDisponibles" class="form-input" style="display:flex; flex-direction: column; justify-content: start;"></div>
                 </div>
                 <div class="aceptarCancelar">
-                    <button>Aceptar</button>
-                    <button>Cancelar</button>
+                    <button id="btnAceptarNuevaZona">Aceptar</button>
+                    <button id="btnCancelarNuevaZona">Cancelar</button>
                 </div>
             </div>
 

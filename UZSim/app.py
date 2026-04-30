@@ -26,6 +26,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SECRET_KEY'] = SECRET_KEY
 db.init_app(app)
 with app.app_context():
+    print(db.engine)
+    print(db.metadata.tables.keys())
     db.create_all()
 
 PERMISSIONS = {
@@ -75,11 +77,17 @@ def get_zonas():
 #Añadir zonas
 @app.route('/crearZona', methods=['POST'])
 def createZone():
-    zone = request.json
-    db.session.add(zone)
+    data = request.json
+    nueva_zona = Zonas(name=data["name"])
+    db.session.add(nueva_zona)
     db.session.commit()
-    return jsonify({"status": "success", "zone": zone}), 200
+    return jsonify({"status": "success"}), 200
 
+#Obtener cortes
+@app.route('/api/cortes', methods=['GET'])
+def get_cortes():
+    cortes = Cortes.query.all()
+    return jsonify([corte.name for corte in cortes])
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5006)

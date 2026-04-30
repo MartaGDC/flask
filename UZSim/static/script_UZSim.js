@@ -6,10 +6,15 @@ const btnSimFisio = document.getElementById("btnSimFisio");
 const btnSimPatol = document.getElementById("btnSimPatol");
 
 const contentSimFisio = document.getElementById("contentSimFisio");
-const zonasCuerpo = document.querySelectorAll(".zonasBody");
+const zonasCuerpo = document.getElementById("zonasCuerpo");
 const windowZona = document.querySelector(".windowZona");
 const btnAddZona = document.getElementById("btnAddZona");
 let zonaSeleccionada = "";
+
+const cortesDisponibles = document.getElementById("cortesDisponibles");
+const btnAceptarNuevaZona = document.getElementById("btnAceptarNuevaZona");
+const btnCancelarNuevaZona = document.getElementById("btnCancelarNuevaZona");
+let corteSeleccionado="";
 
 //Seleccion apartado
 function selectOption(option) {
@@ -22,31 +27,89 @@ function selectOption(option) {
         contentSimFisio.style.display = "block";
     }
 }
+
+
+//------------------SIMULACION FISIO------------------
+document.addEventListener("click", function (e) {
+    if (!windowZona.contains(e.target)) {
+        windowZona.classList.add("hidden");
+        const btnAddZona = document.getElementById("btnAddZona");
+        if (btnAddZona) {
+            btnAddZona.classList.remove("active");
+        }
+    }
+});
+
+
 btnSimFisio.onclick = async () => {
     selectOption('simfisio');
-    const res = await fetch("/api/zonas");
-    if (!res.ok) {
+    const resZonas = await fetch("/api/zonas");
+    if (!resZonas.ok) {
         alert("Error loading list of videos");
         return;
     }
-    zonasCuerpo.innerHTML = "";
-    const zonas = await res.json();
+    const zonas = await resZonas.json();
+    zonasCuerpo.innerHTML = ""; //Limpia si ya se habia rellenado en la ejecucion (tambien elimina el boton de añadir)
+    zonas.forEach(zona => {
+        const divZona = document.createElement("div");
+        divZona.textContent = zona;
+
+    //SELECCION ZONA
+        divZona.onClick = () => {
+            zonaSeleccionada = zona;
+        }
+        zonasCuerpo.appendChild(divZona);
+    });
+
+    //Añadir botón "Añadir". CREACION ZONA
+    const btnAddZona = document.createElement("button");
+    btnAddZona.id = "btnAddZona";
+    btnAddZona.textContent = "Añadir";
+    btnAddZona.addEventListener('click', async (event) => {
+        const resCortes = await fetch('/api/cortes');
+        if (!resCortes.ok) {
+            alert("Error loading list of videos");
+            return;
+        }
+        const cortes = await resCortes.json();
+        cortesDisponibles.innerHTML=""; //También limpia el checkbox "Otro:"
+        cortes.forEach(corte => {
+            const labelCorte = document.createElement('label');
+            const inputCorte = document.createElement('input');
+            inputCorte.type = "checkbox";
+            inputCorte.value = corte;
+            labelCorte.appendChild(inputCorte);
+            labelCorte.append(" " + corte);
+            cortesDisponibles.appendChild(labelCorte);
+        });
+        const otroCorteLabel = document.createElement("div");
+        const otroCorteInput = document.createElement("input");
+        otroCorteInput.type = "text";
+        otroCorteLabel.textContent= "Otro: ";
+        otroCorteLabel.appendChild(otroCorteInput);
+        cortesDisponibles.appendChild(otroCorteLabel);
+        btnAddZona.classList.add("active");
+        windowZona.classList.remove("hidden");
+    })
+    zonasCuerpo.appendChild(btnAddZona);
 }
 
-
-//Seleccion y creación zona
-zonasCuerpo.forEach(botonZona => {
-    botonZona.addEventListener('click', (event) => {
-        zonaSeleccionada = botonZona.textContent;
-    });
+btnAceptarNuevaZona.addEventListener('click', () => {
+    
 });
 
-btnAddZona.addEventListener('click', (event) => {
-    console.log(windowZona);
-    windowZona.classList.remove("hidden");
-})
+btnCancelarNuevaZona.addEventListener('click', () => {
+    windowZona.classList.add("hidden");
+    const btnAddZona = document.getElementById("btnAddZona");
+    if (btnAddZona) {
+        btnAddZona.classList.remove("active");
+    }
+});
 
 
+
+
+//------------------POSTGRESQL------------------
 function createZone(zona) {
     fetch('/crearZona', {
         method: 'POST',
