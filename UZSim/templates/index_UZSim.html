@@ -25,25 +25,34 @@
             <button style="margin: 1vw;" id="btnSimPatol">Simulación patológica</button>
         </div>
 
-        <div id="contentSimFisio" style="display: none;">
+        <div id="content" style="display: none;">
             <h1>Zonas disponibles en el mapa del cuerpo humano</h1>
-            <div id="zonasCuerpo"></div>
-            <div class="windowZona hidden">
-                <h1>Añadir nueva zona al mapa del cuerpo humano</h1>
-                <div class="form-row">
-                    <div class="form-label">Nombre</div>
-                    <input type="text" placeholder="zona nueva">
+            <div style="display: flex;">
+                <div id="zonasCuerpo"></div>
+                <div id="windowZona" class="window hidden">
+                    <div class="form-row">
+                        <div class="form-label">Nombre</div>
+                        <input id="newZone" type="text" placeholder=" Nueva zona">
+                    </div>
+                    <div class="aceptarCancelar">
+                        <button id="btnAceptarNuevaZona">Aceptar</button>
+                        <button id="btnCancelarNuevaZona">Cancelar</button>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-label">Cortes disponibles</div>
-                    <div id="cortesDisponibles" class="form-input" style="display:flex; flex-direction: column; justify-content: start;"></div>
+                <div id="windowCortes" style="margin: 1rem; padding:0.5rem 1rem" class="hidden">
+                    <div style="font-size: 1.2rem; color:#4b5563">Corte: </div>
+                    <div id="cortesDisponibles"></div>
+                    <div id="windowNewCorte" class="window hidden">
+                        <div class="form-row">
+                            <div class="form-label">Nombre</div>
+                            <input id="newCorte" type="text" placeholder=" Nuevo corte">
+                        </div>
+                        <div class="aceptarCancelar">
+                            <button id="btnAceptarNuevoCorte">Aceptar</button>
+                            <button id="btnCancelarNuevoCorte">Cancelar</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="aceptarCancelar">
-                    <button id="btnAceptarNuevaZona">Aceptar</button>
-                    <button id="btnCancelarNuevaZona">Cancelar</button>
-                </div>
-            </div>
-
             </div>
         </div>
     </main>

@@ -15,7 +15,7 @@ from sqlalchemy import text
 import csv, zipfile
 from io import StringIO, BytesIO
 from datetime import datetime
-from models import db, User, Zonas, Cortes, Orientacion, ZonaCorteOrientacion, Mascaras
+from models import db, User, Zonas, Cortes, Orientacion, ZonaCorteEstructura, ConjuntoMapa, Mascaras
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 
 
@@ -77,8 +77,8 @@ def get_zonas():
 #Añadir zonas
 @app.route('/crearZona', methods=['POST'])
 def createZone():
-    data = request.json
-    nueva_zona = Zonas(name=data["name"])
+    name = request.json
+    nueva_zona = Zonas(name=name)
     db.session.add(nueva_zona)
     db.session.commit()
     return jsonify({"status": "success"}), 200
@@ -86,8 +86,42 @@ def createZone():
 #Obtener cortes
 @app.route('/api/cortes', methods=['GET'])
 def get_cortes():
-    cortes = Cortes.query.all()
+    '''Cortes definidos y presentes en la zona seleccionada'''
+    zona_name = request.args.get('zona')
+    cortes = (
+        db.session.query(Cortes)
+        .join(ZonaCorteEstructura, Cortes.id == ZonaCorteEstructura.corte_id)
+        .join(Zonas, Zonas.id == ZonaCorteEstructura.zone_id)
+        .filter(Zonas.name == zona_name)
+        .distinct()
+        .all()
+    )
+
     return jsonify([corte.name for corte in cortes])
+
+#Añadir zonas
+@app.route('/crearCorte', methods=['POST'])
+def createCorte():
+    name = request.json["name"]
+    zona = request.json["zona"]
+    if not name:
+        return jsonify({"error": "Missing name"}), 400
+    corte = Cortes.query.filter_by(name=name).first()
+    if not corte:
+        corte = Cortes(name=name)
+        db.session.add(corte)
+        db.session.flush()
+    zona = Zonas.query.filter_by(name=zona).first()
+
+    nuevaZonaCorteEstructura = ZonaCorteEstructura(
+        zone_id = zona.id,
+        corte_id= corte.id
+    )
+    db.session.add(nuevaZonaCorteEstructura)
+    db.session.commit()
+    return jsonify({"status": "success"}), 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5006)

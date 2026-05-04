@@ -70,7 +70,7 @@ button:hover, button:active {
     box-shadow: 0 20px 25px rgba(0,0,0,0.15);
 }
 
-#contentSimFisio {
+#content {
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -78,7 +78,7 @@ button:hover, button:active {
     margin: 2vw;
     width: 96%;
 }
-#contentSimFisio h1 {
+#content h1 {
     font-size: 1.875rem;      /* text-3xl */
     line-height: 2.25rem;
     font-weight: bold;
@@ -91,7 +91,7 @@ button:hover, button:active {
     width: 80%;              /* w-full */
 }
 
-#zonasCuerpo div, #zonasCuerpo button {
+#zonasCuerpo div, #zonasCuerpo button, #cortesDisponibles div, #cortesDisponibles button {
     color: #4B5563;
     font-size: 1.2rem;
     font-weight: bold;
@@ -102,44 +102,42 @@ button:hover, button:active {
     width: fit-content;
     height: fit-content;
 }
-#zonasCuerpo div:hover {
+#zonasCuerpo div:hover, #cortesDisponibles div {
     background-color: #E5E7EB;
 }
-#zonasCuerpo div:active, #zonasCuerpo div.active, #zonasCuerpo button:active, #zonasCuerpo button.active {
+#zonasCuerpo div:active, #zonasCuerpo div.active, #zonasCuerpo button:active, #zonasCuerpo button.active ,
+#cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active {
     background-color: #14b8a6;
     color: #1f2937;
 }
-#zonasCuerpo button {
+#zonasCuerpo button , #cortesDisponibles button{
     background-color: #475569;
     color: #E5E7EB;
  }
 
 
-.windowZona {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40%;
-    background-color: #4B5563;
-    color: #E5E7EB;
-    padding: 3rem;
+.window { 
+    flex:none;
+    width: fit-content;
+    border: 1px solid #4B5563;
+    border-radius: 5%;
+    color: #4B5563;
+    padding: 2rem;
+    margin: 3rem;
     z-index: 1000;
     font-size:1.2rem;
-}
-.windowZona h1 {
-    font-size: 1.5rem !important;
-    margin-bottom: 3rem !important;
-    color: #E5E7EB !important;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+
 }
 .form-row {
+    width: fit-content;
     display: flex;
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 1.5rem;
 }
 .form-label {
-    width: 15vw;
+    width: fit-content;
     margin-right: 1rem;
 }
 
@@ -151,7 +149,6 @@ button:hover, button:active {
     font-weight: normal;
 }
 
-
 .aceptarCancelar {
     display: flex;
     justify-content: center;
@@ -160,19 +157,18 @@ button:hover, button:active {
 }
 
 .aceptarCancelar button {
-    background: transparent !important;
-    border: 1px solid #e5e7eb !important;
-    font-size:1.2rem !important;
-    color: #e5e7eb !important;
-    margin: 1rem !important;
-    padding: 1rem !important;
+    font-size:1rem !important;
+    padding: 0.5rem !important;
     width: fit-content;
     height:fit-content;
     cursor: pointer;
+    box-shadow: none;
 }
 
-.aceptarCancelar button:hover {
-    background-color: #475569;
-}
 
 .hidden { display: none; }
+
+.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
