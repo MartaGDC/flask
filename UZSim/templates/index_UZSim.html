@@ -42,21 +42,52 @@
                 <div id="windowCortes" style="margin: 1rem; padding:0.5rem 1rem" class="hidden">
                     <div style="font-size: 1.2rem; color:#4b5563">Corte: </div>
                     <div id="cortesDisponibles"></div>
-                    <div id="windowNewCorte" class="window hidden">
-                        <div class="form-row">
-                            <div class="form-label">Nombre</div>
-                            <input id="newCorte" type="text" placeholder=" Nuevo corte">
-                        </div>
-                        <div class="aceptarCancelar">
-                            <button id="btnAceptarNuevoCorte">Aceptar</button>
-                            <button id="btnCancelarNuevoCorte">Cancelar</button>
-                        </div>
+                </div>
+                <div id="windowNewCorte" class="window hidden">
+                    <div class="form-row">
+                        <div class="form-label">Nombre</div>
+                        <input id="newCorte" type="text" placeholder=" Nuevo corte">
+                    </div>
+                    <div class="aceptarCancelar">
+                        <button id="btnAceptarNuevoCorte">Aceptar</button>
+                        <button id="btnCancelarNuevoCorte">Cancelar</button>
                     </div>
                 </div>
+                <!--
+                <div id="windowOrientacion" style="margin-top: 1rem; padding:0.5rem 1rem" class="hidden">
+                    <div style="font-size: 1.2rem; color:#4b5563; margin-top:1rem;">Orientación: </div>
+                    <div id="orientacionDisponibles"></div>
+                </div>
+                <div id="windowNewOrientacion" class="window hidden">
+                    <div class="form-row">
+                        <div class="form-label">Nombre</div>
+                        <input id="newOrientacion" type="text" placeholder=" Nueva orientacion">
+                    </div>
+                    <div class="aceptarCancelar">
+                        <button id="btnAceptarNuevaOrientacion">Aceptar</button>
+                        <button id="btnCancelarNuevaOrientacion">Cancelar</button>
+                    </div>
+                </div>
+                -->
             </div>
         </div>
     </main>
-
+    <div id="mapaWindow" class="windowCentral hidden">
+        <h1 id="titleMapa">A rellenar</h1>
+        <label class="custom-file-btn">
+            Seleccionar vídeo
+            <input type="file" id="videoFileInput" hidden>
+        </label>
+        <label class="custom-file-btn">
+            Seleccionar mapa
+            <input type="file" id="mapFileInput" hidden>
+        </label>
+        <label class="custom-file-btn">
+            Añadir máscaras
+            <input type="file" id="mascaraFileInput" multiple hidden>
+        </label>
+        <div id="listaMascaras"></div>
+    </div>
 
 
 

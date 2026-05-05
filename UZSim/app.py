@@ -15,7 +15,7 @@ from sqlalchemy import text
 import csv, zipfile
 from io import StringIO, BytesIO
 from datetime import datetime
-from models import db, User, Zonas, Cortes, Orientacion, ZonaCorteEstructura, ConjuntoMapa, Mascaras
+from models import db, User, Proyecto, Zonas, Cortes, Orientacion, Ficha, ConjuntoMapa, Mascaras
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 
 
@@ -55,17 +55,28 @@ def token_required(f):
     return decorated
 
 
-def user_can_access(user, app_name, permissions):
-    proyectos = permissions.get(user.role, [])
-    return any(app_name.startswith(p) for p in proyectos)
-
+def user_can_access(user):
+    if user.role=='admin':
+        return True
 
 @app.route('/UZSim')
 @token_required
 def index(user):
-    if not user_can_access(user, "electrolysis", PERMISSIONS):
+    if not user_can_access(user):
         return redirect("http://localhost/index.php")
     return render_template('index_UZSim.html', user=user.username, title='UZSim') 
+
+
+#Añadir opciones
+@app.route('/crearProyecto', methods=['POST'])
+def createProyecto():
+    name = request.json
+    proyecto = Proyecto.query.filter_by(name=name).first()
+    if not proyecto:
+        nuevoProyecto = Proyecto(name=name)
+        db.session.add(nuevoProyecto)
+        db.session.commit()
+    return jsonify({"status": "success"}), 200
 
 
 #Obtener zonas
@@ -90,8 +101,8 @@ def get_cortes():
     zona_name = request.args.get('zona')
     cortes = (
         db.session.query(Cortes)
-        .join(ZonaCorteEstructura, Cortes.id == ZonaCorteEstructura.corte_id)
-        .join(Zonas, Zonas.id == ZonaCorteEstructura.zone_id)
+        .join(Ficha, Cortes.id == Ficha.corte_id)
+        .join(Zonas, Zonas.id == Ficha.zona_id)
         .filter(Zonas.name == zona_name)
         .distinct()
         .all()
@@ -99,11 +110,15 @@ def get_cortes():
 
     return jsonify([corte.name for corte in cortes])
 
-#Añadir zonas
+#Añadir cortes
 @app.route('/crearCorte', methods=['POST'])
 def createCorte():
+    proyecto = request.json["proyecto"]
     name = request.json["name"]
     zona = request.json["zona"]
+    if not proyecto:
+        return jsonify({"error": "Missing project"}), 400
+    proyecto = Proyecto.query.filter_by(name=proyecto).first()
     if not name:
         return jsonify({"error": "Missing name"}), 400
     corte = Cortes.query.filter_by(name=name).first()
@@ -113,11 +128,72 @@ def createCorte():
         db.session.flush()
     zona = Zonas.query.filter_by(name=zona).first()
 
-    nuevaZonaCorteEstructura = ZonaCorteEstructura(
-        zone_id = zona.id,
+    nuevaFicha = Ficha(
+        proyecto_id = proyecto.id,
+        zona_id = zona.id,
         corte_id= corte.id
     )
-    db.session.add(nuevaZonaCorteEstructura)
+    db.session.add(nuevaFicha)
+    db.session.commit()
+    return jsonify({"status": "success"}), 200
+
+#Obtener orientaciones
+@app.route('/api/orientaciones', methods=['GET'])
+def get_orientaciones():
+    '''Orientaciones definidas y presentes en la zona y corte seleccionados'''
+    zona_name = request.args.get('zona')
+    corte_name = request.args.get('corte')
+    orientaciones = (
+        db.session.query(Orientacion)
+        .join(Ficha, Orientacion.id == Ficha.orientacion_id)
+        .join(Cortes, Cortes.id == Ficha.corte_id)
+        .join(Zonas, Zonas.id == Ficha.zona_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+        .distinct()
+        .all()
+    )
+
+    return jsonify([orientacion.name for orientacion in orientaciones])
+
+#Añadir orientaciones
+@app.route('/crearOrientacion', methods=['POST'])
+def createOrientacion():
+    print(request.json)
+    proyecto = request.json["proyecto"]
+    name = request.json["name"]
+    zona = request.json["zona"]
+    orientacion = request.json["orientacion"]
+    if not proyecto:
+        return jsonify({"error": "Missing project"}), 400
+    proyecto = Proyecto.query.filter_by(name=proyecto).first()
+    if not name:
+        return jsonify({"error": "Missing cut"}), 400
+    corte = Cortes.query.filter_by(name=name).first()
+    if not orientacion:
+        return jsonify({"error": "Missing orientation"})
+    nuevaOrientacion = Orientacion.query.filter_by(name=orientacion).first()
+    if not nuevaOrientacion:
+        nuevaOrientacion = Orientacion(name=orientacion)
+        db.session.add(nuevaOrientacion)
+        db.session.flush()
+
+    zona = Zonas.query.filter_by(name=zona).first()
+    ficha = Ficha.query.filter_by(
+        proyecto_id=proyecto.id,
+        zona_id=zona.id,
+        corte_id=corte.id,
+        orientacion_id=None
+    ).first()
+    if ficha:
+        ficha.orientacion_id = nuevaOrientacion.id
+    else:
+        ficha = Ficha(
+            proyecto_id=proyecto.id,
+            zona_id=zona.id,
+            corte_id=corte.id,
+            orientacion_id=nuevaOrientacion.id
+        )
+        db.session.add(ficha)
     db.session.commit()
     return jsonify({"status": "success"}), 200
 

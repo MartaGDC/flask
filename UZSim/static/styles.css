@@ -78,7 +78,7 @@ button:hover, button:active {
     margin: 2vw;
     width: 96%;
 }
-#content h1 {
+#content h1, #mapaWindow h1 {
     font-size: 1.875rem;      /* text-3xl */
     line-height: 2.25rem;
     font-weight: bold;
@@ -91,29 +91,38 @@ button:hover, button:active {
     width: 80%;              /* w-full */
 }
 
-#zonasCuerpo div, #zonasCuerpo button, #cortesDisponibles div, #cortesDisponibles button {
+#zonasCuerpo div, #zonasCuerpo button,
+#cortesDisponibles div, #cortesDisponibles button,
+#orientacionDisponibles div, #orientacionDisponibles button {
     color: #4B5563;
     font-size: 1.2rem;
     font-weight: bold;
     margin: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0rem 1rem;
     background-color: transparent;
     box-shadow: none;
     width: fit-content;
     height: fit-content;
 }
-#zonasCuerpo div:hover, #cortesDisponibles div {
+#zonasCuerpo div:hover,
+#cortesDisponibles div:hover,
+#orientacionDisponibles div:hover {
     background-color: #E5E7EB;
 }
 #zonasCuerpo div:active, #zonasCuerpo div.active, #zonasCuerpo button:active, #zonasCuerpo button.active ,
-#cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active {
+#cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active,
+#orientacionDisponibles div:active, #orientacionDisponibles div.active, #orientacionDisponibles button:active, #orientacionDisponibles button.active {
     background-color: #14b8a6;
     color: #1f2937;
 }
-#zonasCuerpo button , #cortesDisponibles button{
+#zonasCuerpo button,
+#cortesDisponibles button,
+#orientacionDisponibles button{
     background-color: #475569;
     color: #E5E7EB;
- }
+    padding: 0.5rem 1rem;
+
+}
 
 
 .window { 
@@ -127,7 +136,6 @@ button:hover, button:active {
     z-index: 1000;
     font-size:1.2rem;
     box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-
 }
 .form-row {
     width: fit-content;
@@ -143,12 +151,11 @@ button:hover, button:active {
 
 .form-input {
     background-color: transparent;
-    color: #e5e7eb;
-    width:20vw;
+    color: #4B5563;
+    width: fit-content;
     font-size:1rem;
     font-weight: normal;
 }
-
 .aceptarCancelar {
     display: flex;
     justify-content: center;
@@ -165,6 +172,33 @@ button:hover, button:active {
     box-shadow: none;
 }
 
+.windowCentral {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    max-height: 70%;
+    border: 1px solid #4B5563;
+    padding: 2rem;
+    font-size:1.2rem;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+.custom-file-btn {
+    display: inline-block;
+    background-color: transparent;
+    color: #4B5563;
+    border-radius: 5%;
+    cursor: pointer;
+    margin:0.5rem;
+    padding: 0rem 1rem;
+}
+.custom-file-btn:hover {
+    background-color: #14b8a6;
+    color: #1f2937;
+}
 
 .hidden { display: none; }
 
