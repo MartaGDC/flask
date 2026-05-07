@@ -26,13 +26,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SECRET_KEY'] = SECRET_KEY
 db.init_app(app)
 with app.app_context():
-    print(db.engine)
-    print(db.metadata.tables.keys())
     db.create_all()
-
-PERMISSIONS = {
-    "admin": ["electrolysis"]
-}
 
 def token_required(f):
     @wraps(f)
@@ -158,7 +152,6 @@ def get_orientaciones():
 #Añadir orientaciones
 @app.route('/crearOrientacion', methods=['POST'])
 def createOrientacion():
-    print(request.json)
     proyecto = request.json["proyecto"]
     name = request.json["name"]
     zona = request.json["zona"]
@@ -198,6 +191,115 @@ def createOrientacion():
     return jsonify({"status": "success"}), 200
 
 
+#Get imagenes 
+@app.route('/api/images', methods=['GET'])
+def get_images():
+    '''Imagenes presentes en la ficha correspondiente (zona y corte, con orientacion, patologia ... segun proyecto)'''
+    proyecto_name = request.args.get('proyecto')
+    zona_name = request.args.get('zona')
+    corte_name = request.args.get('corte')
+    ficha = (
+        db.session.query(Ficha)
+        .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
+        .join(Cortes, Cortes.id == Ficha.corte_id)
+        .join(Zonas, Zonas.id == Ficha.zona_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
+        .first()
+    )
+    mapa = (
+        db.session.query(ConjuntoMapa)
+        .filter(ConjuntoMapa.id_ficha == ficha.id)
+        .first()
+    )
+    mascaras = (
+        db.session.query(Mascaras)
+        .filter(Mascaras.id_cm == mapa.id)
+        .all()
+    )
+    return jsonify([mapa.mapa_url, [m.mascara_url for m in mascaras]])
+
+#Guardar imagenes
+@app.route('/save', methods=['POST'])
+def save_images():
+    mapa_dir = os.path.join(app.root_path, "static", "mapa")
+    ecos_dir = os.path.join(app.root_path, "static", "ecos")
+    os.makedirs(mapa_dir, exist_ok=True)
+    os.makedirs(ecos_dir, exist_ok=True)
+
+    proyectoData = request.form.get("proyecto")
+    if not proyectoData:
+        return jsonify({"error": "Missing project"}), 400
+    proyecto = Proyecto.query.filter_by(name=proyectoData).first()
+
+    zonaData = request.form.get("zona")
+    if not zonaData:
+        return jsonify({"error": "Missing zone"}), 400
+    zona = Zonas.query.filter_by(name=zonaData).first()
+
+    corteData = request.form.get("corte")
+    if not corteData:
+        return jsonify({"error": "Missing cut"}), 400
+    corte = Cortes.query.filter_by(name=corteData).first()
+
+    ficha = Ficha.query.filter_by(
+        proyecto_id=proyecto.id,
+        zona_id=zona.id,
+        corte_id=corte.id,
+        orientacion_id=None
+    ).first()
+
+    nuevoMapa = ConjuntoMapa.query.filter_by(id_ficha=ficha.id).first()
+    if not nuevoMapa:
+        nuevoMapa = ConjuntoMapa(id_ficha=ficha.id, mapa_url=None)
+        db.session.add(nuevoMapa)
+        db.session.flush()
+    mapaData = request.files.get("mapa")
+    if mapaData:
+        nuevoMapa.mapa_url = mapaData.filename
+        mapaData.save(os.path.join(mapa_dir, mapaData.filename))
+
+    mascarasData = request.files.getlist("mascaras")
+    for i in mascarasData:
+        nuevaMascara = Mascaras(id_cm=nuevoMapa.id, mascara_url=i.filename)
+        print(nuevaMascara.mascara_url)
+        db.session.add(nuevaMascara)
+        db.session.flush()
+
+    for i in mascarasData:
+        i.save(os.path.join(ecos_dir, i.filename))
+    db.session.commit()
+    return jsonify({"status": "success"})
+
+
+#Eliminar img
+@app.route('/deleteImg', methods=['POST'])
+def delete_image():
+    mapa_dir = os.path.join(app.root_path, "static", "mapa")
+    ecos_dir = os.path.join(app.root_path, "static", "ecos")
+
+    mapOrMask = request.json["mapOrMask"]
+    svg_url = request.json["svg_url"]
+
+    if mapOrMask=="mapa":
+        mapa = ConjuntoMapa.query.filter_by(
+            mapa_url=svg_url,
+        ).first()
+        if mapa:
+            mapa.mapa_url = None
+        file = os.path.join(mapa_dir, svg_url)
+        if os.path.exists(file):
+            os.remove(file)
+    else:
+        mascara = Mascaras.query.filter_by(
+            mascara_url = svg_url
+        ).first()
+        if mascara:
+            db.session.delete(mascara)
+        file = os.path.join(ecos_dir, svg_url)
+        if os.path.exists(file):
+            os.remove(file)
+    db.session.commit()
+    return jsonify({"status": "success"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5006)

@@ -33,7 +33,21 @@ const btnAceptarNuevaOrientacion = document.getElementById("btnAceptarNuevaOrien
 const btnCancelarNuevaOrientacion = document.getElementById("btnCancelarNuevaOrientacion");
 let orientacionSeleccionada="";*/
 
+let images = [];
 const mapaWindow = document.getElementById("mapaWindow");
+const titleMapa = document.getElementById("titleMapa");
+const mapaFileInput = document.getElementById("mapaFileInput");
+const mapaText = document.getElementById("mapaText");
+let mapaSeleccionado = null;
+const mascaraFileInput = document.getElementById("mascaraFileInput");
+const listaMascaras = document.getElementById("listaMascaras");
+let mascarasSeleccionadas = [];
+let nombreMascaras = [];
+const btnAceptarImg = document.getElementById("btnAceptarImg");
+const btnCancelarImg = document.getElementById("btnCancelarImg");
+
+const warningMapa = document.getElementById("warningMapa");
+const btnWarn = document.getElementById("btnWarn");
 
 
 //Seleccion apartado
@@ -58,11 +72,15 @@ document.addEventListener("click", (e) => {
     e.stopPropagation();
     /*if (!windowZona.contains(e.target) 
         && !windowNewCorte.contains(e.target)
-        && !windowNewOrientacion.contains(e.target)) {
+        && !windowNewOrientacion.contains(e.target)
+        && !mapaWindow.contains(e.target)
+        && !warningMapa.contains(e.target)) {
         closeAllPanels();
     }*/
     if (!windowZona.contains(e.target) 
-        && !windowNewCorte.contains(e.target)) {
+        && !windowNewCorte.contains(e.target)
+        && !mapaWindow.contains(e.target)
+        && !warningMapa.contains(e.target)) {
         closeAllPanels();
     }
 });
@@ -73,6 +91,8 @@ function closeAllPanels() {
     windowNewCorte.classList.add("hidden");
     /*windowOrientacion.classList.add("hidden");
     windowNewOrientacion.classList.add("hidden");*/
+    mapaWindow.style.display = "none";
+    warningMapa.classList.add('hidden');
     const btnAddZona = document.getElementById("btnAddZona");
     if (btnAddZona) {
         btnAddZona.disabled=false;
@@ -109,7 +129,8 @@ function closeAllPanels() {
     zonaSeleccionada = '';
     corteSeleccionado = '';
     //orientacionSeleccionada = '';
-    
+    mapaSeleccionado = null;
+    mascarasSeleccionadas = [];
 }
 
 function desactivarEl(contenedor, boton)  {
@@ -220,7 +241,7 @@ async function rellenarCortes () {
             divCorte.style.color = "#1f2937"
             divCorte.classList.remove("disabled");
             corteSeleccionado = corte;
-            mapaWindow.classList.remove("hidden");
+            mostrarSelecciones();
             // await rellenarOrientacion();
         });
         cortesDisponibles.appendChild(divCorte);
@@ -261,6 +282,125 @@ btnCancelarNuevoCorte.addEventListener('click', (e) => {
     activarEl(cortesDisponibles);
 
 });
+
+
+//-----------Archivos selecccionados-----------
+async function mostrarSelecciones() {
+    const resImg = await fetch(`/api/images?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}`);
+    if (!resImg.ok) {
+        alert("Error loading list of images");
+        return;
+    }
+    const images = await resImg.json();
+
+    mapaWindow.classList.remove("hidden");            
+    mapaWindow.style.display = "flex";
+    mapaWindow.style.flexDirection = "column";
+    titleMapa.textContent = `${proyectoSeleccionado}: ${zonaSeleccionada} ${corteSeleccionado}`;
+    listaMascaras.innerHTML='';
+
+    if(images[0]) {
+        mostrarMapa(images[0], true)
+    }
+    if(images[1]) {
+        nombreMascaras = images[1] ;
+        nombreMascaras.forEach(mask => {
+            mostrarMascaras(mask, null, true);
+        });
+    }
+}
+
+mapaFileInput.addEventListener("change", (e) => {
+    mapaSeleccionado = e.target.files[0];
+    if (!mapaSeleccionado) return;
+    if (!mapaSeleccionado.name.endsWith(".svg")) {
+        alert("Introduzca archivos de tipo .svg");
+        return;
+    }
+    mostrarMapa(mapaSeleccionado.name);
+});
+
+mascaraFileInput.addEventListener("change", (e) => {
+    let mask = e.target.files[0];
+    if (!mask) return;
+    if (!mask.name.endsWith(".svg")) {
+        alert("Introduzca archivos de tipo .svg");
+        return;
+    }
+    const existe = nombreMascaras.some(nombre => nombre === mask.name);
+    if (existe) {
+        mascaraFileInput.value = "";
+        alert("Archivo previamente añadido");
+        return;
+    }
+    mascarasSeleccionadas.push(mask);
+    nombreMascaras.push(mask.name);
+    mostrarMascaras(mask.name, mask);
+    mascaraFileInput.value = "";
+});
+
+btnAceptarImg.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (nombreMascaras.length===0) {
+        warningMapa.classList.remove("hidden");
+        mapaWindow.classList.add("disabled");
+        return;
+    }
+    await guardarImg(mapaSeleccionado, mascarasSeleccionadas, proyectoSeleccionado, zonaSeleccionada, corteSeleccionado);
+    closeAllPanels();
+});
+btnCancelarImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeAllPanels();
+});
+
+btnWarn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    warningMapa.classList.add('hidden');
+    mapaWindow.classList.remove('disabled');
+})
+
+
+function mostrarMapa(nombreMapa, guardado = false) {
+    mapaText.replaceChildren();
+    mapaText.textContent = nombreMapa;
+    const btnDelete = document.createElement("button");
+    btnDelete.textContent = "X";
+    btnDelete.classList.add("eliminar");
+    btnDelete.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (guardado) {
+            await eliminarImagenes(nombreMapa, "mapa");
+            images[0] = null;
+        }
+        mapaSeleccionado = null;
+        mapaFileInput.value = "";
+        mapaText.replaceChildren();
+    });
+    mapaText.appendChild(btnDelete);
+}
+
+function mostrarMascaras (maskName, maskFile = null, guardada = false) {
+    const divMask = document.createElement("div");
+    divMask.textContent = maskName;
+    const btnDelete = document.createElement("button");
+    btnDelete.textContent = "X";
+    btnDelete.classList.add("eliminar");
+    btnDelete.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if(maskFile) {
+            mascarasSeleccionadas = mascarasSeleccionadas.filter(m => m !== maskFile);
+        }
+        nombreMascaras = nombreMascaras.filter(nombre => nombre !== maskName);
+        if(guardada){
+            await eliminarImagenes(maskName, "mask")
+        }
+        divMask.remove();
+        mascaraFileInput.value = "";
+    });
+    listaMascaras.appendChild(divMask);
+    divMask.appendChild(btnDelete);
+}
 
 
 //-----------Orientacion-----------
@@ -314,7 +454,7 @@ windowOrientacion.addEventListener("keydown", (e) => {
         e.preventDefault();
         btnAceptarNuevaOrientacion.click();
     }
-});*/
+});
 
 btnCancelarNuevaOrientacion.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -323,7 +463,7 @@ btnCancelarNuevaOrientacion.addEventListener('click', (e) => {
     btnAddOrientacion.classList.remove("active");
     activarEl(orientacionDisponibles);
 
-});
+});*/
 
 
 
@@ -378,6 +518,48 @@ async function createOrientacion(proyecto, corte, zona, orientacion) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({"proyecto": proyecto, "name": corte, "zona": zona, "orientacion": orientacion})
+    })
+    if (!response.ok) {
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+    }
+    return await response.json();
+}
+
+async function guardarImg(mapa, mascaras, proyecto, zona, corte) {
+    const formData = new FormData();
+    if (mapa) {
+        formData.append("mapa", mapa);
+    }
+    mascaras.forEach(mask => {
+        formData.append("mascaras", mask);
+    });
+    formData.append("proyecto", proyecto);
+    formData.append("zona", zona);
+    formData.append("corte", corte);
+
+    const response = await fetch('/save', {
+        method: 'POST',
+        body: formData
+    });
+    const text = await response.text();
+    console.log("RAW RESPONSE: ", text);
+    
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${text}`);
+    }
+    const data = JSON.parse(text);
+    console.log("Success:", data);
+    
+}
+
+
+async function eliminarImagenes(svg_url, mapOrMask) {
+    const response = await fetch('/deleteImg', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"mapOrMask": mapOrMask, "svg_url": svg_url})
     })
     if (!response.ok) {
         throw new Error(`Server error: ${response.status} ${response.statusText}`);

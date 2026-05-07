@@ -73,24 +73,33 @@
         </div>
     </main>
     <div id="mapaWindow" class="windowCentral hidden">
-        <h1 id="titleMapa">A rellenar</h1>
-        <label class="custom-file-btn">
-            Seleccionar vídeo
-            <input type="file" id="videoFileInput" hidden>
-        </label>
-        <label class="custom-file-btn">
-            Seleccionar mapa
-            <input type="file" id="mapFileInput" hidden>
-        </label>
-        <label class="custom-file-btn">
-            Añadir máscaras
-            <input type="file" id="mascaraFileInput" multiple hidden>
-        </label>
-        <div id="listaMascaras"></div>
+        <h1 id="titleMapa"></h1>
+        <div style="display: flex;">
+            <label class="file-btn">
+                Seleccionar mapa
+                <input type="file" id="mapaFileInput" class="hidden">
+            </label>
+            <div style="color: #4B5563; margin-top: 0.5rem; width:50%; display:flex; justify-content: space-between;" id="mapaText"></div>
+        </div>
+        <div style="display: flex;">
+            <label class="file-btn">
+                Añadir máscaras
+                <input type="file" id="mascaraFileInput" multiple class="hidden">
+            </label>
+            <div style="display: flex; flex-direction: column; width:50%;" id="listaMascaras"></div>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button id="btnAceptarImg">Aceptar</button>
+            <button id="btnCancelarImg">Cancelar</button>
+        </div>
     </div>
 
-
-
+    <div id="warningMapa" class="warningCentral hidden">
+        <div style="display:flex; justify-content: center;">Se debe seleccionar al menos una máscara.</div>
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+            <button id="btnWarn">Aceptar</button>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='script_UZSim.js') }}"></script>
 </body>

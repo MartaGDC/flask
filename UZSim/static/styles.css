@@ -93,7 +93,8 @@ button:hover, button:active {
 
 #zonasCuerpo div, #zonasCuerpo button,
 #cortesDisponibles div, #cortesDisponibles button,
-#orientacionDisponibles div, #orientacionDisponibles button {
+#orientacionDisponibles div, #orientacionDisponibles button,
+#mapaWindow button {
     color: #4B5563;
     font-size: 1.2rem;
     font-weight: bold;
@@ -111,19 +112,34 @@ button:hover, button:active {
 }
 #zonasCuerpo div:active, #zonasCuerpo div.active, #zonasCuerpo button:active, #zonasCuerpo button.active ,
 #cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active,
-#orientacionDisponibles div:active, #orientacionDisponibles div.active, #orientacionDisponibles button:active, #orientacionDisponibles button.active {
+#orientacionDisponibles div:active, #orientacionDisponibles div.active, #orientacionDisponibles button:active, #orientacionDisponibles button.active,
+#mapaWindow button:hover {
     background-color: #14b8a6;
     color: #1f2937;
 }
 #zonasCuerpo button,
 #cortesDisponibles button,
-#orientacionDisponibles button{
+#orientacionDisponibles button,
+#mapaWindow button{
     background-color: #475569;
     color: #E5E7EB;
     padding: 0.5rem 1rem;
 
 }
 
+#listaMascaras div {
+    color: #4B5563;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    padding: 0rem;
+    background-color: transparent;
+    box-shadow: none;
+    width: 100%;
+    height: fit-content;
+    justify-content: space-between;
+    display: flex;
+}
 
 .window { 
     flex:none;
@@ -177,8 +193,7 @@ button:hover, button:active {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 500px;
+    width: 40%;
     max-height: 70%;
     border: 1px solid #4B5563;
     padding: 2rem;
@@ -186,7 +201,7 @@ button:hover, button:active {
     box-shadow: 0 10px 15px rgba(0,0,0,0.1);
     z-index: 1000;
 }
-.custom-file-btn {
+.file-btn {
     display: inline-block;
     background-color: transparent;
     color: #4B5563;
@@ -194,10 +209,55 @@ button:hover, button:active {
     cursor: pointer;
     margin:0.5rem;
     padding: 0rem 1rem;
+    width: 30%;
+    height: fit-content;
 }
-.custom-file-btn:hover {
+.file-btn:hover {
     background-color: #14b8a6;
     color: #1f2937;
+}
+
+.warningCentral {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    max-height: 70%;
+    background-color: #475569;
+    color: #E5E7EB;
+    border: 1px solid #E5E7EB;
+    padding: 2rem;
+    font-size:1.2rem;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.warningCentral button {
+    background-color: #E5E7EB;
+    border-radius: 5%;
+    cursor: pointer;
+    margin:0.5rem;
+    padding: 0.5rem !important;
+    width: fit-content;
+    height: fit-content;
+    font-size:1.2rem;
+    color: #475569;
+    box-shadow: none;
+
+}
+
+.eliminar {
+    background-color: #ff2056!important;
+    border-radius: 5%;
+    cursor: pointer;
+    margin: 0rem !important;
+    padding: 0rem 0.5rem !important;
+    width: fit-content;
+    height: fit-content;
+    font-size:1rem;
+    color: #E5E7EB !important;
+    box-shadow: none;
 }
 
 .hidden { display: none; }
