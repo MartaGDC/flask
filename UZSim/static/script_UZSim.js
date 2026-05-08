@@ -26,14 +26,23 @@ const btnAceptarNuevoCorte = document.getElementById("btnAceptarNuevoCorte");
 const btnCancelarNuevoCorte = document.getElementById("btnCancelarNuevoCorte");
 let corteSeleccionado="";
 
-/*const windowOrientacion = document.getElementById("windowOrientacion");
+const windowEstructura = document.getElementById("windowEstructura");
+const estructuraDisponibles = document.getElementById("estructuraDisponibles");
+const windowNewEstructura = document.getElementById("windowNewEstructura");
+const btnAddEstructura = document.getElementById("btnAddEstructura");
+const newEstructura = document.getElementById("newEstructura");
+const btnAceptarNuevaEstructura = document.getElementById("btnAceptarNuevaEstructura");
+const btnCancelarNuevaEstructura = document.getElementById("btnCancelarNuevaEstructura");
+let estructuraSeleccionada="";
+
+const windowOrientacion = document.getElementById("windowOrientacion");
 const orientacionDisponibles = document.getElementById("orientacionDisponibles");
 const windowNewOrientacion = document.getElementById("windowNewOrientacion");
 const btnAddOrientacion = document.getElementById("btnAddOrientacion");
 const newOrientacion = document.getElementById("newOrientacion");
 const btnAceptarNuevaOrientacion = document.getElementById("btnAceptarNuevaOrientacion");
 const btnCancelarNuevaOrientacion = document.getElementById("btnCancelarNuevaOrientacion");
-let orientacionSeleccionada="";*/
+let orientacionSeleccionada="";
 
 let images = [];
 const mapaWindow = document.getElementById("mapaWindow");
@@ -53,10 +62,10 @@ const btnWarn = document.getElementById("btnWarn");
 
 
 //Seleccion apartado
-function selectOption(option) {
+async function selectOption(option) {
     if (option === 'CAR') {
         proyectoSeleccionado = option;
-        createProyecto(option);
+        await createProyecto(option);
         buttonContainer.style.display = "none";
         cuerpo.style.display = "flex";
         cuerpo.style.flexDirection = "column";
@@ -65,9 +74,30 @@ function selectOption(option) {
         content.style.display = "block";
     }
 
-    if (option === 'CERF') {
+    else if (option === 'CERF') {
         proyectoSeleccionado = option;
-        createProyecto(option);
+        await createProyecto(option);
+        buttonContainer.style.display = "none";
+        cuerpo.style.display = "flex";
+        cuerpo.style.flexDirection = "column";
+        cuerpo.style.justifyContent = "start";
+        cuerpo.style.alignItems = "start";
+        content.style.display = "block";
+    }
+
+    else if (option === 'SF') {
+        proyectoSeleccionado = option;
+        await createProyecto(option);
+        buttonContainer.style.display = "none";
+        cuerpo.style.display = "flex";
+        cuerpo.style.flexDirection = "column";
+        cuerpo.style.justifyContent = "start";
+        cuerpo.style.alignItems = "start";
+        content.style.display = "block";
+    }
+    else {
+        proyectoSeleccionado = option;
+        await createProyecto(option);
         buttonContainer.style.display = "none";
         cuerpo.style.display = "flex";
         cuerpo.style.flexDirection = "column";
@@ -83,15 +113,9 @@ function selectOption(option) {
 //------------------UX------------------
 document.addEventListener("click", (e) => {
     e.stopPropagation();
-    /*if (!windowZona.contains(e.target) 
-        && !windowNewCorte.contains(e.target)
-        && !windowNewOrientacion.contains(e.target)
-        && !mapaWindow.contains(e.target)
-        && !warningMapa.contains(e.target)) {
-        closeAllPanels();
-    }*/
     if (!windowZona.contains(e.target) 
         && !windowNewCorte.contains(e.target)
+        && !windowNewOrientacion.contains(e.target)
         && !mapaWindow.contains(e.target)
         && !warningMapa.contains(e.target)) {
         closeAllPanels();
@@ -102,8 +126,8 @@ function closeAllPanels() {
     windowZona.classList.add("hidden");
     windowCortes.classList.add("hidden");
     windowNewCorte.classList.add("hidden");
-    /*windowOrientacion.classList.add("hidden");
-    windowNewOrientacion.classList.add("hidden");*/
+    windowOrientacion.classList.add("hidden");
+    windowNewOrientacion.classList.add("hidden");
     mapaWindow.style.display = "none";
     warningMapa.classList.add('hidden');
     const btnAddZona = document.getElementById("btnAddZona");
@@ -116,11 +140,11 @@ function closeAllPanels() {
         btnAddCorte.disabled=false;
         btnAddCorte.classList.remove("disabled", "active");
     }
-    /*const btnAddOrientacion = document.getElementById("btnAddOrientacion");
+    const btnAddOrientacion = document.getElementById("btnAddOrientacion");
     if (btnAddOrientacion) {
         btnAddOrientacion.disabled=false;
         btnAddOrientacion.classList.remove("disabled", "active");
-    }*/
+    }
     zonasCuerpo.querySelectorAll("div").forEach(el => {
         el.classList.remove("disabled");
         el.disabled = false;
@@ -133,15 +157,15 @@ function closeAllPanels() {
         el.style.background = "transparent";
         el.style.color = "#4B5563";
     });
-    /*orientacionDisponibles.querySelectorAll("div")?.forEach(el => {
+    orientacionDisponibles.querySelectorAll("div")?.forEach(el => {
         el.classList.remove("disabled");
         el.disabled = false;
         el.style.background = "transparent";
         el.style.color = "#4B5563";
-    });*/
+    });
     zonaSeleccionada = '';
     corteSeleccionado = '';
-    //orientacionSeleccionada = '';
+    orientacionSeleccionada = '';
     mapaSeleccionado = null;
     mascarasSeleccionadas = [];
     
@@ -169,15 +193,24 @@ function activarEl(contenedor)  {
 
 
 btnEco.onclick = async () => {
-    selectOption('CAR');
+    await selectOption('CAR');
     rellenarZonas();
 }
 
 btnFisio.onclick = async () => {
-    selectOption('CERF');
+    await selectOption('CERF');
     rellenarZonas();
 }
 
+btnSimFisio.onclick = async () => {
+    await selectOption('SF');
+    rellenarZonas();
+}
+
+btnSimPatol.onclick = async () => {
+    await selectOption('SP');
+    rellenarZonas();
+}
 
 
 
@@ -270,9 +303,14 @@ async function rellenarCortes () {
         window: windowNewCorte,
         api: `/api/cortes?zona=${zonaSeleccionada}&proyecto=${proyectoSeleccionado}`,
         tablaHTML: cortesDisponibles,
-        onSelect: async(corte) => {
+         onSelect: async(corte) => {
             corteSeleccionado = corte;
-            mostrarSelecciones();
+            if(proyectoSeleccionado == 'SF' || proyectoSeleccionado =='SP'){
+                rellenarEstructura();
+            }
+            else{
+                mostrarSelecciones();
+            }
         },
         addButtonId: "btnAddCorte",
         input: newCorte
@@ -300,6 +338,96 @@ btnCancelarNuevoCorte.addEventListener('click', (e) => {
     const btnAddCorte = document.getElementById("btnAddCorte");
     btnAddCorte.classList.remove("active");
     activarEl(cortesDisponibles);
+});
+
+
+
+//-----------Estructura-----------
+async function rellenarEstructura() {
+    windowEstructura.classList.remove("hidden");
+    rellenar({
+        window: windowNewEstructura,
+        api: `/api/estructuras?zona=${zonaSeleccionada}&corte=${corteSeleccionado}&proyecto=${proyectoSeleccionado}`,
+        tablaHTML: estructuraDisponibles,
+         onSelect: async(estructura) => {
+            estructuraSeleccionada = estructura;
+            if(proyectoSeleccionado == 'SF'){
+                //
+            }
+            else {
+               //exploracion y patologia
+            }
+        },
+        addButtonId: "btnAddEstructura",
+        input: newEstructura
+    });
+}
+
+btnAceptarNuevaEstructura.addEventListener('click', async(e) => {
+    e.stopPropagation();
+    if (newEstructura.value == '') return;
+    await createEstructura(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, newEstructura.value);
+    windowNewEstructura.classList.add("hidden");
+    await rellenarEstructura();
+});
+windowEstructura.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        btnAceptarNuevaEstructura.click();
+    }
+});
+
+btnCancelarNuevaEstructura.addEventListener('click', (e) => {
+    e.stopPropagation();
+    windowNewEstructura.classList.add("hidden");
+    const btnAddEstructura = document.getElementById("btnAddEstructura");
+    btnAddEstructura.classList.remove("active");
+    activarEl(estructuraDisponibles);
+
+});
+
+
+//-----------Orientacion-----------
+async function rellenarOrientacion() {
+    windowOrientacion.classList.remove("hidden");
+    rellenar({
+        window: windowNewOrientacion,
+        api: `/api/orientaciones?zona=${zonaSeleccionada}&corte=${corteSeleccionado}&proyecto=${proyectoSeleccionado}`,
+        tablaHTML: orientacionDisponibles,
+         onSelect: async(orientacion) => {
+            orientacionSeleccionada = orientacion;
+            if(proyectoSeleccionado == 'SF'){
+                //
+            }
+            else {
+               //exploracion y patologia
+            }
+        },
+        addButtonId: "btnAddOrientacion",
+        input: newOrientacion
+    });
+}
+
+btnAceptarNuevaOrientacion.addEventListener('click', async(e) => {
+    e.stopPropagation();
+    if (newOrientacion.value == '') return;
+    await createOrientacion(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, newOrientacion.value);
+    windowNewOrientacion.classList.add("hidden");
+    await rellenarOrientacion();
+});
+windowOrientacion.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        btnAceptarNuevaOrientacion.click();
+    }
+});
+
+btnCancelarNuevaOrientacion.addEventListener('click', (e) => {
+    e.stopPropagation();
+    windowNewOrientacion.classList.add("hidden");
+    const btnAddOrientacion = document.getElementById("btnAddOrientacion");
+    btnAddOrientacion.classList.remove("active");
+    activarEl(orientacionDisponibles);
 
 });
 
@@ -316,7 +444,7 @@ async function mostrarSelecciones() {
     mapaWindow.classList.remove("hidden");            
     mapaWindow.style.display = "flex";
     mapaWindow.style.flexDirection = "column";
-    titleMapa.textContent = `${proyectoSeleccionado}: ${zonaSeleccionada} ${corteSeleccionado}`;
+    titleMapa.textContent = `${proyectoSeleccionado}: ${zonaSeleccionada} ${corteSeleccionado} ${orientacionSeleccionada}`;
     mapaFileInput.value= '';
     mapaText.replaceChildren();
     listaMascaras.innerHTML='';
@@ -423,69 +551,6 @@ function mostrarMascaras (maskName, maskFile = null, guardada = false) {
     listaMascaras.appendChild(divMask);
     divMask.appendChild(btnDelete);
 }
-
-
-//-----------Orientacion-----------
-/*async function rellenarOrientacion() {
-    windowOrientacion.classList.remove("hidden");
-    const resOrientacion = await fetch(`/api/orientaciones?zona=${zonaSeleccionada}&corte=${corteSeleccionado}`);
-    if (!resOrientacion.ok) {
-        alert("Error loading list of orientations");
-        return;
-    }
-    const orientaciones = await resOrientacion.json();
-    orientacionDisponibles.innerHTML = ""; //Limpia si ya se habia rellenado en la ejecucion (tambien elimina el boton de añadir)
-    orientaciones.forEach(orientacion => {
-        const divOrientacion = document.createElement("div");
-        divOrientacion.textContent = orientacion;
-        divOrientacion.style.cursor = "pointer";
-        divOrientacion.addEventListener("click", async(e) => {
-            e.stopPropagation();
-            desactivarEl(orientacionDisponibles, btnAddOrientacion);
-            divOrientacion.style.background = "#14b8a6";
-            divOrientacion.style.color = "#1f2937"
-            divOrientacion.classList.remove("disabled");
-            orientacionSeleccionada = orientacion;
-            // await ();
-        });
-        orientacionDisponibles.appendChild(divOrientacion);
-    });
-    const btnAddOrientacion = document.createElement("button");
-    btnAddOrientacion.id = "btnAddOrientacion";
-    btnAddOrientacion.textContent = "Añadir";
-    btnAddOrientacion.addEventListener('click', (e) => {
-        e.stopPropagation();
-        desactivarEl(orientacionDisponibles, btnAddOrientacion);
-        btnAddOrientacion.classList.add("active");
-        btnAddOrientacion.classList.remove("disabled");
-        windowNewOrientacion.classList.remove("hidden");
-        newCorte.focus();
-    });
-    orientacionDisponibles.appendChild(btnAddOrientacion);
-}
-
-btnAceptarNuevaOrientacion.addEventListener('click', async(e) => {
-    e.stopPropagation();
-    if (newOrientacion.value == '') return;
-    await createOrientacion(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, newOrientacion.value);
-    windowNewOrientacion.classList.add("hidden");
-    await rellenarOrientacion();
-});
-windowOrientacion.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        btnAceptarNuevaOrientacion.click();
-    }
-});
-
-btnCancelarNuevaOrientacion.addEventListener('click', (e) => {
-    e.stopPropagation();
-    windowNewOrientacion.classList.add("hidden");
-    const btnAddOrientacion = document.getElementById("btnAddOrientacion");
-    btnAddOrientacion.classList.remove("active");
-    activarEl(orientacionDisponibles);
-
-});*/
 
 
 

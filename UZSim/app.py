@@ -15,7 +15,7 @@ from sqlalchemy import text
 import csv, zipfile
 from io import StringIO, BytesIO
 from datetime import datetime
-from models import db, User, Proyecto, Zonas, Cortes, Orientacion, Ficha, ConjuntoMapa, Mascaras
+from models import db, User, Proyecto, Zonas, Cortes, Orientacion, Ficha, Estructura, FichaSF, Patologia, Exploración, FichaSP, ConjuntoMapa, ConjuntoMapaSF, ConjuntoMapaSP, Mascaras, MascarasSF, MascarasSP
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 
 
@@ -98,16 +98,17 @@ def createZone():
         nueva_zona = Zonas(name=zona_name)
         db.session.add(nueva_zona)
         db.session.flush()
-    nuevaFicha = Ficha(
-        proyecto_id = proyecto.id,
-        zona_id = nueva_zona.id,
-    )
-    db.session.add(nuevaFicha)
-    db.session.flush()
-    nuevoMapa = ConjuntoMapa(
-        id_ficha = nuevaFicha.id
-    )
-    db.session.add(nuevoMapa)
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        nuevaFicha = Ficha(
+            proyecto_id = proyecto.id,
+            zona_id = nueva_zona.id,
+        )
+        db.session.add(nuevaFicha)
+        db.session.flush()
+        nuevoMapa = ConjuntoMapa(
+            id_ficha = nuevaFicha.id
+        )
+        db.session.add(nuevoMapa)
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -132,12 +133,12 @@ def get_cortes():
 #Añadir cortes
 @app.route('/crearCorte', methods=['POST'])
 def createCorte():
-    proyecto = request.json["proyecto"]
+    proyecto_name = request.json["proyecto"]
     name = request.json["name"]
-    zona = request.json["zona"]
+    zona_name = request.json["zona"]
     if not proyecto:
         return jsonify({"error": "Missing project"}), 400
-    proyecto = Proyecto.query.filter_by(name=proyecto).first()
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     if not name:
         return jsonify({"error": "Missing name"}), 400
     corte = Cortes.query.filter_by(name=name).first()
@@ -145,7 +146,7 @@ def createCorte():
         corte = Cortes(name=name)
         db.session.add(corte)
         db.session.flush()
-    zona = Zonas.query.filter_by(name=zona).first()
+    zona = Zonas.query.filter_by(name=zona_name).first()
 
     nuevaFicha = Ficha.query.filter_by(
         proyecto_id=proyecto.id,
@@ -243,8 +244,8 @@ def get_images():
         ficha = (
             db.session.query(Ficha)
             .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
-            .join(Cortes, Cortes.id == Ficha.corte_id)
             .join(Zonas, Zonas.id == Ficha.zona_id)
+            .join(Cortes, Cortes.id == Ficha.corte_id)
             .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
             .first()
         )

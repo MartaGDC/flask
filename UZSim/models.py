@@ -83,6 +83,7 @@ class FichaSF (db.Model):
     __tablename__ = "fichaSF"
     id = db.Column(db.Integer, primary_key=True)
     estructura_id = db.Column(db.Integer, db.ForeignKey('estructura.id'), nullable=False)
+    orientacion_id = db.Column(db.Integer, db.ForeignKey('orientacion.id'), nullable=False)
 
 class FichaSP (db.Model):
     __tablename__ = "fichaSP"
