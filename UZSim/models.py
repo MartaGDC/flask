@@ -42,7 +42,7 @@ class Ficha (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=False)
     zona_id = db.Column(db.Integer, db.ForeignKey('zonas.id'), nullable=False)
-    corte_id = db.Column(db.Integer, db.ForeignKey('cortes.id'), nullable=False)
+    corte_id = db.Column(db.Integer, db.ForeignKey('cortes.id'), nullable=True)
     orientacion_id = db.Column(db.Integer, db.ForeignKey('orientacion.id'), nullable=True)
 
 class ConjuntoMapa (db.Model):

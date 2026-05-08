@@ -76,15 +76,38 @@ def createProyecto():
 #Obtener zonas
 @app.route('/api/zonas', methods=['GET'])
 def get_zonas():
-    zonas = Zonas.query.all()
+    proyecto_name = request.args.get('proyecto')
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+    zonas = (
+        db.session.query(Zonas)
+        .join(Ficha, Zonas.id == Ficha.zona_id)
+        .filter(Ficha.proyecto_id == proyecto.id)
+        .distinct()
+        .all()
+    )
     return jsonify([zona.name for zona in zonas])
 
 #Añadir zonas
 @app.route('/crearZona', methods=['POST'])
 def createZone():
-    name = request.json
-    nueva_zona = Zonas(name=name)
-    db.session.add(nueva_zona)
+    proyecto_name = request.json["proyecto"]
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+    zona_name = request.json["zona"]
+    nueva_zona = Zonas.query.filter_by(name=zona_name).first()
+    if not nueva_zona:
+        nueva_zona = Zonas(name=zona_name)
+        db.session.add(nueva_zona)
+        db.session.flush()
+    nuevaFicha = Ficha(
+        proyecto_id = proyecto.id,
+        zona_id = nueva_zona.id,
+    )
+    db.session.add(nuevaFicha)
+    db.session.flush()
+    nuevoMapa = ConjuntoMapa(
+        id_ficha = nuevaFicha.id
+    )
+    db.session.add(nuevoMapa)
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -92,12 +115,14 @@ def createZone():
 @app.route('/api/cortes', methods=['GET'])
 def get_cortes():
     '''Cortes definidos y presentes en la zona seleccionada'''
+    proyecto_name = request.args.get('proyecto')
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     zona_name = request.args.get('zona')
     cortes = (
         db.session.query(Cortes)
         .join(Ficha, Cortes.id == Ficha.corte_id)
         .join(Zonas, Zonas.id == Ficha.zona_id)
-        .filter(Zonas.name == zona_name)
+        .filter(Zonas.name == zona_name, Ficha.proyecto_id == proyecto.id)
         .distinct()
         .all()
     )
@@ -122,12 +147,28 @@ def createCorte():
         db.session.flush()
     zona = Zonas.query.filter_by(name=zona).first()
 
-    nuevaFicha = Ficha(
-        proyecto_id = proyecto.id,
-        zona_id = zona.id,
-        corte_id= corte.id
-    )
-    db.session.add(nuevaFicha)
+    nuevaFicha = Ficha.query.filter_by(
+        proyecto_id=proyecto.id,
+        zona_id=zona.id,
+        corte_id=None,
+        orientacion_id=None
+    ).first()
+    if nuevaFicha:
+        nuevaFicha.corte_id = corte.id
+    else:
+        nuevaFicha=Ficha(
+            proyecto_id=proyecto.id,
+            zona_id=zona.id,
+            corte_id=corte.id,
+            orientacion_id=None
+        )
+        db.session.add(nuevaFicha)
+        db.session.flush()
+        nuevoMapa = ConjuntoMapa(
+            id_ficha = nuevaFicha.id
+        )
+        db.session.add(nuevoMapa)
+
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -198,14 +239,23 @@ def get_images():
     proyecto_name = request.args.get('proyecto')
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
-    ficha = (
-        db.session.query(Ficha)
-        .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
-        .join(Cortes, Cortes.id == Ficha.corte_id)
-        .join(Zonas, Zonas.id == Ficha.zona_id)
-        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
-        .first()
-    )
+    if corte_name:
+        ficha = (
+            db.session.query(Ficha)
+            .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
+            .join(Cortes, Cortes.id == Ficha.corte_id)
+            .join(Zonas, Zonas.id == Ficha.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
+            .first()
+        )
+    else:
+        ficha = (
+            db.session.query(Ficha)
+            .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
+            .join(Zonas, Zonas.id == Ficha.zona_id)
+            .filter(Zonas.name == zona_name, Proyecto.name == proyecto_name)
+            .first()
+        )
     mapa = (
         db.session.query(ConjuntoMapa)
         .filter(ConjuntoMapa.id_ficha == ficha.id)
@@ -216,6 +266,7 @@ def get_images():
         .filter(Mascaras.id_cm == mapa.id)
         .all()
     )
+    
     return jsonify([mapa.mapa_url, [m.mascara_url for m in mascaras]])
 
 #Guardar imagenes

@@ -1,3 +1,5 @@
+const body = document.body;
+
 const cuerpo = document.getElementById("cuerpo");
 const buttonContainer = document.getElementById("buttonContainer");
 const btnEco = document.getElementById("btnEco");
@@ -52,6 +54,17 @@ const btnWarn = document.getElementById("btnWarn");
 
 //Seleccion apartado
 function selectOption(option) {
+    if (option === 'CAR') {
+        proyectoSeleccionado = option;
+        createProyecto(option);
+        buttonContainer.style.display = "none";
+        cuerpo.style.display = "flex";
+        cuerpo.style.flexDirection = "column";
+        cuerpo.style.justifyContent = "start";
+        cuerpo.style.alignItems = "start";
+        content.style.display = "block";
+    }
+
     if (option === 'CERF') {
         proyectoSeleccionado = option;
         createProyecto(option);
@@ -131,6 +144,8 @@ function closeAllPanels() {
     //orientacionSeleccionada = '';
     mapaSeleccionado = null;
     mascarasSeleccionadas = [];
+    
+    
 }
 
 function desactivarEl(contenedor, boton)  {
@@ -153,54 +168,82 @@ function activarEl(contenedor)  {
 }
 
 
+btnEco.onclick = async () => {
+    selectOption('CAR');
+    rellenarZonas();
+}
 
 btnFisio.onclick = async () => {
     selectOption('CERF');
     rellenarZonas();
 }
 
-//-----------Zonas-----------
-async function rellenarZonas () {
-    const resZonas = await fetch("/api/zonas");
-    if (!resZonas.ok) {
-        alert("Error loading list of zones");
+
+
+
+async function rellenar({window, api, tablaHTML, onSelect, addButtonId, input}) {
+    const res = await fetch(api);
+    if (!res.ok) {
+        alert("Error loading list");
         return;
     }
-    const zonas = await resZonas.json();
-    zonasCuerpo.innerHTML = ""; //Limpia si ya se habia rellenado en la ejecucion (tambien elimina el boton de añadir)
-    zonas.forEach(zona => {
-        const divZona = document.createElement("div");
-        divZona.textContent = zona;
-        divZona.style.cursor = "pointer";
-        divZona.addEventListener("click", async (e) => {
+    const items = await res.json();
+    tablaHTML.innerHTML = "";
+    items.forEach(item => {
+        const div = document.createElement("div");
+        div.textContent = item;
+        div.style.cursor = "pointer";
+        div.addEventListener("click", async (e) => {
             e.stopPropagation();
-            desactivarEl(zonasCuerpo, btnAddZona);
-            divZona.style.background = "#14b8a6";
-            divZona.style.color = "#1f2937"
-            divZona.classList.remove("disabled");
-            zonaSeleccionada = zona;
-            await rellenarCortes();
+            desactivarEl(tablaHTML, btnAdd);
+            div.style.background = "#14b8a6";
+            div.style.color = "#1f2937"
+            div.classList.remove("disabled");
+            await onSelect(item);
         });
-        zonasCuerpo.appendChild(divZona);
+        tablaHTML.appendChild(div);
     });
-    const btnAddZona = document.createElement("button");
-    btnAddZona.id = "btnAddZona";
-    btnAddZona.textContent = "Añadir";
-    btnAddZona.addEventListener('click', (e) => {
+    const btnAdd = document.createElement("button");
+
+    btnAdd.id = addButtonId;
+    btnAdd.textContent = "Añadir";
+    btnAdd.addEventListener("click", (e) => {
+        console.log(addButtonId);
         e.stopPropagation();
-        desactivarEl(zonasCuerpo, btnAddZona);
-        btnAddZona.classList.add("active");
-        btnAddZona.classList.remove("disabled");
-        windowZona.classList.remove("hidden");
-        newZone.focus();
+        desactivarEl(tablaHTML, btnAdd);
+        btnAdd.classList.add("active");
+        btnAdd.classList.remove("disabled");
+        window.classList.remove("hidden");
+        input.focus();
     });
-    zonasCuerpo.appendChild(btnAddZona);
+    tablaHTML.appendChild(btnAdd);
+}
+
+//-----------Zonas-----------
+async function rellenarZonas () {
+    rellenar({
+        window: windowZona,
+        api: `/api/zonas?proyecto=${proyectoSeleccionado}`,
+        tablaHTML: zonasCuerpo,
+        onSelect: async(zona) => {
+            zonaSeleccionada = zona;
+            if(proyectoSeleccionado != 'CAR'){
+                rellenarCortes();
+            }
+            else{
+                mostrarSelecciones();
+            }
+        },
+        addButtonId: "btnAddZona",
+        input: newZone
+    });
 }
 
 btnAceptarNuevaZona.addEventListener('click', async(e) => {
     e.stopPropagation();
     if (newZone.value == '') return;
     await createZone(newZone.value);
+    newZone.value = '';
     windowZona.classList.add("hidden");
     await rellenarZonas();
 });
@@ -223,47 +266,24 @@ btnCancelarNuevaZona.addEventListener('click', (e) => {
 //-----------Cortes-----------
 async function rellenarCortes () {
     windowCortes.classList.remove("hidden");
-    const resCortes = await fetch(`/api/cortes?zona=${zonaSeleccionada}`)
-    if (!resCortes.ok) {
-        alert("Error loading list of cuts");
-        return;
-    }
-    const cortes = await resCortes.json();
-    cortesDisponibles.innerHTML = ""; //Limpia si ya se habia rellenado en la ejecucion (tambien elimina el boton de añadir)
-    cortes.forEach(corte => {
-        const divCorte = document.createElement("div");
-        divCorte.textContent = corte;
-        divCorte.style.cursor = "pointer";
-        divCorte.addEventListener("click", async(e) => {
-            e.stopPropagation();
-            desactivarEl(cortesDisponibles, btnAddCorte);
-            divCorte.style.background = "#14b8a6";
-            divCorte.style.color = "#1f2937"
-            divCorte.classList.remove("disabled");
+    rellenar({
+        window: windowNewCorte,
+        api: `/api/cortes?zona=${zonaSeleccionada}&proyecto=${proyectoSeleccionado}`,
+        tablaHTML: cortesDisponibles,
+        onSelect: async(corte) => {
             corteSeleccionado = corte;
             mostrarSelecciones();
-            // await rellenarOrientacion();
-        });
-        cortesDisponibles.appendChild(divCorte);
+        },
+        addButtonId: "btnAddCorte",
+        input: newCorte
     });
-    const btnAddCorte = document.createElement("button");
-    btnAddCorte.id = "btnAddCorte";
-    btnAddCorte.textContent = "Añadir";
-    btnAddCorte.addEventListener('click', (e) => {
-        e.stopPropagation();
-        desactivarEl(cortesDisponibles, btnAddCorte);
-        btnAddCorte.classList.add("active");
-        btnAddCorte.classList.remove("disabled");
-        windowNewCorte.classList.remove("hidden");
-        newCorte.focus();
-    });
-    cortesDisponibles.appendChild(btnAddCorte);
 }
 
 btnAceptarNuevoCorte.addEventListener('click', async(e) => {
     e.stopPropagation();
     if (newCorte.value == '') return;
     await createCorte(proyectoSeleccionado, newCorte.value, zonaSeleccionada);
+    newCorte.value = '';
     windowNewCorte.classList.add("hidden");
     await rellenarCortes();
 });
@@ -292,14 +312,16 @@ async function mostrarSelecciones() {
         return;
     }
     const images = await resImg.json();
-
+    //Preparacion de la ventana:
     mapaWindow.classList.remove("hidden");            
     mapaWindow.style.display = "flex";
     mapaWindow.style.flexDirection = "column";
     titleMapa.textContent = `${proyectoSeleccionado}: ${zonaSeleccionada} ${corteSeleccionado}`;
+    mapaFileInput.value= '';
+    mapaText.replaceChildren();
     listaMascaras.innerHTML='';
-
-    if(images[0]) {
+    //Recuperacion de BBDD Mapa y Mascaras si existen:
+    if(images[0]) { 
         mostrarMapa(images[0], true)
     }
     if(images[1]) {
@@ -312,6 +334,7 @@ async function mostrarSelecciones() {
 
 mapaFileInput.addEventListener("change", (e) => {
     mapaSeleccionado = e.target.files[0];
+    console.log(mapaSeleccionado);
     if (!mapaSeleccionado) return;
     if (!mapaSeleccionado.name.endsWith(".svg")) {
         alert("Introduzca archivos de tipo .svg");
@@ -362,7 +385,6 @@ btnWarn.addEventListener('click', (e) => {
 
 
 function mostrarMapa(nombreMapa, guardado = false) {
-    mapaText.replaceChildren();
     mapaText.textContent = nombreMapa;
     const btnDelete = document.createElement("button");
     btnDelete.textContent = "X";
@@ -489,7 +511,7 @@ async function createZone(zona) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(zona)
+        body: JSON.stringify({"zona": zona, "proyecto": proyectoSeleccionado})
     })
     if (!response.ok) {
         throw new Error(`Server error: ${response.status} ${response.statusText}`);
