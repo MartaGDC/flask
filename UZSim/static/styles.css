@@ -94,6 +94,8 @@ button:hover, button:active {
 #zonasCuerpo div, #zonasCuerpo button,
 #cortesDisponibles div, #cortesDisponibles button,
 #estructuraDisponibles div, #estructuraDisponibles button,
+#exploracionDisponibles div, #exploracionDisponibles button,
+#patologiaDispoibles div, #patologiaDispoibles button,
 #orientacionDisponibles div, #orientacionDisponibles button,
 #mapaWindow button {
     color: #4B5563;
@@ -109,12 +111,16 @@ button:hover, button:active {
 #zonasCuerpo div:hover,
 #cortesDisponibles div:hover,
 #estructuraDisponibles div:hover,
+#exploracionDisponibles div:hover,
+#patologiaDispoibles div:hover,
 #orientacionDisponibles div:hover {
     background-color: #E5E7EB;
 }
 #zonasCuerpo div:active, #zonasCuerpo div.active, #zonasCuerpo button:active, #zonasCuerpo button.active ,
 #cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active,
 #estructuraDisponibles div:active, #estructuraDisponibles div.active, #estructuraDisponibles button:active, #estructuraDisponibles button.active,
+#exploracionDisponibles div:active, #exploracionDisponibles div.active, #exploracionDisponibles button:active, #exploracionDisponibles button.active,
+#patologiaDispoibles div:active, #patologiaDispoibles div.active, #patologiaDispoibles button:active, #patologiaDispoibles button.active,
 #orientacionDisponibles div:active, #orientacionDisponibles div.active, #orientacionDisponibles button:active, #orientacionDisponibles button.active,
 #mapaWindow button:hover {
     background-color: #14b8a6;
@@ -123,6 +129,8 @@ button:hover, button:active {
 #zonasCuerpo button,
 #cortesDisponibles button,
 #estructuraDisponibles button,
+#exploracionDisponibles button,
+#patologiaDispoibles button,
 #orientacionDisponibles button,
 #mapaWindow button {
     background-color: #475569;
