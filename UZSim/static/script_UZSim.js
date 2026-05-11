@@ -54,6 +54,10 @@ const mascaraFileInput = document.getElementById("mascaraFileInput");
 const listaMascaras = document.getElementById("listaMascaras");
 let mascarasSeleccionadas = [];
 let nombreMascaras = [];
+const contenedorVideo = document.getElementById("contenedorVideo");
+const videoFileInput = document.getElementById("videoFileInput");
+const videoText = document.getElementById("videoText");
+let videoSeleccionado = null;
 const btnAceptarImg = document.getElementById("btnAceptarImg");
 const btnCancelarImg = document.getElementById("btnCancelarImg");
 
@@ -115,6 +119,7 @@ document.addEventListener("click", (e) => {
     e.stopPropagation();
     if (!windowZona.contains(e.target) 
         && !windowNewCorte.contains(e.target)
+        && !windowNewEstructura.contains(e.target)
         && !windowNewOrientacion.contains(e.target)
         && !mapaWindow.contains(e.target)
         && !warningMapa.contains(e.target)) {
@@ -126,6 +131,8 @@ function closeAllPanels() {
     windowZona.classList.add("hidden");
     windowCortes.classList.add("hidden");
     windowNewCorte.classList.add("hidden");
+    windowEstructura.classList.add("hidden");
+    windowNewEstructura.classList.add("hidden");
     windowOrientacion.classList.add("hidden");
     windowNewOrientacion.classList.add("hidden");
     mapaWindow.style.display = "none";
@@ -139,6 +146,11 @@ function closeAllPanels() {
     if (btnAddCorte) {
         btnAddCorte.disabled=false;
         btnAddCorte.classList.remove("disabled", "active");
+    }
+    const btnAddEstructura = document.getElementById("btnAddEstructura");
+    if(btnAddEstructura) {
+        btnAddEstructura.disabled = false;
+        btnAddEstructura.classList.remove("disabled", "active");
     }
     const btnAddOrientacion = document.getElementById("btnAddOrientacion");
     if (btnAddOrientacion) {
@@ -157,6 +169,12 @@ function closeAllPanels() {
         el.style.background = "transparent";
         el.style.color = "#4B5563";
     });
+    estructuraDisponibles.querySelectorAll("div")?.forEach(el => {
+        el.classList.remove("disabled");
+        el.disabled = false;
+        el.style.background = "transparent";
+        el.style.color = "#4B5563";
+    });
     orientacionDisponibles.querySelectorAll("div")?.forEach(el => {
         el.classList.remove("disabled");
         el.disabled = false;
@@ -165,6 +183,7 @@ function closeAllPanels() {
     });
     zonaSeleccionada = '';
     corteSeleccionado = '';
+    estructuraSeleccionada = '';
     orientacionSeleccionada = '';
     mapaSeleccionado = null;
     mascarasSeleccionadas = [];
@@ -352,7 +371,8 @@ async function rellenarEstructura() {
          onSelect: async(estructura) => {
             estructuraSeleccionada = estructura;
             if(proyectoSeleccionado == 'SF'){
-                //
+                rellenarOrientacion();
+                //mostrarSelecciones();
             }
             else {
                //exploracion y patologia
@@ -397,7 +417,7 @@ async function rellenarOrientacion() {
          onSelect: async(orientacion) => {
             orientacionSeleccionada = orientacion;
             if(proyectoSeleccionado == 'SF'){
-                //
+                mostrarSelecciones();
             }
             else {
                //exploracion y patologia
@@ -411,7 +431,8 @@ async function rellenarOrientacion() {
 btnAceptarNuevaOrientacion.addEventListener('click', async(e) => {
     e.stopPropagation();
     if (newOrientacion.value == '') return;
-    await createOrientacion(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, newOrientacion.value);
+    await createOrientacion(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, estructuraSeleccionada, newOrientacion.value);
+    newOrientacion.value = '';
     windowNewOrientacion.classList.add("hidden");
     await rellenarOrientacion();
 });
@@ -434,7 +455,7 @@ btnCancelarNuevaOrientacion.addEventListener('click', (e) => {
 
 //-----------Archivos selecccionados-----------
 async function mostrarSelecciones() {
-    const resImg = await fetch(`/api/images?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}`);
+    const resImg = await fetch(`/api/images?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}&orientacion=${orientacionSeleccionada}`);
     if (!resImg.ok) {
         alert("Error loading list of images");
         return;
@@ -444,31 +465,60 @@ async function mostrarSelecciones() {
     mapaWindow.classList.remove("hidden");            
     mapaWindow.style.display = "flex";
     mapaWindow.style.flexDirection = "column";
-    titleMapa.textContent = `${proyectoSeleccionado}: ${zonaSeleccionada} ${corteSeleccionado} ${orientacionSeleccionada}`;
+    titleMapa.textContent = `${proyectoSeleccionado}: ${zonaSeleccionada} ${corteSeleccionado} ${estructuraSeleccionada} ${orientacionSeleccionada}`;
     mapaFileInput.value= '';
     mapaText.replaceChildren();
     listaMascaras.innerHTML='';
-    //Recuperacion de BBDD Mapa y Mascaras si existen:
-    if(images[0]) { 
-        mostrarMapa(images[0], true)
+    if (proyectoSeleccionado != 'SF' && proyectoSeleccionado != 'SP'){
+        //Recuperacion de BBDD Mapa y Mascaras si existen:
+        if(images[0]) { 
+            mostrarMapa(images[0], true)
+        }
+        if(images[1]) {
+            nombreMascaras = images[1] ;
+            nombreMascaras.forEach(mask => {
+                mostrarMascaras(mask, null, true);
+            });
+        }
     }
-    if(images[1]) {
-        nombreMascaras = images[1] ;
-        nombreMascaras.forEach(mask => {
-            mostrarMascaras(mask, null, true);
-        });
+    else if (proyectoSeleccionado == 'SF') {
+        contenedorVideo.style.display = "flex";
+        videoFileInput.value= '';
+        videoText.replaceChildren();
+        //Recuperacion de BBDD Mapa y Mascaras si existen:
+        if(images[0]) { 
+            mostrarMapa(images[0], true)
+        }
+        if(images[1]) {
+            mostrarVideo(images[1], true)
+        }
+        if(images[2]) {
+            nombreMascaras = images[2] ;
+            nombreMascaras.forEach(mask => {
+                mostrarMascaras(mask, null, true);
+            });
+        }
     }
 }
 
 mapaFileInput.addEventListener("change", (e) => {
     mapaSeleccionado = e.target.files[0];
-    console.log(mapaSeleccionado);
     if (!mapaSeleccionado) return;
     if (!mapaSeleccionado.name.endsWith(".svg")) {
         alert("Introduzca archivos de tipo .svg");
         return;
     }
     mostrarMapa(mapaSeleccionado.name);
+});
+
+videoFileInput.addEventListener("change", (e) => {
+    videoSeleccionado = e.target.files[0];
+    if (!videoSeleccionado) return;
+    if (!videoSeleccionado.name.endsWith("mp4")) {
+        alert("Introduzca archivos de tipo .mp4");
+        return;
+    }
+    mostrarVideo(videoSeleccionado.name);
 });
 
 mascaraFileInput.addEventListener("change", (e) => {
@@ -497,7 +547,7 @@ btnAceptarImg.addEventListener('click', async (e) => {
         mapaWindow.classList.add("disabled");
         return;
     }
-    await guardarImg(mapaSeleccionado, mascarasSeleccionadas, proyectoSeleccionado, zonaSeleccionada, corteSeleccionado);
+    await guardarImg(mapaSeleccionado, mascarasSeleccionadas, proyectoSeleccionado, zonaSeleccionada, corteSeleccionado, orientacionSeleccionada, estructuraSeleccionada);
     closeAllPanels();
 });
 btnCancelarImg.addEventListener('click', (e) => {
@@ -528,6 +578,24 @@ function mostrarMapa(nombreMapa, guardado = false) {
         mapaText.replaceChildren();
     });
     mapaText.appendChild(btnDelete);
+}
+
+function mostrarVideo(nombreVideo, guardado = false) {
+    videoText.textContent = nombreVideo;
+    const btnDelete = document.createElement("button");
+    btnDelete.textContent = "X";
+    btnDelete.classList.add("eliminar");
+    btnDelete.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (guardado) {
+            await eliminarImagenes(nombreVideo, "video");
+            images[1] = null;
+        }
+        videoSeleccionado = null;
+        videoFileInput.value = "";
+        videoText.replaceChildren();
+    });
+    videoText.appendChild(btnDelete);
 }
 
 function mostrarMascaras (maskName, maskFile = null, guardada = false) {
@@ -598,13 +666,28 @@ async function createCorte(proyecto, corte, zona) {
     return await response.json();
 }
 
-async function createOrientacion(proyecto, corte, zona, orientacion) {
+async function createEstructura(proyecto, corte, zona, nombre) {
+    const response = await fetch('/crearEstructura', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"proyecto": proyecto, "corte": corte, "zona": zona, "nombre": nombre})
+    })
+    if(!response.ok) {
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+    }
+    return await response.json();
+}
+
+
+async function createOrientacion(proyecto, corte, zona, estructura, orientacion) {
     const response = await fetch('/crearOrientacion', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({"proyecto": proyecto, "name": corte, "zona": zona, "orientacion": orientacion})
+        body: JSON.stringify({"proyecto": proyecto, "corte": corte, "zona": zona, "estructura": estructura, "orientacion": orientacion})
     })
     if (!response.ok) {
         throw new Error(`Server error: ${response.status} ${response.statusText}`);
@@ -612,7 +695,7 @@ async function createOrientacion(proyecto, corte, zona, orientacion) {
     return await response.json();
 }
 
-async function guardarImg(mapa, mascaras, proyecto, zona, corte) {
+async function guardarImg(mapa, mascaras, proyecto, zona, corte, orientacion, estructura) {
     const formData = new FormData();
     if (mapa) {
         formData.append("mapa", mapa);
@@ -623,6 +706,8 @@ async function guardarImg(mapa, mascaras, proyecto, zona, corte) {
     formData.append("proyecto", proyecto);
     formData.append("zona", zona);
     formData.append("corte", corte);
+    formData.append("orientacion", orientacion);
+    formData.append("estructura", estructura);
 
     const response = await fetch('/save', {
         method: 'POST',

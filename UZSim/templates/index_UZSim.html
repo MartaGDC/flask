@@ -14,7 +14,7 @@
             <button>Home</button>
         </a>
         <div style="position: absolute; top: 0; right: 0;">
-            <button id = "downloadBtn">Downlad zip</button>
+            <button id = "downloadBtn">Download zip</button>
         </div>
     </header>
     <main id="cuerpo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
@@ -53,21 +53,6 @@
                         <button id="btnCancelarNuevoCorte">Cancelar</button>
                     </div>
                 </div>
-                
-                <div id="windowOrientacion" style="margin-top: 1rem; padding:0.5rem 1rem" class="hidden">
-                    <div style="font-size: 1.2rem; color:#4b5563; margin-top:1rem;">Orientación: </div>
-                    <div id="orientacionDisponibles"></div>
-                </div>
-                <div id="windowNewOrientacion" class="window hidden">
-                    <div class="form-row">
-                        <div class="form-label">Nombre</div>
-                        <input id="newOrientacion" type="text" placeholder=" Nueva orientacion">
-                    </div>
-                    <div class="aceptarCancelar">
-                        <button id="btnAceptarNuevaOrientacion">Aceptar</button>
-                        <button id="btnCancelarNuevaOrientacion">Cancelar</button>
-                    </div>
-                </div>
 
                 <div id="windowEstructura" style="margin-top: 1rem; padding:0.5rem 1rem" class="hidden">
                     <div style="font-size: 1.2rem; color:#4b5563; margin-top:1rem;">Estructura: </div>
@@ -84,6 +69,20 @@
                     </div>
                 </div>
 
+                <div id="windowOrientacion" style="margin-top: 2rem; padding:0.5rem 1rem" class="hidden">
+                    <div style="font-size: 1.2rem; color:#4b5563; margin-top:1rem;">Orientación: </div>
+                    <div id="orientacionDisponibles"></div>
+                </div>
+                <div id="windowNewOrientacion" class="window hidden">
+                    <div class="form-row">
+                        <div class="form-label">Nombre</div>
+                        <input id="newOrientacion" type="text" placeholder=" Nueva orientacion">
+                    </div>
+                    <div class="aceptarCancelar">
+                        <button id="btnAceptarNuevaOrientacion">Aceptar</button>
+                        <button id="btnCancelarNuevaOrientacion">Cancelar</button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -95,6 +94,13 @@
                 <input type="file" id="mapaFileInput" class="hidden">
             </label>
             <div style="color: #4B5563; margin-top: 0.5rem; width:50%; display:flex; justify-content: space-between;" id="mapaText"></div>
+        </div>
+        <div style="display: none" id="contenedorVideo">
+            <label class="file-btn">
+                Seleccionar video
+                <input type="file" id="videoFileInput" class="hidden">
+            </label>
+            <div style="color: #4B5563; margin-top: 0.5rem; width:50%; display:flex; justify-content: space-between;" id="videoText"></div>
         </div>
         <div style="display: flex;">
             <label class="file-btn">

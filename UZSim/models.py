@@ -63,9 +63,9 @@ class Mascaras (db.Model):
 class Estructura (db.Model): #Para SF y SP
     __tablename__ = "estructura"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=True)
     zona_id = db.Column(db.Integer, db.ForeignKey('zonas.id'), nullable=False)
-    corte_id = db.Column(db.Integer, db.ForeignKey('cortes.id'), nullable=False)
+    corte_id = db.Column(db.Integer, db.ForeignKey('cortes.id'), nullable=True)
 
 class Patologia (db.Model): #Para SP
     __tablename__ = "patologia"
@@ -73,7 +73,7 @@ class Patologia (db.Model): #Para SP
     name = db.Column(db.String(100), unique=True, nullable=False)
     estructura_id = db.Column(db.Integer, db.ForeignKey('estructura.id'), nullable=False)
 
-class Exploración (db.Model): #Para SP, detalles de la sonda
+class Exploracion (db.Model): #Para SP, detalles de la sonda
     __tablename__ = "exploracion"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
@@ -83,7 +83,7 @@ class FichaSF (db.Model):
     __tablename__ = "fichaSF"
     id = db.Column(db.Integer, primary_key=True)
     estructura_id = db.Column(db.Integer, db.ForeignKey('estructura.id'), nullable=False)
-    orientacion_id = db.Column(db.Integer, db.ForeignKey('orientacion.id'), nullable=False)
+    orientacion_id = db.Column(db.Integer, db.ForeignKey('orientacion.id'), nullable=True)
 
 class FichaSP (db.Model):
     __tablename__ = "fichaSP"

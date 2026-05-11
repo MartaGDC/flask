@@ -93,6 +93,7 @@ button:hover, button:active {
 
 #zonasCuerpo div, #zonasCuerpo button,
 #cortesDisponibles div, #cortesDisponibles button,
+#estructuraDisponibles div, #estructuraDisponibles button,
 #orientacionDisponibles div, #orientacionDisponibles button,
 #mapaWindow button {
     color: #4B5563;
@@ -107,11 +108,13 @@ button:hover, button:active {
 }
 #zonasCuerpo div:hover,
 #cortesDisponibles div:hover,
+#estructuraDisponibles div:hover,
 #orientacionDisponibles div:hover {
     background-color: #E5E7EB;
 }
 #zonasCuerpo div:active, #zonasCuerpo div.active, #zonasCuerpo button:active, #zonasCuerpo button.active ,
 #cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active,
+#estructuraDisponibles div:active, #estructuraDisponibles div.active, #estructuraDisponibles button:active, #estructuraDisponibles button.active,
 #orientacionDisponibles div:active, #orientacionDisponibles div.active, #orientacionDisponibles button:active, #orientacionDisponibles button.active,
 #mapaWindow button:hover {
     background-color: #14b8a6;
@@ -119,8 +122,9 @@ button:hover, button:active {
 }
 #zonasCuerpo button,
 #cortesDisponibles button,
+#estructuraDisponibles button,
 #orientacionDisponibles button,
-#mapaWindow button{
+#mapaWindow button {
     background-color: #475569;
     color: #E5E7EB;
     padding: 0.5rem 1rem;
@@ -189,6 +193,7 @@ button:hover, button:active {
 }
 
 .windowCentral {
+    background-color: #F5F5F5;
     position: fixed;
     top: 50%;
     left: 50%;

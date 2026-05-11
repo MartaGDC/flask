@@ -15,7 +15,7 @@ from sqlalchemy import text
 import csv, zipfile
 from io import StringIO, BytesIO
 from datetime import datetime
-from models import db, User, Proyecto, Zonas, Cortes, Orientacion, Ficha, Estructura, FichaSF, Patologia, Exploración, FichaSP, ConjuntoMapa, ConjuntoMapaSF, ConjuntoMapaSP, Mascaras, MascarasSF, MascarasSP
+from models import db, User, Proyecto, Zonas, Cortes, Orientacion, Ficha, Estructura, FichaSF, Patologia, Exploracion, FichaSP, ConjuntoMapa, ConjuntoMapaSF, ConjuntoMapaSP, Mascaras, MascarasSF, MascarasSP
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 
 
@@ -78,13 +78,22 @@ def createProyecto():
 def get_zonas():
     proyecto_name = request.args.get('proyecto')
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
-    zonas = (
-        db.session.query(Zonas)
-        .join(Ficha, Zonas.id == Ficha.zona_id)
-        .filter(Ficha.proyecto_id == proyecto.id)
-        .distinct()
-        .all()
-    )
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        zonas = (
+            db.session.query(Zonas)
+            .join(Ficha, Zonas.id == Ficha.zona_id)
+            .filter(Ficha.proyecto_id == proyecto.id)
+            .distinct()
+            .all()
+        )
+    elif proyecto_name == 'SF':
+        zonas = (
+            db.session.query(Zonas)
+            .join(Estructura, Zonas.id == Estructura.zona_id)
+            .join(FichaSF, Estructura.id == FichaSF.estructura_id)
+            .distinct()
+            .all()
+        )
     return jsonify([zona.name for zona in zonas])
 
 #Añadir zonas
@@ -109,6 +118,26 @@ def createZone():
             id_ficha = nuevaFicha.id
         )
         db.session.add(nuevoMapa)
+
+    elif proyecto_name=="SF":
+        nuevaEstructura = Estructura(
+            name = None,
+            zona_id = nueva_zona.id,
+            corte_id = None
+        )
+        db.session.add(nuevaEstructura)
+        db.session.flush()
+        nuevaFicha = FichaSF(
+            estructura_id = nuevaEstructura.id,
+            orientacion_id = None
+        )
+        db.session.add(nuevaFicha)
+        db.session.flush()
+        nuevoMapa = ConjuntoMapaSF(
+            id_fichasf = nuevaFicha.id,
+        )
+        db.session.add(nuevoMapa)
+
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -119,15 +148,24 @@ def get_cortes():
     proyecto_name = request.args.get('proyecto')
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     zona_name = request.args.get('zona')
-    cortes = (
-        db.session.query(Cortes)
-        .join(Ficha, Cortes.id == Ficha.corte_id)
-        .join(Zonas, Zonas.id == Ficha.zona_id)
-        .filter(Zonas.name == zona_name, Ficha.proyecto_id == proyecto.id)
-        .distinct()
-        .all()
-    )
-
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        cortes = (
+            db.session.query(Cortes)
+            .join(Ficha, Cortes.id == Ficha.corte_id)
+            .join(Zonas, Zonas.id == Ficha.zona_id)
+            .filter(Zonas.name == zona_name, Ficha.proyecto_id == proyecto.id)
+            .distinct()
+            .all()
+        )
+    elif proyecto_name=='SF':
+        cortes = (
+            db.session.query(Cortes)
+            .join(Estructura, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name)
+            .distinct()
+            .all()
+        )
     return jsonify([corte.name for corte in cortes])
 
 #Añadir cortes
@@ -136,7 +174,7 @@ def createCorte():
     proyecto_name = request.json["proyecto"]
     name = request.json["name"]
     zona_name = request.json["zona"]
-    if not proyecto:
+    if not proyecto_name:
         return jsonify({"error": "Missing project"}), 400
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     if not name:
@@ -148,30 +186,121 @@ def createCorte():
         db.session.flush()
     zona = Zonas.query.filter_by(name=zona_name).first()
 
-    nuevaFicha = Ficha.query.filter_by(
-        proyecto_id=proyecto.id,
-        zona_id=zona.id,
-        corte_id=None,
-        orientacion_id=None
-    ).first()
-    if nuevaFicha:
-        nuevaFicha.corte_id = corte.id
-    else:
-        nuevaFicha=Ficha(
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        nuevaFicha = Ficha.query.filter_by(
             proyecto_id=proyecto.id,
             zona_id=zona.id,
-            corte_id=corte.id,
+            corte_id=None,
             orientacion_id=None
-        )
-        db.session.add(nuevaFicha)
-        db.session.flush()
-        nuevoMapa = ConjuntoMapa(
-            id_ficha = nuevaFicha.id
-        )
-        db.session.add(nuevoMapa)
+        ).first()
+        if nuevaFicha:
+            nuevaFicha.corte_id = corte.id
+        else:
+            nuevaFicha=Ficha(
+                proyecto_id=proyecto.id,
+                zona_id=zona.id,
+                corte_id=corte.id,
+                orientacion_id=None
+            )
+            db.session.add(nuevaFicha)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapa(
+                id_ficha = nuevaFicha.id
+            )
+            db.session.add(nuevoMapa)
+        
+    elif proyecto_name == 'SF':
+        nuevaEstructura = Estructura.query.filter_by(
+            zona_id = zona.id,
+            corte_id = None
+        ).first()
+        if nuevaEstructura:
+            nuevaEstructura.corte_id = corte.id
+        else:
+            nuevaEstructura=Estructura(
+                zona_id=zona.id,
+                corte_id=corte.id,
+                name=None
+            )
+            db.session.add(nuevaEstructura)
+            db.session.flush()
+            nuevaFicha =FichaSF(
+                estructura_id = nuevaEstructura.id
+            )
+            db.session.add(nuevaFicha)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapaSF(
+                id_fichasf = nuevaFicha.id
+            )
+            db.session.add(nuevoMapa)
 
     db.session.commit()
     return jsonify({"status": "success"}), 200
+
+#Obtener estructuras
+@app.route('/api/estructuras', methods=['GET'])
+def get_estructuras():
+    '''Estruturas definidas y presentes en la zona y corte seleccionados'''
+    zona_name = request.args.get("zona")
+    corte_name = request.args.get('corte')
+    estructuras = (
+        db.session.query(Estructura)
+        .join(Cortes, Cortes.id == Estructura.corte_id)
+        .join(Zonas, Zonas.id == Estructura.zona_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+        .distinct()
+        .all()
+    )
+    return jsonify([estructura.name for estructura in estructuras])
+
+#Añadir estructuras
+@app.route('/crearEstructura', methods=['POST'])
+def createEstructura():
+    proyecto_name = request.json["proyecto"]
+    corte_name = request.json["corte"]
+    zona_name = request.json["zona"]
+    nombre = request.json["nombre"]
+    if not zona_name:
+        return jsonify({"error": "Missing zone"}), 400
+    zona = Zonas.query.filter_by(name=zona_name).first()
+    if not corte_name:
+        return jsonify({"error": "Missing cut"}), 400
+    corte = Cortes.query.filter_by(name=corte_name).first()
+    if not nombre:
+        return jsonify({"error": "Missing estructure name"})
+    nuevaEstructura = Estructura.query.filter_by(name=nombre).first()
+    if not nuevaEstructura:
+        nuevaEstructura = (
+            db.session.query(Estructura)
+            .join(Cortes, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+            .distinct()
+            .first()
+        )
+        if nuevaEstructura.name == None:
+            nuevaEstructura.name = nombre
+        else:
+            nuevaEstructura = Estructura(
+                name = nombre,
+                zona_id = zona.id,
+                corte_id = corte.id
+            )
+            db.session.add(nuevaEstructura)
+            db.session.flush()
+            nuevaFicha = FichaSF(
+                estructura_id = nuevaEstructura.id,
+                orientacion_id = None
+            )
+            db.session.add(nuevaFicha)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapaSF(
+                id_fichasf = nuevaFicha.id,
+            )
+            db.session.add(nuevoMapa)
+    db.session.commit()
+    return jsonify({"status": "success"}), 200
+
 
 #Obtener orientaciones
 @app.route('/api/orientaciones', methods=['GET'])
@@ -179,56 +308,97 @@ def get_orientaciones():
     '''Orientaciones definidas y presentes en la zona y corte seleccionados'''
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
-    orientaciones = (
-        db.session.query(Orientacion)
-        .join(Ficha, Orientacion.id == Ficha.orientacion_id)
-        .join(Cortes, Cortes.id == Ficha.corte_id)
-        .join(Zonas, Zonas.id == Ficha.zona_id)
-        .filter(Zonas.name == zona_name, Cortes.name == corte_name)
-        .distinct()
-        .all()
-    )
-
+    proyecto_name = request.args.get('proyecto')
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        orientaciones = (
+            db.session.query(Orientacion)
+            .join(Ficha, Orientacion.id == Ficha.orientacion_id)
+            .join(Cortes, Cortes.id == Ficha.corte_id)
+            .join(Zonas, Zonas.id == Ficha.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+            .distinct()
+            .all()
+        )
+    elif proyecto_name == 'SF':
+        orientaciones = (
+            db.session.query(Orientacion)
+            .join(FichaSF, Orientacion.id == FichaSF.orientacion_id)
+            .join(Estructura, Estructura.id == FichaSF.estructura_id)
+            .join(Cortes, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+            .distinct()
+            .all()
+        )
     return jsonify([orientacion.name for orientacion in orientaciones])
 
 #Añadir orientaciones
 @app.route('/crearOrientacion', methods=['POST'])
 def createOrientacion():
-    proyecto = request.json["proyecto"]
-    name = request.json["name"]
-    zona = request.json["zona"]
-    orientacion = request.json["orientacion"]
-    if not proyecto:
+    proyecto_name = request.json["proyecto"]
+    corte_name = request.json["corte"]
+    zona_name = request.json["zona"]
+    estructura_name = request.json["estructura"]
+    orientacion_name = request.json["orientacion"]
+    if not proyecto_name:
         return jsonify({"error": "Missing project"}), 400
-    proyecto = Proyecto.query.filter_by(name=proyecto).first()
-    if not name:
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+    if not zona_name:
+        return jsonify({"error": "Missing zone"}), 400
+    zona = Zonas.query.filter_by(name=zona_name).first()
+    if not corte_name:
         return jsonify({"error": "Missing cut"}), 400
-    corte = Cortes.query.filter_by(name=name).first()
-    if not orientacion:
+    corte = Cortes.query.filter_by(name=corte_name).first()
+    if not orientacion_name:
         return jsonify({"error": "Missing orientation"})
-    nuevaOrientacion = Orientacion.query.filter_by(name=orientacion).first()
+    nuevaOrientacion = Orientacion.query.filter_by(name=orientacion_name).first()
     if not nuevaOrientacion:
-        nuevaOrientacion = Orientacion(name=orientacion)
+        nuevaOrientacion = Orientacion(name=orientacion_name)
         db.session.add(nuevaOrientacion)
         db.session.flush()
 
-    zona = Zonas.query.filter_by(name=zona).first()
-    ficha = Ficha.query.filter_by(
-        proyecto_id=proyecto.id,
-        zona_id=zona.id,
-        corte_id=corte.id,
-        orientacion_id=None
-    ).first()
-    if ficha:
-        ficha.orientacion_id = nuevaOrientacion.id
-    else:
-        ficha = Ficha(
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        ficha = Ficha.query.filter_by(
             proyecto_id=proyecto.id,
             zona_id=zona.id,
             corte_id=corte.id,
-            orientacion_id=nuevaOrientacion.id
+            orientacion_id=None
+        ).first()
+        if ficha:
+            ficha.orientacion_id = nuevaOrientacion.id
+        else:
+            ficha = Ficha(
+                proyecto_id=proyecto.id,
+                zona_id=zona.id,
+                corte_id=corte.id,
+                orientacion_id=nuevaOrientacion.id
+            )
+            db.session.add(ficha)
+    elif proyecto_name == 'SF':
+        estructura = Estructura.query.filter_by(name=estructura_name).first()
+        fichaSF = (
+            db.session.query(FichaSF)
+            .join(Estructura, Estructura.id == FichaSF.estructura_id)
+            .join(Cortes, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, FichaSF.orientacion_id == None)
+            .distinct()
+            .first()
         )
-        db.session.add(ficha)
+        if fichaSF:
+            fichaSF.orientacion_id = nuevaOrientacion.id
+        else:
+            fichaSF = FichaSF(
+                estructura_id = estructura.id,
+                orientacion_id = nuevaOrientacion.id
+            )
+            db.session.add(fichaSF)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapaSF(
+                id_fichasf = fichaSF.id,
+            )
+            db.session.add(nuevoMapa)
+
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -240,85 +410,171 @@ def get_images():
     proyecto_name = request.args.get('proyecto')
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
-    if corte_name:
-        ficha = (
-            db.session.query(Ficha)
-            .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
-            .join(Zonas, Zonas.id == Ficha.zona_id)
-            .join(Cortes, Cortes.id == Ficha.corte_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
+    estructura_name = request.args.get('estructura')
+    orientacion_name = request.args.get('orientacion')
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        if corte_name:
+            ficha = (
+                db.session.query(Ficha)
+                .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
+                .join(Zonas, Zonas.id == Ficha.zona_id)
+                .join(Cortes, Cortes.id == Ficha.corte_id)
+                .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
+                .first()
+            )
+        else:
+            ficha = (
+                db.session.query(Ficha)
+                .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
+                .join(Zonas, Zonas.id == Ficha.zona_id)
+                .filter(Zonas.name == zona_name, Proyecto.name == proyecto_name)
+                .first()
+            )
+        mapa = (
+            db.session.query(ConjuntoMapa)
+            .filter(ConjuntoMapa.id_ficha == ficha.id)
             .first()
         )
-    else:
+        mascaras = (
+            db.session.query(Mascaras)
+            .filter(Mascaras.id_cm == mapa.id)
+            .all()
+        )
+        return jsonify([mapa.mapa_url, [m.mascara_url for m in mascaras]])
+    elif proyecto_name == 'SF':
+        orientacion = Orientacion.query.filter_by(name=orientacion_name).first()
+        estructura = (
+            db.session.query(Estructura)
+            .join(Cortes, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+            .distinct()
+            .first() 
+        )
         ficha = (
-            db.session.query(Ficha)
-            .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
-            .join(Zonas, Zonas.id == Ficha.zona_id)
-            .filter(Zonas.name == zona_name, Proyecto.name == proyecto_name)
+            db.session.query(FichaSF)
+            .filter(estructura.id == FichaSF.estructura_id, orientacion.id == FichaSF.orientacion_id)
+            .distinct()
             .first()
         )
-    mapa = (
-        db.session.query(ConjuntoMapa)
-        .filter(ConjuntoMapa.id_ficha == ficha.id)
-        .first()
-    )
-    mascaras = (
-        db.session.query(Mascaras)
-        .filter(Mascaras.id_cm == mapa.id)
-        .all()
-    )
-    
-    return jsonify([mapa.mapa_url, [m.mascara_url for m in mascaras]])
+        print(ficha.id)
+        mapa = (
+            db.session.query(ConjuntoMapaSF)
+            .filter(ConjuntoMapaSF.id_fichasf == ficha.id)
+            .first()
+        )
+        mascaras = (
+            db.session.query(MascarasSF)
+            .filter(MascarasSF.id_cmsf == mapa.id)
+            .all()
+        )
+        return jsonify([mapa.mapa_url, mapa.video_url, [m.mascara_url for m in mascaras]])
 
 #Guardar imagenes
 @app.route('/save', methods=['POST'])
 def save_images():
     mapa_dir = os.path.join(app.root_path, "static", "mapa")
+    video_dir = os.path.join(app.root_path, "static", "video")
     ecos_dir = os.path.join(app.root_path, "static", "ecos")
     os.makedirs(mapa_dir, exist_ok=True)
+    os.makedirs(video_dir, exist_ok=True)
     os.makedirs(ecos_dir, exist_ok=True)
 
-    proyectoData = request.form.get("proyecto")
-    if not proyectoData:
+    proyecto_name = request.form.get("proyecto")
+    if not proyecto_name:
         return jsonify({"error": "Missing project"}), 400
-    proyecto = Proyecto.query.filter_by(name=proyectoData).first()
-
-    zonaData = request.form.get("zona")
-    if not zonaData:
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+    zona_name = request.form.get("zona")
+    if not zona_name:
         return jsonify({"error": "Missing zone"}), 400
-    zona = Zonas.query.filter_by(name=zonaData).first()
+    zona = Zonas.query.filter_by(name=zona_name).first()
+    corte_name = request.form.get("corte")
+    orientacion_name = request.form.get("orientacion")
+    estructura_name = request.form.get("estructura")
+    if proyecto_name != 'SF' and proyecto_name != 'SP':
+        if not corte_name:
+            ficha = Ficha.query.filter_by(
+                proyecto_id=proyecto.id,
+                zona_id=zona.id,
+                corte_id=None,
+                orientacion_id=None
+            ).first()
+        else:
+            corte = Cortes.query.filter_by(name=corte_name).first()
+            ficha = Ficha.query.filter_by(
+                proyecto_id=proyecto.id,
+                zona_id=zona.id,
+                corte_id=corte.id,
+                orientacion_id=None
+            ).first()
+        nuevoMapa = ConjuntoMapa.query.filter_by(id_ficha=ficha.id).first()
+        if not nuevoMapa:
+            nuevoMapa = ConjuntoMapa(id_ficha=ficha.id, mapa_url=None)
+            db.session.add(nuevoMapa)
+            db.session.flush()
 
-    corteData = request.form.get("corte")
-    if not corteData:
-        return jsonify({"error": "Missing cut"}), 400
-    corte = Cortes.query.filter_by(name=corteData).first()
+        mapaData = request.files.get("mapa")
+        if mapaData:
+            nuevoMapa.mapa_url = mapaData.filename
+            mapaData.save(os.path.join(mapa_dir, mapaData.filename))
 
-    ficha = Ficha.query.filter_by(
-        proyecto_id=proyecto.id,
-        zona_id=zona.id,
-        corte_id=corte.id,
-        orientacion_id=None
-    ).first()
+        mascarasData = request.files.getlist("mascaras")
+        for i in mascarasData:
+            nuevaMascara = Mascaras(id_cm=nuevoMapa.id, mascara_url=i.filename)
+            print(nuevaMascara.mascara_url)
+            db.session.add(nuevaMascara)
+            db.session.flush()
+        for i in mascarasData:
+            i.save(os.path.join(ecos_dir, i.filename))
 
-    nuevoMapa = ConjuntoMapa.query.filter_by(id_ficha=ficha.id).first()
-    if not nuevoMapa:
-        nuevoMapa = ConjuntoMapa(id_ficha=ficha.id, mapa_url=None)
-        db.session.add(nuevoMapa)
-        db.session.flush()
-    mapaData = request.files.get("mapa")
-    if mapaData:
-        nuevoMapa.mapa_url = mapaData.filename
-        mapaData.save(os.path.join(mapa_dir, mapaData.filename))
 
-    mascarasData = request.files.getlist("mascaras")
-    for i in mascarasData:
-        nuevaMascara = Mascaras(id_cm=nuevoMapa.id, mascara_url=i.filename)
-        print(nuevaMascara.mascara_url)
-        db.session.add(nuevaMascara)
-        db.session.flush()
+    if proyecto_name == 'SF':
+        if not corte_name:
+            return jsonify({"error": "Missing cut"}), 400
+        if not estructura_name:
+            return jsonify({"error": "Missing estructure name"}), 400
+        if not orientacion_name:
+            return jsonify({"error": "Missing orientation"}), 400
+        orientacion = Orientacion.query.filter_by(name=orientacion_name).first()
+        estructura = (
+            db.session.query(Estructura)
+            .join(Cortes, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+            .distinct()
+            .first()
+        )
+        ficha = (
+            db.session.query(FichaSF)
+            .filter(estructura.id == FichaSF.estructura_id, orientacion.id == FichaSF.orientacion_id)
+            .distinct()
+            .first()
+        )
+        nuevoMapa = ConjuntoMapaSF.query.filter_by(id_fichasf=ficha.id).first()
+        if not nuevoMapa:
+            nuevoMapa = ConjuntoMapaSF(id_fichasf=ficha.id, mapa_url=None, video_url=None)
+            db.session.add(nuevoMapa)
+            db.session.flush()
 
-    for i in mascarasData:
-        i.save(os.path.join(ecos_dir, i.filename))
+        mapaData = request.files.get("mapa")
+        if mapaData:
+            nuevoMapa.mapa_url = mapaData.filename
+            mapaData.save(os.path.join(mapa_dir, mapaData.filename))
+
+        videoData = request.files.get("video")
+        if videoData:
+            nuevoMapa.video_url = videoData.filename
+            videoData.save(os.path.join(video_dir, videoData.filename))
+        
+        mascarasData = request.files.getlist("mascaras")
+        for i in mascarasData:
+            nuevaMascara = MascarasSF(id_cmsf=nuevoMapa.id, mascara_url=i.filename)
+            print(nuevaMascara.mascara_url)
+            db.session.add(nuevaMascara)
+            db.session.flush()
+        for i in mascarasData:
+            i.save(os.path.join(ecos_dir, i.filename))
+    
     db.session.commit()
     return jsonify({"status": "success"})
 
