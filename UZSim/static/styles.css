@@ -95,7 +95,7 @@ button:hover, button:active {
 #cortesDisponibles div, #cortesDisponibles button,
 #estructuraDisponibles div, #estructuraDisponibles button,
 #exploracionDisponibles div, #exploracionDisponibles button,
-#patologiaDispoibles div, #patologiaDispoibles button,
+#patologiaDisponibles div, #patologiaDisponibles button,
 #orientacionDisponibles div, #orientacionDisponibles button,
 #mapaWindow button {
     color: #4B5563;
@@ -112,7 +112,7 @@ button:hover, button:active {
 #cortesDisponibles div:hover,
 #estructuraDisponibles div:hover,
 #exploracionDisponibles div:hover,
-#patologiaDispoibles div:hover,
+#patologiaDisponibles div:hover,
 #orientacionDisponibles div:hover {
     background-color: #E5E7EB;
 }
@@ -120,7 +120,7 @@ button:hover, button:active {
 #cortesDisponibles div:active, #cortesDisponibles div.active, #cortesDisponibles button:active, #cortesDisponibles button.active,
 #estructuraDisponibles div:active, #estructuraDisponibles div.active, #estructuraDisponibles button:active, #estructuraDisponibles button.active,
 #exploracionDisponibles div:active, #exploracionDisponibles div.active, #exploracionDisponibles button:active, #exploracionDisponibles button.active,
-#patologiaDispoibles div:active, #patologiaDispoibles div.active, #patologiaDispoibles button:active, #patologiaDispoibles button.active,
+#patologiaDisponibles div:active, #patologiaDisponibles div.active, #patologiaDisponibles button:active, #patologiaDisponibles button.active,
 #orientacionDisponibles div:active, #orientacionDisponibles div.active, #orientacionDisponibles button:active, #orientacionDisponibles button.active,
 #mapaWindow button:hover {
     background-color: #14b8a6;
@@ -130,7 +130,7 @@ button:hover, button:active {
 #cortesDisponibles button,
 #estructuraDisponibles button,
 #exploracionDisponibles button,
-#patologiaDispoibles button,
+#patologiaDisponibles button,
 #orientacionDisponibles button,
 #mapaWindow button {
     background-color: #475569;

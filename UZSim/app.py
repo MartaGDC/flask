@@ -94,6 +94,15 @@ def get_zonas():
             .distinct()
             .all()
         )
+    else:
+        proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+        zonas = (
+            db.session.query(Zonas)
+            .join(Estructura, Zonas.id == Estructura.zona_id)
+            .filter(Estructura.proyecto_id == proyecto.id)
+            .distinct()
+            .all()
+        )
     return jsonify([zona.name for zona in zonas])
 
 #Añadir zonas
@@ -107,6 +116,7 @@ def createZone():
         nueva_zona = Zonas(name=zona_name)
         db.session.add(nueva_zona)
         db.session.flush()
+
     if proyecto_name != 'SF' and proyecto_name != 'SP':
         nuevaFicha = Ficha(
             proyecto_id = proyecto.id,
@@ -118,25 +128,43 @@ def createZone():
             id_ficha = nuevaFicha.id
         )
         db.session.add(nuevoMapa)
-
-    elif proyecto_name=="SF":
+    else:
         nuevaEstructura = Estructura(
             name = None,
             zona_id = nueva_zona.id,
-            corte_id = None
+            corte_id = None,
+            proyecto_id = proyecto.id
         )
         db.session.add(nuevaEstructura)
         db.session.flush()
-        nuevaFicha = FichaSF(
-            estructura_id = nuevaEstructura.id,
-            orientacion_id = None
-        )
-        db.session.add(nuevaFicha)
-        db.session.flush()
-        nuevoMapa = ConjuntoMapaSF(
-            id_fichasf = nuevaFicha.id,
-        )
-        db.session.add(nuevoMapa)
+
+        if proyecto_name=="SF":
+            nuevaFicha = FichaSF(
+                estructura_id = nuevaEstructura.id,
+                orientacion_id = None
+            )
+            db.session.add(nuevaFicha)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapaSF(
+                id_fichasf = nuevaFicha.id,
+            )
+            db.session.add(nuevoMapa)
+
+        else:
+            nuevaPatologia = Patologia(
+                name = None,
+                estructura_id = nuevaEstructura.id
+            )
+            nuevaFicha = FichaSP(
+                patologia_id = nuevaPatologia.id,
+                exploracion_id = None
+            )
+            db.session.add(nuevaFicha)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapaSP(
+                id_fichasp = nuevaFicha.id,
+            )
+            db.session.add(nuevoMapa)
 
     db.session.commit()
     return jsonify({"status": "success"}), 200
@@ -157,7 +185,7 @@ def get_cortes():
             .distinct()
             .all()
         )
-    elif proyecto_name=='SF':
+    else:
         cortes = (
             db.session.query(Cortes)
             .join(Estructura, Cortes.id == Estructura.corte_id)
@@ -209,7 +237,7 @@ def createCorte():
             )
             db.session.add(nuevoMapa)
         
-    elif proyecto_name == 'SF':
+    else:
         nuevaEstructura = Estructura.query.filter_by(
             zona_id = zona.id,
             corte_id = None
@@ -220,19 +248,36 @@ def createCorte():
             nuevaEstructura=Estructura(
                 zona_id=zona.id,
                 corte_id=corte.id,
-                name=None
+                name=None,
+                proyecto_id = proyecto.id
             )
             db.session.add(nuevaEstructura)
             db.session.flush()
-            nuevaFicha =FichaSF(
-                estructura_id = nuevaEstructura.id
-            )
-            db.session.add(nuevaFicha)
-            db.session.flush()
-            nuevoMapa = ConjuntoMapaSF(
-                id_fichasf = nuevaFicha.id
-            )
-            db.session.add(nuevoMapa)
+            if proyecto_name == 'SF':
+                nuevaFicha =FichaSF(
+                    estructura_id = nuevaEstructura.id
+                )
+                db.session.add(nuevaFicha)
+                db.session.flush()
+                nuevoMapa = ConjuntoMapaSF(
+                    id_fichasf = nuevaFicha.id
+                )
+                db.session.add(nuevoMapa)
+            else:
+                nuevaPatologia = Patologia(
+                    name = None,
+                    estructura_id = nuevaEstructura.id
+                )
+                nuevaFicha = FichaSP(
+                    patologia_id = nuevaPatologia.id,
+                    exploracion_id = None
+                )
+                db.session.add(nuevaFicha)
+                db.session.flush()
+                nuevoMapa = ConjuntoMapaSP(
+                    id_fichasp = nuevaFicha.id,
+                )
+                db.session.add(nuevoMapa)
 
     db.session.commit()
     return jsonify({"status": "success"}), 200
@@ -243,11 +288,13 @@ def get_estructuras():
     '''Estruturas definidas y presentes en la zona y corte seleccionados'''
     zona_name = request.args.get("zona")
     corte_name = request.args.get('corte')
+    proyecto_name = request.args.get('proyecto')
     estructuras = (
         db.session.query(Estructura)
         .join(Cortes, Cortes.id == Estructura.corte_id)
         .join(Zonas, Zonas.id == Estructura.zona_id)
-        .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+        .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
         .distinct()
         .all()
     )
@@ -266,15 +313,22 @@ def createEstructura():
     if not corte_name:
         return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     if not nombre:
         return jsonify({"error": "Missing estructure name"})
-    nuevaEstructura = Estructura.query.filter_by(name=nombre).first()
+    nuevaEstructura = Estructura.query.filter_by(
+        name=nombre,
+        zona_id = zona.id,
+        corte_id = corte.id,
+        proyecto_id = proyecto.id
+    ).first()
     if not nuevaEstructura:
         nuevaEstructura = (
             db.session.query(Estructura)
             .join(Cortes, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+            .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
             .distinct()
             .first()
         )
@@ -284,20 +338,107 @@ def createEstructura():
             nuevaEstructura = Estructura(
                 name = nombre,
                 zona_id = zona.id,
-                corte_id = corte.id
+                corte_id = corte.id,
+                proyecto_id = proyecto.id
             )
             db.session.add(nuevaEstructura)
             db.session.flush()
-            nuevaFicha = FichaSF(
-                estructura_id = nuevaEstructura.id,
-                orientacion_id = None
-            )
-            db.session.add(nuevaFicha)
-            db.session.flush()
-            nuevoMapa = ConjuntoMapaSF(
-                id_fichasf = nuevaFicha.id,
-            )
-            db.session.add(nuevoMapa)
+            if proyecto_name == 'SF':
+                nuevaFicha = FichaSF(
+                    estructura_id = nuevaEstructura.id,
+                    orientacion_id = None
+                )
+                db.session.add(nuevaFicha)
+                db.session.flush()
+                nuevoMapa = ConjuntoMapaSF(
+                    id_fichasf = nuevaFicha.id,
+                )
+                db.session.add(nuevoMapa)
+            else:
+                nuevaPatologia = Patologia(
+                    estructura_id = nuevaEstructura.id
+                )
+                db.session.add(nuevaPatologia)
+                db.session.flush()
+                nuevaFicha = FichaSP(
+                    patologia_id= nuevaPatologia.id
+                )
+                db.session.add(nuevaFicha)
+                db.session.flush()
+                nuevoMapa = ConjuntoMapaSP(
+                    id_fichasp = nuevaFicha.id
+                )
+                db.session.add()
+    db.session.commit()
+    return jsonify({"status": "success"}), 200
+
+
+#Obtener patologias
+@app.route('/api/patologias', methods=['GET'])
+def get_patologias():
+    '''Orientaciones definidas y presentes en la zona, corte y estructura seleccionados'''
+    zona_name = request.args.get('zona')
+    corte_name = request.args.get('corte')
+    estructura_name = request.args.get('estructura')
+    patologias = (
+        db.session.query(Patologia)
+        .join(FichaSP, Patologia.id == FichaSP.patologia_id)
+        .join(Estructura, Estructura.id == Patologia.estructura_id)
+        .join(Cortes, Cortes.id == Estructura.corte_id)
+        .join(Zonas, Zonas.id == Estructura.zona_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+        .distinct()
+        .all()
+    )
+    return jsonify([patologia.name for patologia in patologias])
+
+#Añadir patologia
+@app.route('/crearPatologia', methods=['POST'])
+def createPatologia():
+    corte_name = request.json["corte"]
+    zona_name = request.json["zona"]
+    estructura_name = request.json["estructura"]
+    patologia_name = request.json["patologia"]
+    if not zona_name:
+        return jsonify({"error": "Missing zone"}), 400
+    zona = Zonas.query.filter_by(name=zona_name).first()
+    if not corte_name:
+        return jsonify({"error": "Missing cut"}), 400
+    corte = Cortes.query.filter_by(name=corte_name).first()
+    proyecto = Proyecto.query.filter_by(name='SP').first()
+    if not estructura_name:
+        return jsonify({"error": "Missing structure name"})
+    estructura = Estructura.query.filter_by(
+        name=estructura_name,
+        zona_id = zona.id,
+        corte_id = corte.id,
+        proyecto_id = proyecto.id
+    ).first()
+    if not patologia_name:
+        return jsonify({"error": "Missing pathology"})
+    nuevaPatologia = Patologia.query.filter_by(
+        estructura_id=estructura.id,
+        name = None
+    ).first()
+    if nuevaPatologia:
+        nuevaPatologia.name = patologia_name
+    else:
+        nuevaPatologia = Patologia(
+            estructura_id = estructura.id,
+            name = patologia_name
+        )
+        db.session.add(nuevaPatologia)
+        db.session.flush()
+        fichaSP = FichaSP(
+            patologia_id = nuevaPatologia.id,
+            exploracion_id = None
+        )
+        db.session.add(fichaSP)
+        db.session.flush()
+        nuevoMapa = ConjuntoMapaSP(
+            id_fichasp = fichaSP.id,
+        )
+        db.session.add(nuevoMapa)
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -305,9 +446,12 @@ def createEstructura():
 #Obtener orientaciones
 @app.route('/api/orientaciones', methods=['GET'])
 def get_orientaciones():
-    '''Orientaciones definidas y presentes en la zona y corte seleccionados'''
+    '''Orientaciones definidas y presentes en la zona, corte y estructura (y patologia) seleccionados'''
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
+    estructura_name = request.args.get('estructura')
+    patologia_name = request.args.get('patologia')
+    exploracion_name = request.args.get('exploracion')
     proyecto_name = request.args.get('proyecto')
     if proyecto_name != 'SF' and proyecto_name != 'SP':
         orientaciones = (
@@ -326,7 +470,20 @@ def get_orientaciones():
             .join(Estructura, Estructura.id == FichaSF.estructura_id)
             .join(Cortes, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+            .distinct()
+            .all()
+        )
+    else:
+        orientaciones = (
+            db.session.query(Orientacion)
+            .join(Exploracion, Orientacion.id == Exploracion.orientacion_id)
+            .join(FichaSP, Exploracion.id == FichaSP.exploracion_id)
+            .join(Patologia, Patologia.id == FichaSP.patologia_id)
+            .join(Estructura, Estructura.id == Patologia.estructura_id)
+            .join(Cortes, Cortes.id == Estructura.corte_id)
+            .join(Zonas, Zonas.id == Estructura.zona_id)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Exploracion.name == exploracion_name, Patologia.name == patologia_name)
             .distinct()
             .all()
         )
@@ -340,6 +497,8 @@ def createOrientacion():
     zona_name = request.json["zona"]
     estructura_name = request.json["estructura"]
     orientacion_name = request.json["orientacion"]
+    patologia_name = request.json['patologia']
+    exploracion_name = request.json['exploracion']
     if not proyecto_name:
         return jsonify({"error": "Missing project"}), 400
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
@@ -374,34 +533,150 @@ def createOrientacion():
                 orientacion_id=nuevaOrientacion.id
             )
             db.session.add(ficha)
-    elif proyecto_name == 'SF':
-        estructura = Estructura.query.filter_by(name=estructura_name).first()
-        fichaSF = (
-            db.session.query(FichaSF)
-            .join(Estructura, Estructura.id == FichaSF.estructura_id)
-            .join(Cortes, Cortes.id == Estructura.corte_id)
-            .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, FichaSF.orientacion_id == None)
-            .distinct()
-            .first()
-        )
-        if fichaSF:
-            fichaSF.orientacion_id = nuevaOrientacion.id
+    else:
+        estructura = Estructura.query.filter_by(
+            name=estructura_name,
+            zona_id = zona.id,
+            corte_id = corte.id,
+            proyecto_id = proyecto.id
+        ).first()
+        if proyecto_name == 'SF':  
+            fichaSF = (
+                db.session.query(FichaSF)
+                .join(Estructura, Estructura.id == FichaSF.estructura_id)
+                .join(Cortes, Cortes.id == Estructura.corte_id)
+                .join(Zonas, Zonas.id == Estructura.zona_id)
+                .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, FichaSF.orientacion_id == None)
+                .distinct()
+                .first()
+            )
+            if fichaSF:
+                fichaSF.orientacion_id = nuevaOrientacion.id
+            else:
+                fichaSF = FichaSF(
+                    estructura_id = estructura.id,
+                    orientacion_id = nuevaOrientacion.id
+                )
+                db.session.add(fichaSF)
+                db.session.flush()
+                nuevoMapa = ConjuntoMapaSF(
+                    id_fichasf = fichaSF.id,
+                )
+                db.session.add(nuevoMapa)
         else:
-            fichaSF = FichaSF(
-                estructura_id = estructura.id,
-                orientacion_id = nuevaOrientacion.id
-            )
-            db.session.add(fichaSF)
-            db.session.flush()
-            nuevoMapa = ConjuntoMapaSF(
-                id_fichasf = fichaSF.id,
-            )
-            db.session.add(nuevoMapa)
+            patologia_name = request.json["patologia"]
+            patologia = Patologia.query.filter_by(
+                name = patologia_name,
+                estructura_id = estructura.id
+            ).first()
+            exploracion = Exploracion.query.filter_by(
+                name = exploracion_name,
+                orientacion_id = None
+            ).first()
+            if exploracion:
+                exploracion.orientacion_id = nuevaOrientacion.id
+            else:
+                exploracion = Exploracion(
+                    name = exploracion_name,
+                    orientacion_id = nuevaOrientacion.id
+                )
+                db.session.add(exploracion)
+                db.session.flush()
+                fichaSP = (
+                    db.session.query(FichaSP)
+                    .join(Patologia, Patologia.id == FichaSP.patologia_id)
+                    .join(Exploracion, Exploracion.id == FichaSP.exploracion_id)
+                    .filter(FichaSP.patologia_id == patologia.id, FichaSP.exploracion_id == None)
+                    .distinct()
+                    .first()
+                )
+                if fichaSP:
+                    fichaSP.exploracion_id = exploracion.id
+                else:
+                    fichaSP = FichaSP(
+                        patologia_id = patologia.id,
+                        exploracion_id = exploracion.id
+                    )
+                    db.session.add(fichaSP)
+                    db.session.flush()
+                    nuevoMapa = ConjuntoMapaSP(
+                        id_fichasp = fichaSP.id,
+                    )
+                    db.session.add(nuevoMapa)
 
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
+
+#Obtener exploraciones
+@app.route('/api/exploraciones', methods=['GET'])
+def get_exploraciones():
+    zona_name = request.args.get('zona')
+    corte_name = request.args.get('corte')
+    estructura_name = request.args.get('estructura')
+    patologia_name = request.args.get('patologia')
+    exploraciones = ( 
+        db.session.query(Exploracion)
+        .join(FichaSP, Exploracion.id == FichaSP.exploracion_id)
+        .join(Patologia, Patologia.id == FichaSP.patologia_id)
+        .join(Estructura, Estructura.id == Patologia.estructura_id)
+        .join(Cortes, Cortes.id == Estructura.corte_id)
+        .join(Zonas, Zonas.id == Estructura.zona_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Patologia.name == patologia_name)
+        .distinct()
+        .all()
+    )
+    return jsonify([exploracion.name for exploracion in exploraciones])
+
+#Añadir exploraciones
+@app.route('/crearExploracion', methods=['POST'])
+def createExploracion():
+    corte_name = request.json["corte"]
+    zona_name = request.json["zona"]
+    estructura_name = request.json["estructura"]
+    patologia_name = request.json['patologia']
+    exploracion_name = request.json['exploracion']
+
+    if not zona_name:
+        return jsonify({"error": "Missing zone"}), 400
+    zona = Zonas.query.filter_by(name=zona_name).first()
+    if not corte_name:
+        return jsonify({"error": "Missing cut"}), 400
+    corte = Cortes.query.filter_by(name=corte_name).first()
+    proyecto = Proyecto.query.filter_by(name='SP').first()
+    estructura = Estructura.query.filter_by(
+        name = estructura_name,
+        zona_id = zona.id,
+        corte_id = corte.id,
+        proyecto_id = proyecto.id
+    ).first()
+    patologia = Patologia.query.filter_by(
+        name = patologia_name,
+        estructura_id = estructura.id
+    ).first()
+    
+    nuevaExploracion = Exploracion.query.filter_by(name=exploracion_name).first()
+    if not nuevaExploracion:
+        nuevaExploracion = Exploracion(
+            name=exploracion_name,
+            orientacion_id = None
+        )
+        db.session.add(nuevaExploracion)
+        db.session.flush()
+
+        fichaSP = FichaSP(
+            patologia_id = patologia.id,
+            exploracion_id = nuevaExploracion.id
+        )
+        db.session.add(fichaSP)
+        db.session.flush()
+        nuevoMapa = ConjuntoMapaSP(
+            id_fichasp = fichaSP.id,
+        )
+        db.session.add(nuevoMapa)
+
+    db.session.commit()
+    return jsonify({"status": "success"}), 200
 
 #Get imagenes 
 @app.route('/api/images', methods=['GET'])
@@ -412,6 +687,8 @@ def get_images():
     corte_name = request.args.get('corte')
     estructura_name = request.args.get('estructura')
     orientacion_name = request.args.get('orientacion')
+    patologia_name = request.args.get('patologia')
+    exploracion_name = request.args.get('exploracion')
     if proyecto_name != 'SF' and proyecto_name != 'SP':
         if corte_name:
             ficha = (
@@ -441,7 +718,7 @@ def get_images():
             .all()
         )
         return jsonify([mapa.mapa_url, [m.mascara_url for m in mascaras]])
-    elif proyecto_name == 'SF':
+    else:
         orientacion = Orientacion.query.filter_by(name=orientacion_name).first()
         estructura = (
             db.session.query(Estructura)
@@ -451,23 +728,52 @@ def get_images():
             .distinct()
             .first() 
         )
-        ficha = (
-            db.session.query(FichaSF)
-            .filter(estructura.id == FichaSF.estructura_id, orientacion.id == FichaSF.orientacion_id)
-            .distinct()
-            .first()
-        )
-        print(ficha.id)
-        mapa = (
-            db.session.query(ConjuntoMapaSF)
-            .filter(ConjuntoMapaSF.id_fichasf == ficha.id)
-            .first()
-        )
-        mascaras = (
-            db.session.query(MascarasSF)
-            .filter(MascarasSF.id_cmsf == mapa.id)
-            .all()
-        )
+        if proyecto_name == 'SF':
+            ficha = (
+                db.session.query(FichaSF)
+                .filter(estructura.id == FichaSF.estructura_id, orientacion.id == FichaSF.orientacion_id)
+                .distinct()
+                .first()
+            )
+            mapa = (
+                db.session.query(ConjuntoMapaSF)
+                .filter(ConjuntoMapaSF.id_fichasf == ficha.id)
+                .first()
+            )
+            mascaras = (
+                db.session.query(MascarasSF)
+                .filter(MascarasSF.id_cmsf == mapa.id)
+                .all()
+            )
+        else:
+            patologia = (
+                db.session.query(Patologia)
+                .filter(Patologia.name == patologia_name, Patologia.estructura_id == estructura.id)
+                .distinct()
+                .first()
+            )
+            exploracion = (
+                db.session.query(Exploracion)
+                .filter(Exploracion.name == exploracion_name, Exploracion.orientacion_id == orientacion.id)
+                .distinct()
+                .first()
+            )
+            ficha = (
+                db.session.query(FichaSP)
+                .filter(FichaSP.patologia_id == patologia.id, FichaSP.exploracion_id == exploracion.id)
+                .distinct()
+                .first()
+            )
+            mapa = (
+                db.session.query(ConjuntoMapaSP)
+                .filter(ConjuntoMapaSP.id_fichasp == ficha.id)
+                .first()
+            )
+            mascaras = (
+                db.session.query(MascarasSP)
+                .filter(MascarasSP.id_cmsp == mapa.id)
+                .all()
+            )
         return jsonify([mapa.mapa_url, mapa.video_url, [m.mascara_url for m in mascaras]])
 
 #Guardar imagenes
@@ -521,14 +827,12 @@ def save_images():
         mascarasData = request.files.getlist("mascaras")
         for i in mascarasData:
             nuevaMascara = Mascaras(id_cm=nuevoMapa.id, mascara_url=i.filename)
-            print(nuevaMascara.mascara_url)
             db.session.add(nuevaMascara)
             db.session.flush()
         for i in mascarasData:
             i.save(os.path.join(ecos_dir, i.filename))
 
-
-    if proyecto_name == 'SF':
+    else:
         if not corte_name:
             return jsonify({"error": "Missing cut"}), 400
         if not estructura_name:
@@ -544,37 +848,85 @@ def save_images():
             .distinct()
             .first()
         )
-        ficha = (
-            db.session.query(FichaSF)
-            .filter(estructura.id == FichaSF.estructura_id, orientacion.id == FichaSF.orientacion_id)
-            .distinct()
-            .first()
-        )
-        nuevoMapa = ConjuntoMapaSF.query.filter_by(id_fichasf=ficha.id).first()
-        if not nuevoMapa:
-            nuevoMapa = ConjuntoMapaSF(id_fichasf=ficha.id, mapa_url=None, video_url=None)
-            db.session.add(nuevoMapa)
-            db.session.flush()
 
-        mapaData = request.files.get("mapa")
-        if mapaData:
-            nuevoMapa.mapa_url = mapaData.filename
-            mapaData.save(os.path.join(mapa_dir, mapaData.filename))
+        if proyecto_name == 'SF':    
+            ficha = (
+                db.session.query(FichaSF)
+                .filter(estructura.id == FichaSF.estructura_id, orientacion.id == FichaSF.orientacion_id)
+                .distinct()
+                .first()
+            )
+            nuevoMapa = ConjuntoMapaSF.query.filter_by(id_fichasf=ficha.id).first()
+            if not nuevoMapa:
+                nuevoMapa = ConjuntoMapaSF(id_fichasf=ficha.id, mapa_url=None, video_url=None)
+                db.session.add(nuevoMapa)
+                db.session.flush()
 
-        videoData = request.files.get("video")
-        if videoData:
-            nuevoMapa.video_url = videoData.filename
-            videoData.save(os.path.join(video_dir, videoData.filename))
-        
-        mascarasData = request.files.getlist("mascaras")
-        for i in mascarasData:
-            nuevaMascara = MascarasSF(id_cmsf=nuevoMapa.id, mascara_url=i.filename)
-            print(nuevaMascara.mascara_url)
-            db.session.add(nuevaMascara)
-            db.session.flush()
-        for i in mascarasData:
-            i.save(os.path.join(ecos_dir, i.filename))
+            mapaData = request.files.get("mapa")
+            if mapaData:
+                nuevoMapa.mapa_url = mapaData.filename
+                mapaData.save(os.path.join(mapa_dir, mapaData.filename))
+
+            videoData = request.files.get("video")
+            if videoData:
+                nuevoMapa.video_url = videoData.filename
+                videoData.save(os.path.join(video_dir, videoData.filename))
+            
+            mascarasData = request.files.getlist("mascaras")
+            for i in mascarasData:
+                nuevaMascara = MascarasSF(id_cmsf=nuevoMapa.id, mascara_url=i.filename)
+                db.session.add(nuevaMascara)
+                db.session.flush()
+            for i in mascarasData:
+                i.save(os.path.join(ecos_dir, i.filename))
     
+        else:
+            patologia_name = request.form.get("patologia")
+            exploracion_name = request.form.get("exploracion")
+            
+            patologia = (
+                db.session.query(Patologia)
+                .filter(Patologia.name == patologia_name, Patologia.estructura_id == estructura.id)
+                .distinct()
+                .first()
+            )
+            exploracion = (
+                db.session.query(Exploracion)
+                .filter(Exploracion.name == exploracion_name, Exploracion.orientacion_id == orientacion.id)
+                .distinct()
+                .first()
+            )
+            
+            ficha = (
+                db.session.query(FichaSP)
+                .filter(patologia.id == FichaSP.patologia_id, exploracion.id == FichaSP.exploracion_id)
+                .distinct()
+                .first()
+            )
+            nuevoMapa = ConjuntoMapaSP.query.filter_by(id_fichasp=ficha.id).first()
+            if not nuevoMapa:
+                nuevoMapa = ConjuntoMapaSP(id_fichasp=ficha.id, mapa_url=None, video_url=None)
+                db.session.add(nuevoMapa)
+                db.session.flush()
+
+            mapaData = request.files.get("mapa")
+            if mapaData:
+                nuevoMapa.mapa_url = mapaData.filename
+                mapaData.save(os.path.join(mapa_dir, mapaData.filename))
+
+            videoData = request.files.get("video")
+            if videoData:
+                nuevoMapa.video_url = videoData.filename
+                videoData.save(os.path.join(video_dir, videoData.filename))
+            
+            mascarasData = request.files.getlist("mascaras")
+            for i in mascarasData:
+                nuevaMascara = MascarasSP(id_cmsp=nuevoMapa.id, mascara_url=i.filename)
+                db.session.add(nuevaMascara)
+                db.session.flush()
+            for i in mascarasData:
+                i.save(os.path.join(ecos_dir, i.filename))
+
     db.session.commit()
     return jsonify({"status": "success"})
 
@@ -583,31 +935,149 @@ def save_images():
 @app.route('/deleteImg', methods=['POST'])
 def delete_image():
     mapa_dir = os.path.join(app.root_path, "static", "mapa")
+    video_dir = os.path.join(app.root_path, "static", "video")
     ecos_dir = os.path.join(app.root_path, "static", "ecos")
 
     mapOrMask = request.json["mapOrMask"]
     svg_url = request.json["svg_url"]
+    proyecto = request.json["proyecto"]
 
-    if mapOrMask=="mapa":
-        mapa = ConjuntoMapa.query.filter_by(
-            mapa_url=svg_url,
-        ).first()
-        if mapa:
-            mapa.mapa_url = None
-        file = os.path.join(mapa_dir, svg_url)
-        if os.path.exists(file):
-            os.remove(file)
+    if proyecto != 'SF' and proyecto != 'SP':
+        if mapOrMask=="mapa":
+            mapa = ConjuntoMapa.query.filter_by(
+                mapa_url=svg_url,
+            ).first()
+            if mapa:
+                mapa.mapa_url = None
+            
+            file = os.path.join(mapa_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+        else:
+            mascara = Mascaras.query.filter_by(
+                mascara_url = svg_url
+            ).first()
+            if mascara:
+                db.session.delete(mascara)
+            file = os.path.join(ecos_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+    elif proyecto == 'SF':
+        if mapOrMask=="mapa":
+            mapa = ConjuntoMapaSF.query.filter_by(
+                mapa_url=svg_url,
+            ).first()
+            if mapa:
+                mapa.mapa_url = None
+            file = os.path.join(mapa_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+        elif mapOrMask == 'video':
+            video = ConjuntoMapaSF.query.filter_by(
+                video_url=svg_url,
+            ).first()
+            if video:
+                video.video_url = None
+            file = os.path.join(video_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+        else:
+            mascara = MascarasSF.query.filter_by(
+                mascara_url = svg_url
+            ).first()
+            if mascara:
+                db.session.delete(mascara)
+            file = os.path.join(ecos_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
     else:
-        mascara = Mascaras.query.filter_by(
-            mascara_url = svg_url
-        ).first()
-        if mascara:
-            db.session.delete(mascara)
-        file = os.path.join(ecos_dir, svg_url)
-        if os.path.exists(file):
-            os.remove(file)
+        if mapOrMask=="mapa":
+            mapa = ConjuntoMapaSP.query.filter_by(
+                mapa_url=svg_url,
+            ).first()
+            if mapa:
+                mapa.mapa_url = None
+            file = os.path.join(mapa_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+        elif mapOrMask == 'video':
+            video = ConjuntoMapaSP.query.filter_by(
+                video_url=svg_url,
+            ).first()
+            if video:
+                video.video_url = None
+            file = os.path.join(video_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+        else:
+            mascara = MascarasSP.query.filter_by(
+                mascara_url = svg_url
+            ).first()
+            if mascara:
+                db.session.delete(mascara)
+            file = os.path.join(ecos_dir, svg_url)
+            if os.path.exists(file):
+                os.remove(file)
+
     db.session.commit()
     return jsonify({"status": "success"})
+
+
+@app.route('/download')
+def download():
+    date = datetime.now().strftime("%Y-%m-%d")
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w') as zf:
+        conn = db.engine.connect()
+        result = conn.execute(
+            text("""
+                SELECT 
+                    mascaras.id, 
+                    mascaras.mascara_url, 
+                    conjunto_mapa.mapa_url, 
+                    p.name AS proyecto, 
+                    z.name AS zonas 
+                FROM mascaras 
+                JOIN conjunto_mapa 
+                    ON mascaras.id_cm = conjunto_mapa.id 
+                JOIN ficha f 
+                    ON conjunto_mapa.id_ficha = f.id 
+                JOIN proyecto p 
+                    ON f.proyecto_id = p.id 
+                JOIN zonas z 
+                    ON f.zona_id = z.id 
+                ORDER BY mascaras.id
+            """)
+        )
+        columns = result.keys()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(columns)
+        rows = []
+        for row in result:
+            rows.append(row)
+            writer.writerow(row)
+        result.close()
+        conn.close()
+        zf.writestr(f"{date}.csv", output.getvalue())
+        for row in rows:
+            try:
+                mascara_url = row.mascara_url
+                if not mascara_url:
+                    continue
+                filename = os.path.basename(mascara_url)
+                filepath = os.path.join(app.root_path, "static", "ecos", filename)
+                if os.path.exists(filepath):
+                    zf.write(filepath, arcname=f"mascaras/{filename}")
+            except Exception as e:
+                print("ERROR SVG:", e)
+    zip_buffer.seek(0)
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        download_name=f"download_{date}.zip",
+        as_attachment=True
+    )
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1',port=5006)

@@ -66,6 +66,7 @@ class Estructura (db.Model): #Para SF y SP
     name = db.Column(db.String(100), unique=True, nullable=True)
     zona_id = db.Column(db.Integer, db.ForeignKey('zonas.id'), nullable=False)
     corte_id = db.Column(db.Integer, db.ForeignKey('cortes.id'), nullable=True)
+    proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=False)
 
 class Patologia (db.Model): #Para SP
     __tablename__ = "patologia"
@@ -77,7 +78,7 @@ class Exploracion (db.Model): #Para SP, detalles de la sonda
     __tablename__ = "exploracion"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
-    orientacion_id = db.Column(db.Integer, db.ForeignKey('orientacion.id'), nullable=False)
+    orientacion_id = db.Column(db.Integer, db.ForeignKey('orientacion.id'), nullable=True)
 
 class FichaSF (db.Model):
     __tablename__ = "fichaSF"
@@ -88,7 +89,7 @@ class FichaSF (db.Model):
 class FichaSP (db.Model):
     __tablename__ = "fichaSP"
     id = db.Column(db.Integer, primary_key=True)
-    patologia_id = db.Column(db.Integer, db.ForeignKey('patologia.id'), nullable=False)
+    patologia_id = db.Column(db.Integer, db.ForeignKey('patologia.id'), nullable=True)
     exploracion_id = db.Column(db.Integer, db.ForeignKey('exploracion.id'), nullable=True)
 
 class ConjuntoMapaSF (db.Model):
