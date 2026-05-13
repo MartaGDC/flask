@@ -1027,10 +1027,44 @@ def delete_image():
 def download():
     date = datetime.now().strftime("%Y-%m-%d")
     zip_buffer = BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w') as zf:
-        conn = db.engine.connect()
-        result = conn.execute(
-            text("""
+    files = []
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+        def create_csv(filename, query):
+            '''Creacion csvs'''
+            conn = db.engine.connect()
+            result = conn.execute(text(query))
+            columns = result.keys()
+            output = StringIO()
+            writer = csv.writer(output)
+            writer.writerow(columns)
+            rows = []
+            for row in result:
+                rows.append(row)
+                writer.writerow(row)
+            result.close()
+            conn.close()
+            zf.writestr(filename, output.getvalue().encode('utf-8-sig'))
+            return rows
+        
+        def add_files(rows, field_name, static_folder, zip_folder):
+            '''Añadir archivos svg y mp4'''
+            for row in rows:
+                try:
+                    file_url = getattr(row, field_name, None)
+                    if not file_url:
+                        continue
+                    filename = os.path.basename(file_url)
+                    filepath = os.path.join(app.root_path, "static", static_folder, filename)
+                    if os.path.exists(filepath):
+                        zf.write(filepath, arcname=f"{zip_folder}/{filename}")
+                        files.append(filepath)
+                except Exception as e:
+                    print(f"ERROR {field_name}:", e)
+        
+        #CAR:
+        rows_car = create_csv(
+            f"csv/CAR.csv",
+            """
                 SELECT 
                     mascaras.id, 
                     mascaras.mascara_url, 
@@ -1046,31 +1080,114 @@ def download():
                     ON f.proyecto_id = p.id 
                 JOIN zonas z 
                     ON f.zona_id = z.id 
+                WHERE p.name = 'CAR'
                 ORDER BY mascaras.id
-            """)
+            """
         )
-        columns = result.keys()
-        output = StringIO()
-        writer = csv.writer(output)
-        writer.writerow(columns)
-        rows = []
-        for row in result:
-            rows.append(row)
-            writer.writerow(row)
-        result.close()
-        conn.close()
-        zf.writestr(f"{date}.csv", output.getvalue())
-        for row in rows:
-            try:
-                mascara_url = row.mascara_url
-                if not mascara_url:
-                    continue
-                filename = os.path.basename(mascara_url)
-                filepath = os.path.join(app.root_path, "static", "ecos", filename)
-                if os.path.exists(filepath):
-                    zf.write(filepath, arcname=f"mascaras/{filename}")
-            except Exception as e:
-                print("ERROR SVG:", e)
+
+        #CERF:
+        rows_cerf = create_csv(
+            f"csv/CERF.csv",
+            """
+                SELECT 
+                    mascaras.id, 
+                    mascaras.mascara_url, 
+                    conjunto_mapa.mapa_url, 
+                    p.name AS proyecto, 
+                    z.name AS zonas,
+                    c.name AS cortes
+                FROM mascaras 
+                JOIN conjunto_mapa 
+                    ON mascaras.id_cm = conjunto_mapa.id 
+                JOIN ficha f 
+                    ON conjunto_mapa.id_ficha = f.id 
+                JOIN proyecto p 
+                    ON f.proyecto_id = p.id 
+                JOIN zonas z 
+                    ON f.zona_id = z.id 
+                JOIN cortes c
+                    ON f.corte_id = c.id
+                ORDER BY mascaras.id
+            """
+        )
+
+        #SF:
+        rows_sf = create_csv(
+            f"csv/SF.csv",
+            """
+                SELECT 
+                    mascaras.id, 
+                    mascaras.mascara_url, 
+                    conjunto_mapa.mapa_url, 
+                    conjunto_mapa.video_url, 
+                    p.name AS proyecto, 
+                    z.name AS zonas,
+                    c.name AS cortes,
+                    o.name AS orientacion,
+                    e.name AS estructura
+                FROM "mascarasSF" AS mascaras 
+                JOIN "conjunto_mapaSF" AS conjunto_mapa
+                    ON mascaras.id_cmsf = conjunto_mapa.id 
+                JOIN "fichaSF" f 
+                    ON conjunto_mapa.id_fichasf = f.id 
+                JOIN estructura e
+                    ON f.estructura_id = e.id
+                JOIN orientacion o 
+                    ON f.orientacion_id = o.id
+                JOIN proyecto p 
+                    ON e.proyecto_id = p.id 
+                JOIN zonas z 
+                    ON e.zona_id = z.id 
+                JOIN cortes c
+                    ON e.corte_id = c.id
+                ORDER BY mascaras.id
+            """
+        )
+
+        #SP:
+        rows_sp = create_csv(
+            f"csv/SP.csv",
+            """
+                SELECT 
+                    mascaras.id, 
+                    mascaras.mascara_url, 
+                    conjunto_mapa.mapa_url, 
+                    conjunto_mapa.video_url, 
+                    p.name AS proyecto, 
+                    z.name AS zonas,
+                    c.name AS cortes,
+                    e.name AS estructura,
+                    pa.name AS patologia, 
+                    o.name AS orientacion,
+                    ex.name AS exploracion 
+                FROM "mascarasSP" AS mascaras
+                JOIN "conjunto_mapaSP" AS conjunto_mapa
+                    ON mascaras.id_cmsp = conjunto_mapa.id 
+                JOIN "fichaSP" f 
+                    ON conjunto_mapa.id_fichasp = f.id 
+                JOIN patologia pa 
+                    ON f.patologia_id = pa.id 
+                JOIN exploracion ex 
+                    ON f.exploracion_id = ex.id 
+                JOIN orientacion o
+                    ON ex.orientacion_id = o.id
+                JOIN estructura e
+                    ON pa.estructura_id = e.id
+                JOIN proyecto p 
+                    ON e.proyecto_id = p.id 
+                JOIN zonas z 
+                    ON e.zona_id = z.id 
+                JOIN cortes c
+                    ON e.corte_id = c.id
+                ORDER BY mascaras.id
+            """
+        )
+
+
+        all_rows = rows_car + rows_cerf + rows_sf + rows_sp
+        add_files(all_rows, "mascara_url", "ecos", "mascaras")
+        add_files(all_rows, "mapa_url", "mapa", "mapas")
+        add_files(all_rows, "video_url", "video", "videos")
     zip_buffer.seek(0)
     return send_file(
         zip_buffer,
