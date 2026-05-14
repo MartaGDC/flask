@@ -465,12 +465,7 @@ async function rellenarOrientacion() {
         tablaHTML: orientacionDisponibles,
          onSelect: async(orientacion) => {
             orientacionSeleccionada = orientacion;
-            if(proyectoSeleccionado == 'SF'){
-                mostrarSelecciones();
-            }
-            else {
-               mostrarSelecciones();
-            }
+            mostrarSelecciones();
         },
         addButtonId: "btnAddOrientacion",
         input: newOrientacion
