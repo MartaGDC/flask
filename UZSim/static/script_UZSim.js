@@ -374,6 +374,9 @@ async function rellenarCortes () {
             if(proyectoSeleccionado == 'SF' || proyectoSeleccionado =='SP'){
                 rellenarEstructura();
             }
+            else if (proyectoSeleccionado == 'CERF') {
+                rellenarOrientacion();
+            }
             else{
                 mostrarSelecciones();
             }

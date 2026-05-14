@@ -533,6 +533,11 @@ def createOrientacion():
                 orientacion_id=nuevaOrientacion.id
             )
             db.session.add(ficha)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapa(
+                id_ficha = ficha.id,
+            )
+            db.session.add(nuevoMapa)
     else:
         estructura = Estructura.query.filter_by(
             name=estructura_name,
@@ -696,7 +701,8 @@ def get_images():
                 .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
                 .join(Zonas, Zonas.id == Ficha.zona_id)
                 .join(Cortes, Cortes.id == Ficha.corte_id)
-                .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
+                .join(Orientacion, Orientacion.id == Ficha.orientacion_id)
+                .filter(Zonas.name == zona_name, Cortes.name == corte_name, Orientacion.name == orientacion_name, Proyecto.name == proyecto_name)
                 .first()
             )
         else:
@@ -807,11 +813,12 @@ def save_images():
             ).first()
         else:
             corte = Cortes.query.filter_by(name=corte_name).first()
+            orientacion = Orientacion.query.filter_by(name=orientacion_name).first()
             ficha = Ficha.query.filter_by(
                 proyecto_id=proyecto.id,
                 zona_id=zona.id,
                 corte_id=corte.id,
-                orientacion_id=None
+                orientacion_id=orientacion.id
             ).first()
         nuevoMapa = ConjuntoMapa.query.filter_by(id_ficha=ficha.id).first()
         if not nuevoMapa:
@@ -1095,7 +1102,8 @@ def download():
                     conjunto_mapa.mapa_url, 
                     p.name AS proyecto, 
                     z.name AS zonas,
-                    c.name AS cortes
+                    c.name AS cortes,
+                    o.name AS orientacion
                 FROM mascaras 
                 JOIN conjunto_mapa 
                     ON mascaras.id_cm = conjunto_mapa.id 
@@ -1107,6 +1115,8 @@ def download():
                     ON f.zona_id = z.id 
                 JOIN cortes c
                     ON f.corte_id = c.id
+                JOIN orientacion o
+                    ON f.orientacion_id = o.id
                 ORDER BY mascaras.id
             """
         )
