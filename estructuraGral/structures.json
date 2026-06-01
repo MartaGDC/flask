@@ -1044,6 +1044,19 @@
                 {"name": "Hueso", "color":"rgba(225, 255, 200)"}
             ]
         }
-    }
+    },
 
+    "proDiafragma": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Diafragma", "color":"rgba(240, 70, 0)"},
+                {"name": "Epimisio superficial", "color":"rgba(245, 255, 200)"},
+                {"name": "Epimisio profundo", "color":"rgba(245, 255, 190)"},
+                {"name": "Costilla", "color":"rgba(225, 255, 200)"}
+            ]
+        }
+    }
 }

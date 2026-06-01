@@ -23,6 +23,10 @@ os.makedirs(f"{rutaActual}mascaras", exist_ok=True)
 
 
 #-----COLORES-----
+'''No se corresponde directamente con el dicionario de app.py,
+ya que en app.py el diccionario identifica a los videos que se visualizan en cada proyecto,
+y hay videos que sirven para varios proyectos.
+Em este caso, el diccionario identifica a los proyectos, no a los videos.'''
 proyectos_dict = {
     "base_tejidos":"0_1_",
     "base_artefactos" : "0_2_",
@@ -69,9 +73,21 @@ proyectos_dict = {
     'abd_transversal_toracolum': '5_4_',
     'abd_suelo_pelvico': '5_5_',
 
-    'menisco': '6_',
+    'diafragma': '6_',
 
-    'rm': ''
+    'menisco': '9_',
+
+    'rm': '',
+
+    'aquiles_longitudinal':'11_1_',
+    'aquiles_transversal':'11_2_',
+
+    'stc_longitudinal':'10_1_',
+    'stc_transversal':'10_1_',
+
+    'polea_longitudinal':'12_1_',
+
+    'proDiafragma': '13_'
 }
 app_nombre=''
 def load_json(path):

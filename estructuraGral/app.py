@@ -65,6 +65,8 @@ APP_VIDEOS = {
     'abd_transversal_toracolum': '5_4_',
     'abd_suelo_pelvico': '5_5_',
 
+    'diafragma': '6_',
+
     'menisco': '9_',
 
     'rm': '',
@@ -75,18 +77,20 @@ APP_VIDEOS = {
     'stc_transversal': "10_1_",
     'stc_longitudinal': '10_2_',
 
-    'polea_longitudinal': '3_1_'
+    'polea_longitudinal': '3_1_',
+    'proDiafragma': '6_'
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea"],
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea", 'proDiaf'],
     "foot_aquiles": ["foot", "aquiles"], #jpr
     "aquiles": ["aquiles"], #iac
     "knee_hand": ["knee", "hand", "polea"], #pfm
     "knee_menisco": ["knee", "menisco"], #jmp
     "nerves_stc": ["nerves", "stc"], #ebg
     "abd": ["abd"], #ppa
-    "stc": ["stc"] #gcf
+    "stc": ["stc"], #gcf
+    'diaf': ['proDiaf'] #sjg
 }
 
 def token_required(f):
