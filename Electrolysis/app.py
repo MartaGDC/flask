@@ -106,7 +106,7 @@ def upload_file():
     allowed_extensions = [".jpg", ".jpeg", ".png", ".mp4", ".mha", ".wmv"]
     if extension not in allowed_extensions:
         return jsonify({"error": "File type not allowed"}), 400
-    if extension == ".wmv":
+    if extension == ".wmv" or extension == ".mp4":
         name = name.replace(",", "_").replace(" ", "_")
         name = f"electro{name}"
         filename = name + extension
@@ -118,7 +118,7 @@ def upload_file():
     sys.path.insert(0, tools_path)
     if extension == ".mp4" or extension == ".mpeg" or extension == ".wmv":
         from generar_proxys import process_one
-        process_one(filename)
+        process_one(filename, 'electrolysis')
 
     return jsonify({
         "success": True,
@@ -130,7 +130,10 @@ def upload_file():
 def list_files(app_name):
     app_num = APP_VIDEOS[app_name]
     dir_path = BASE_DIR
-    videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
+    videos = sorted([file for file in os.listdir(BASE_DIR) if file.startswith(app_num) and (file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
+    dir_path = os.path.join(BASE_DIR, "proxy")
+    videos.extend([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".wmv"))])
+    videos = [video.replace('_proxy', '') for video in videos]
     return jsonify(videos)
 
 
@@ -156,7 +159,7 @@ def play_video(filename):
     elif extension.lower() not in [".jpeg", ".jpg", ".png"]:
         filename = f"{name}_proxy{extension}"
         dir_path = BASE_DIR + "/proxy"
-        if extension==".wmv":
+        if extension==".wmv" or extension==".mp4":
             filename=f"{name}_proxy.mp4"
     else:
         dir_path = BASE_DIR

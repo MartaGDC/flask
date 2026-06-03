@@ -41,7 +41,10 @@ def process_all():
                     proxy_path #guardado de salida
                 ], check=True)
 
-def process_one(filename):
+def process_one(filename, proyecto):
+    if proyecto == 'electrolysis':
+        ORIG = "/srv/electrolysis"
+        PROXY = "/srv/electrolysis/proxy"
     orig_path = os.path.join(ORIG, filename)
     name, _ = os.path.splitext(filename)
     proxy_name = f"{name}_proxy.mp4"
