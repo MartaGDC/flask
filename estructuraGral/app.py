@@ -189,14 +189,20 @@ def list_files(app_name):
     app_num = APP_VIDEOS[app_name]
     dir_path = BASE_DIR
     if(app_name.startswith("base")):
+        dir_path = os.path.join(BASE_DIR, "proxy")
         videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
+        videos = sorted([file for file in os.listdir(BASE_DIR) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
     elif(app_name.startswith("hand")):
-        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
+        videos = sorted([file for file in os.listdir(BASE_DIR) if file.startswith(app_num) and (file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha"))])
+        dir_path = os.path.join(BASE_DIR, "proxy")
+        videos.extend([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
     else:
+        dir_path = os.path.join(BASE_DIR, "proxy")
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".wmv"))])
-    return jsonify(videos)
+    
+    videos = [video.replace('_proxy', '') for video in videos]
+    return jsonify(sorted(videos))
 
 
 #Acceso al video de la carpeta
