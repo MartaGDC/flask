@@ -74,8 +74,8 @@ APP_VIDEOS = {
     'aquiles_longitudinal': '1_3_',
     'aquiles_transversal': '1_4_',
 
-    'stc_transversal': "10_1_",
-    'stc_longitudinal': '10_2_',
+    'stc_transversal': "010_1_",
+    'stc_longitudinal': '010_2_',
 
     'polea_longitudinal': '3_1_',
     'proDiafragma': '6_'

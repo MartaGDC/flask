@@ -82,8 +82,8 @@ proyectos_dict = {
     'aquiles_longitudinal':'11_1_',
     'aquiles_transversal':'11_2_',
 
-    'stc_longitudinal':'10_1_',
-    'stc_transversal':'10_1_',
+    'stc_longitudinal':'010_1_',
+    'stc_transversal':'010_1_',
 
     'polea_longitudinal':'12_1_',
 
