@@ -16,7 +16,7 @@ from sqlalchemy import text
 import csv, zipfile
 from io import StringIO, BytesIO
 from datetime import datetime
-from models import db, User, ElectrolysisBone, ElectrolysisQuality
+from models import db, User, ElectrolysisBone2, ElectrolysisQuality2, BrushSetting
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 
 
@@ -32,8 +32,67 @@ with app.app_context():
 
 # CORS(app)
 APP_VIDEOS = {
-    'electrolysis': ''
+    "base_tejidos":"",
+    "base_artefactos" : "",
+    "base_ROIS":"",
+    "base_marco":"",
+    
+    "foot_longitudinal_fascia": "1_1_",
+    "foot_transversal_fascia": "1_2_",
+    "foot_longitudinal_achilles": "1_3_",
+    "foot_transversal_achilles": "1_4_",
+    "foot_longitudinal_volar": "1_5_",
+    "foot_transversal_tarsal": "1_6_",
+
+    "knee_anterior_longitudinal": "2_1_",
+    "knee_anterior_transversal": "2_2_",
+    "knee_anterior_transverse_trochlea": "2_3_",
+    "knee_anterior_longitudinal_trochlea": "2_4_",
+    "knee_anterior_parasagittal": "2_5_",
+    "knee_medial_LLI": '2_6_',
+    'knee_medial_meniscal_transversal': '2_7_',
+    'knee_medial_meniscal_longitudinal': '2_8_',
+    'knee_lateral_cintilla': '2_9_',
+    'knee_lateral_LLE': '2_10_',
+    'knee_lateral_biceps': '2_11_',
+    'knee_lateral_menisco_transversal': '2_12_',
+    'knee_lateral_menisco_longitudinal': '2_13_',
+    'knee_posterior_transversal_medial': '2_14_',
+    'knee_posterior_transversal_central': '2_15_',
+    'knee_posterior_transversal_lateral': '2_16_',
+    'knee_posterior_logitudinal_medial': '2_17_',
+    'knee_posterior_longitudinal_lateral': '2_18_',
+
+    'hand_longitudinal': '3_1_',
+    'hand_transversal': '3_2_',
+    'hand_radial': '3_3_',
+    'hand_cubital': '3_4_',
+    'hand_dorsal': '3_5_',
+
+    'nerves_STC': '4_1_',
+
+    'abd_transversal_alba': '5_1_',
+    'abd_transversal_recto': '5_2_',
+    'abd_transversal_spiegel': '5_3_',
+    'abd_transversal_toracolum': '5_4_',
+    'abd_suelo_pelvico': '5_5_',
+
+    'diafragma': '6_',
+
+    'menisco': '9_',
+
+    'rm': '',
+
+    'aquiles_longitudinal': '1_3_',
+    'aquiles_transversal': '1_4_',
+
+    'stc_transversal': "010_1_",
+    'stc_longitudinal': '010_2_',
+
+    'polea_longitudinal': '3_1_',
+    'proDiafragma': '6_'
 }
+
 
 
 PERMISSIONS = {
@@ -74,20 +133,30 @@ def load_json(path):
         return json.load(f)
 
 
-@app.route('/electrolysis')
+@app.route('/electrolysis2')
 @token_required
 def index(user):
     if not user_can_access(user, "electrolysis", PERMISSIONS):
         return redirect("http://localhost/index.php")
-    return render_template('index_electrolysis.html', user=user.username, title='electrolysis') 
+    structures = load_json(os.path.join(app.root_path, "structures.json")).get("electrolysis2", {})
+    brush_settings = BrushSetting.query.filter_by(app_name="electrolysis2").all()
+    brush_map = {}
+    for b in brush_settings:
+        brush_map[(b.zone, b.structure_name)] = b.width
+    for zone, structs in structures.get("structures", {}).items():
+        for s in structs:
+            key = (zone, s["name"])
+            if key in brush_map:
+                s["width"] = brush_map[key]
+    return render_template('index_electrolysis2.html', user=user.username, title='electrolysis2', data=structures) 
 
 
 @app.route("/count_frames/<username>/<video>")
 def count_frames_electrolysis(username, video):
-    count = ElectrolysisBone.query.filter_by(
+    count = ElectrolysisBone2.query.filter_by(
         evaluator=username
     ).filter(
-        ElectrolysisBone.video.startswith(video)
+        ElectrolysisBone2.video.startswith(video)
     ).count()
     return jsonify({"count": count})
 
@@ -97,6 +166,7 @@ def count_frames_electrolysis(username, video):
 def upload_file():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
+    print('subir')
     file = request.files["file"]
     if file.filename == "":
         return jsonify({"error": "Empty filename"}), 400
@@ -165,6 +235,22 @@ def play_video(filename):
         dir_path = BASE_DIR
     return send_from_directory(directory=dir_path, path=filename)
 
+@app.route("/update_brush", methods=["POST"])
+def update_brush_width():
+    req = request.json
+    appName = req["appName"]
+    name = req["name"]
+    zone = req["zone"]
+    width = req["width"]
+    brush = BrushSetting.query.filter_by(app_name=appName, zone=zone, structure_name=name).first()
+    if brush:
+        brush.width = width
+    else:
+        brush = BrushSetting(app_name=appName, zone=zone, structure_name=name, width=width)
+        db.session.add(brush)
+    db.session.commit()
+    return jsonify({"status": "ok"})
+
 
 @app.route('/save-parametres', methods=['POST'])
 def save_parametres():
@@ -225,7 +311,7 @@ def tissue_quality(data):
 
     Point = [[x_min, y_min], [x_max, y_max]]
 
-    new_quality = ElectrolysisQuality(
+    new_quality = ElectrolysisQuality2(
         timestamp = timestamp,
         video = video,
         frameoriginal = frameoriginal,
@@ -326,7 +412,7 @@ def bone_region(data):
     
     Point = [[x_min, y_min], [x_max, y_max]]
 
-    new_bone = ElectrolysisBone(
+    new_bone = ElectrolysisBone2(
         timestamp=timestamp,
         video=video,
         frameoriginal=frameoriginal,
@@ -359,7 +445,7 @@ def download():
     zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w') as zf:
         conn = db.engine.connect()
-        result = conn.execute(text("SELECT * FROM electrolysis_bone"))
+        result = conn.execute(text("SELECT * FROM electrolysis_bone2"))
         columns = result.keys()
         output = StringIO()
         writer = csv.writer(output)
@@ -369,10 +455,10 @@ def download():
         result.close()
         conn.close()
 
-        zf.writestr(f"electrolysis_bone_{date}.csv", output.getvalue())
+        zf.writestr(f"electrolysis_bone2_{date}.csv", output.getvalue())
 
         conn = db.engine.connect()
-        result = conn.execute(text("SELECT * FROM electrolysis_quality"))
+        result = conn.execute(text("SELECT * FROM electrolysis_quality2"))
         columns = result.keys()
         output = StringIO()
         writer = csv.writer(output)
@@ -382,7 +468,7 @@ def download():
         result.close()
         conn.close()
 
-        zf.writestr(f"electrolysis_quality_{date}.csv", output.getvalue())
+        zf.writestr(f"electrolysis_quality2_{date}.csv", output.getvalue())
 
     zip_buffer.seek(0)
     return send_file(

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo a otros dipositivos -->
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="//cdn.bootcss.com/noUiSlider/8.5.1/nouislider.min.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/noUiSlider/8.5.1/nouislider.js"></script>
+<body data-appname="{{title}}">
+    <!-- Barra superior -->
+    <header class="top-bar">
+        <a href="http://localhost/menu.php">
+            <button>Home</button>
+        </a>
+        <button id = "reloadBtn">Reload</button>
+        <div style="position: absolute; top: 0; right: 0;">
+            <button id = "downloadBtn">Downlad CSV</button>
+        </div>
+    </header>
+
+    <!-- Área central -->
+    <main class="content">
+        <div class="selector">
+            <button id="uploadBtn">Upload file</button>
+            <p id="fileName">No video selected.</p>
+            <p class="researcher-info" id="researcherInfo" data-user="{{user}}"></p>
+        </div>
+        <div class="frame-viewer">
+            <div style="position: relative; display: inline-block;">
+                <canvas id="frame-placeholder"></canvas>
+                <canvas id="canvas-overlay"
+                    style="position: absolute; top: 0; left: 0;"></canvas>
+            </div>
+            <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
+                <span id="boneSliderSpan" class="hidden">Set the threshold so that you see barely anything else than electrolysed tissue</span>
+                <div style="margin-top: 10px; display: flex; flex-direction: row;">
+                    <input type="range" style="margin-top: 10px;" id="boneSlider" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
+                    <label for="boneSlider" id="boneSliderLabel" class="hidden" style="margin-left: 30px">Value: </label> 
+                </div>
+                <button id="acceptThresholdBtn" style="margin-top: 10px;" class="hidden" disabled>Accept threshold</button>
+            </div>
+            <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
+            <button id="scaleSave" class="hidden" disabled>Select a rectangle of 1cm to set the scale</button>
+            <button id="submitBtn" class="hidden" disabled>Submit</button>
+        </div>
+    </main>
+    <div id= "uploadWindow" class="window hidden">
+        <input type="file" id="uploadedFile">
+        <p id="uploadStatus" class="hidden" style="text-align: center;">Processing video, please wait...</p>
+    </div>
+    <div id="videoWindow" class="window hidden">
+        <ul id="videoList" class="videoList"></ul>
+    </div>
+    <div id="video-container" style="display:none;">
+        <video id="video-player"></video>
+        <div class="progress-bar">
+            <input type="range" id="progress" min="0" max="100" value="0" step="0.1">
+        </div>
+        <div id="range"></div>
+        <div class="frame-controls">
+            <button id="prev-frame">⏮</button>
+            <button id="play">►</button>
+            <button id="pause" class="hidden">⏸</button>
+            <button id="next-frame">⏭</button>
+        </div>
+    </div>
+    <aside class="sidebar hidden" id="sidebar">
+        <div class="block">
+            {% if data.zones|length > 1 %}
+                <div id="selectZone">Select Zone:</div>
+                <div class="zones">
+                    {% for zone in data.zones %}
+                        <label>
+                            <input type="radio" name="zone" value="{{ zone.value }}"
+                            {% if loop.first %}
+                                checked
+                            {% endif %}>
+                            <span class="check"></span>
+                            {{ zone.label }}
+                        </label>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% for zone in data.zones %}
+                    <input type="radio" name="zone" value="{{ zone.value }}" checked hidden>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="block">
+            <div id="selectStructure">Select Structure:</div>
+            {% for zone, structures in data.structures.items() %}
+                {% for structure in structures %}
+                    <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
+                        <div class = "rectangulo">
+                            <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
+                            <input type="range" min="1" max="40" value="{{ structure.width }}" class="brush-slider" style="accent-color: {{ structure.color }};">
+                            <button id="delete{{ loop.index }}" class="delete">✖</button>
+                        </div>
+                        <button class="invisible" data-structure="{{ structure.name }}">Ø</button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </aside>
+    <script src="{{ url_for('static', filename='script_electrolysis2.js') }}"></script>
+</body>
+</html>
