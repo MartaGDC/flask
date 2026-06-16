@@ -33,14 +33,7 @@
                 <canvas id="canvas-overlay"
                     style="position: absolute; top: 0; left: 0;"></canvas>
             </div>
-            <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
-                <span id="boneSliderSpan" class="hidden">Set the threshold so that you see barely anything else than electrolysed tissue</span>
-                <div style="margin-top: 10px; display: flex; flex-direction: row;">
-                    <input type="range" style="margin-top: 10px;" id="boneSlider" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
-                    <label for="boneSlider" id="boneSliderLabel" class="hidden" style="margin-left: 30px">Value: </label> 
-                </div>
-                <button id="acceptThresholdBtn" style="margin-top: 10px;" class="hidden" disabled>Accept threshold</button>
-            </div>
+            <div></div>
             <button id="acceptFrameBtn" class="hidden" disabled>Select frame</button>
             <button id="scaleSave" class="hidden" disabled>Select a rectangle of 1cm to set the scale</button>
             <button id="submitBtn" class="hidden" disabled>Submit</button>
@@ -92,13 +85,16 @@
             <div id="selectStructure">Select Structure:</div>
             {% for zone, structures in data.structures.items() %}
                 {% for structure in structures %}
-                    <div class=" structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
+                    <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
+                        <input type="range" style="margin-top: 20px;" class="boneSlider" id="boneSlider{{ loop.index }}" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
+                        <label for="boneSlider{{ loop.index }}" class="boneSliderLabel" id="boneSliderLabel{{ loop.index }}" style="margin-bottom: 10px; text-align: center;" class="hidden">Threshold: 150</label> 
+                    </div>
+                    <div class="structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
                         <div class = "rectangulo">
                             <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>
                             <input type="range" min="1" max="40" value="{{ structure.width }}" class="brush-slider" style="accent-color: {{ structure.color }};">
                             <button id="delete{{ loop.index }}" class="delete">✖</button>
                         </div>
-                        <button class="invisible" data-structure="{{ structure.name }}">Ø</button>
                     </div>
                 {% endfor %}
             {% endfor %}

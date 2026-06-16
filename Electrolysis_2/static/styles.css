@@ -342,6 +342,27 @@ body {
     padding: 0 1.5vw;
 }
 
+#acceptThresholdBtn {
+    padding: 0.5vw 0;
+    width: 15vw;
+    font-family: 'Arial', sans-serif;
+    font-size: 1.2vw;
+    font-weight: bold;
+    line-height: 1.5;
+    color: #1A1A1A;
+    text-align: center;
+    background-color: #F5F5F5;
+    border: 1px solid #1A1A1A;
+    border-radius: 5px;
+    transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+    cursor: pointer;
+}
+#acceptThresholdBtn:hover, #acceptThresholdBtn:active {
+    background-color: #FFFFFF;
+    color: #3a3a3a;
+    border: 1px solid #1A1A1A;
+}
+
 .zones{
     padding: 0 1vw;
     display: flex;
@@ -489,8 +510,8 @@ body {
     opacity: 0.7;
 }
 
-#boneSlider {
-    width: 30vw;
+.boneSlider {
+    width: 100%;
     accent-color: #333333;
     appearance: none;
     margin: 0;

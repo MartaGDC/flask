@@ -42,11 +42,9 @@ const scaleSave = document.getElementById("scaleSave");
 let scaleInfo = null;
 let objectJSQuality = null;
 
-const boneSlider = document.getElementById("boneSlider");
-const boneSliderSpan = document.getElementById("boneSliderSpan");
-const boneSliderLabel = document.getElementById("boneSliderLabel")
-const acceptThresholdBtn = document.getElementById("acceptThresholdBtn");
-let threshold = null;
+const boneSliders = document.querySelectorAll(".boneSlider");
+const boneSliderLabels = document.querySelectorAll(".boneSliderLabel");
+let thresholds = [];
 let objectJSBone = null;
 
 const sidebar = document.getElementById("sidebar");
@@ -341,15 +339,14 @@ scaleSave.addEventListener('click', () => {
         }
         scaleSave.disabled = true;
         scaleSave.classList.add("hidden");
-        boneSlider.disabled = false;
-        boneSlider.classList.remove("hidden");
-        boneSliderSpan.classList.remove("hidden");
-        boneSliderLabel.classList.remove("hidden");
-        acceptThresholdBtn.disabled = false;
-        acceptThresholdBtn.classList.remove("hidden");
-        threshold = parseInt(boneSlider.value, 10);
-        boneSliderLabel.textContent += threshold;
-        applyThreshold(savedFrame, threshold); 
+        const firstIndex = selectedStructure.querySelector('.brush-slider');
+        currentIndex = Array.from(sliders).indexOf(firstIndex);
+        thresholds[currentIndex] = parseInt(boneSliders[currentIndex].value, 10);
+        boneSliders[currentIndex].classList.remove("hidden");
+        boneSliders[currentIndex].disabled = false;
+        boneSliderLabels[currentIndex].classList.remove("hidden");
+        boneSliderLabels[currentIndex].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[currentIndex];
+        applyThreshold(savedFrame, thresholds[currentIndex]);
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
         activarListeners(false);
@@ -413,65 +410,6 @@ function calculateScale() {
 }
 
 
-/*"Bone" threshold:
-- Slider para marcar el umbral de tejido de interés (no creo que sirva para tejidos sin un gran contraste)
-- Modificar los colores del frame de acuerdo al threshold
-*/
-/*-------------------------MARCAR UMBRAL DE TEJIDO QUEMADO-------------------------*/
-boneSlider.addEventListener('input', () => {
-    threshold = parseInt(boneSlider.value, 10);
-    boneSliderLabel.textContent = "Value: " + threshold; 
-    applyThreshold(savedFrame, threshold);
-});
-
-function applyThreshold(image, threshold) {
-    var canvasElement = document.createElement("canvas");
-    var contextElement = canvasElement.getContext("2d");
-    canvasElement.width = image.width;
-    canvasElement.height = image.height;
-    contextElement.putImageData(image, 0, 0);
-    var imageData = contextElement.getImageData(0, 0, canvasElement.width, canvasElement.height);
-    var data = imageData.data;
-    var len = data.length;
-    for (var i = 0; i < len; i += 4) {
-        var gray = data[i];
-        var color = gray < threshold ? 0 : 255;
-        data[i] = color; // red
-        data[i + 1] = color; // green
-        data[i + 2] = color; // blue
-    }
-    contextElement.putImageData(imageData, 0, 0);
-    var imgElement = new Image();
-    imgElement.src = canvasElement.toDataURL();
-    imgElement.onload = function() {
-        ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-        ctx.drawImage(imgElement, 0, 0);
-    };
-}
-acceptThresholdBtn.addEventListener('click', () => {
-    boneSlider.disabled = true;
-    boneSlider.classList.add("hidden");
-    boneSliderSpan.classList.add("hidden");
-    boneSliderLabel.classList.add("hidden");
-    acceptThresholdBtn.disabled = true;
-    acceptThresholdBtn.classList.add("hidden");
-    submitBtn.disabled = false;
-    submitBtn.classList.remove("hidden");
-    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
-    ctx.putImageData(savedFrame, 0, 0);
-    //Dibujos con los brush
-    overlay.style.touchAction = "none";
-    overlay["addEventListener"]("mousedown", startDrawingBrush); //overlay["addEventListener"]("mousedown", startDrawing) es lo mismo que overlay.addEventListener("mousedown", startDrawing)
-    overlay["addEventListener"]("mousemove", drawBrush);
-    overlay["addEventListener"]("mouseup", stopDrawingBrush);
-    overlay["addEventListener"]("mouseleave", stopDrawingBrush);
-    overlay["addEventListener"]("touchstart", startDrawingBrush);
-    overlay["addEventListener"]("touchmove", drawBrush);
-    overlay["addEventListener"]("touchend", stopDrawingBrush);
-    overlay["addEventListener"]("touchcancel", stopDrawingBrush);
-});
-
-
 /*Sidebar:
 - Al seleccionar una zona, se muestran las estructuras correspondientes.
 - Al seleccionar una estructura, se activa el brush correspondiente, permitiendo dibujar.
@@ -501,17 +439,26 @@ function showStructures(selectedZone){
             selectedStructure.classList.remove("transparent");
         });
     });
+    boneSliders.forEach((boneSlider, _) => {
+        boneSlider.disabled = true;
+        boneSlider.classList.add("hidden");
+    });
+    boneSliderLabels.forEach((boneSliderLabel, _) => {
+        boneSliderLabel.disabled = true;
+        boneSliderLabel.classList.add("hidden");
+    });
+    boneSliders[currentIndex].classList.remove("hidden");
+    boneSliders[currentIndex].disabled = false;
+    boneSliderLabels[currentIndex].classList.remove("hidden");
+    thresholds[currentIndex] = parseInt(boneSliders[currentIndex].value, 10);
+    boneSliderLabels[currentIndex].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[currentIndex];
+
 }
 showStructures(selectedZone);
 zones.forEach(zone => {
     zone.addEventListener('change', (event) => {
         structures.forEach((structure) => {
             structure.classList.add("hidden");
-            invisible.forEach((invisibleBtn, _) => {
-                invisibleBtn.classList.remove("active");
-                const structureName = invisibleBtn.getAttribute('data-structure');
-                invisibleStructures[structureName] = false;
-            });
             clearDrawing();
         });
         selectedZone = event.target.value;
@@ -522,8 +469,81 @@ structures.forEach((structure, index) => {
     structure.addEventListener('click', () => {
         widths[index] = parseInt(sliders[index].value);
         currentIndex = index;
+        boneSliders.forEach((boneSlider, _) => {
+            boneSlider.disabled = true;
+            boneSlider.classList.add("hidden");
+        });
+        boneSliderLabels.forEach((boneSliderLabel, _) => {
+            boneSliderLabel.disabled = true;
+            boneSliderLabel.classList.add("hidden");
+        });
+        boneSliders[currentIndex].classList.remove("hidden");
+        boneSliders[currentIndex].disabled = false;
+        boneSliderLabels[currentIndex].classList.remove("hidden");
+        thresholds[currentIndex] = parseInt(boneSliders[currentIndex].value, 10);
+        boneSliderLabels[currentIndex].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[currentIndex];
     });
 });
+
+/*"Bone" threshold:
+- Slider para marcar el umbral de tejido de interés (no creo que sirva para tejidos sin un gran contraste)
+- Modificar los colores del frame de acuerdo al threshold
+*/
+/*-------------------------MARCAR UMBRAL DE TEJIDO QUEMADO-------------------------*/
+boneSliders.forEach((boneSlider, index) => {
+    boneSlider.addEventListener('input', () => {
+        thresholds[index] = parseInt(boneSlider.value, 10);
+        boneSliderLabels[index].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[index];
+        applyThreshold(savedFrame, thresholds[index]);
+    });
+});
+
+function applyThreshold(image, threshold) {
+    var canvasElement = document.createElement("canvas");
+    var contextElement = canvasElement.getContext("2d");
+    canvasElement.width = image.width;
+    canvasElement.height = image.height;
+    contextElement.putImageData(image, 0, 0);
+    var imageData = contextElement.getImageData(0, 0, canvasElement.width, canvasElement.height);
+    var data = imageData.data;
+    var len = data.length;
+    for (var i = 0; i < len; i += 4) {
+        var gray = data[i];
+        var color = gray < threshold ? 0 : 255;
+        data[i] = color; // red
+        data[i + 1] = color; // green
+        data[i + 2] = color; // blue
+    }
+    contextElement.putImageData(imageData, 0, 0);
+    var imgElement = new Image();
+    imgElement.src = canvasElement.toDataURL();
+    imgElement.onload = function() {
+        ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
+        ctx.drawImage(imgElement, 0, 0);
+    };
+}
+/*boneSliderLabel.addEventListener('click', () => {
+    boneSlider.disabled = true;
+    boneSlider.classList.add("hidden");
+    boneSliderLabel.disabled = true;
+    boneSliderLabel.classList.add("hidden");
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("hidden");
+    ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
+    ctx.putImageData(savedFrame, 0, 0);
+    //Dibujos con los brush
+    overlay.style.touchAction = "none";
+    overlay["addEventListener"]("mousedown", startDrawingBrush); //overlay["addEventListener"]("mousedown", startDrawing) es lo mismo que overlay.addEventListener("mousedown", startDrawing)
+    overlay["addEventListener"]("mousemove", drawBrush);
+    overlay["addEventListener"]("mouseup", stopDrawingBrush);
+    overlay["addEventListener"]("mouseleave", stopDrawingBrush);
+    overlay["addEventListener"]("touchstart", startDrawingBrush);
+    overlay["addEventListener"]("touchmove", drawBrush);
+    overlay["addEventListener"]("touchend", stopDrawingBrush);
+    overlay["addEventListener"]("touchcancel", stopDrawingBrush);
+});*/
+
+
 sliders.forEach((slider, index) => {
     slider.addEventListener('input', async e => {
         widths[index] = parseInt(slider.value);
