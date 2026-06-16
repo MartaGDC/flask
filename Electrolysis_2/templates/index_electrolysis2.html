@@ -82,13 +82,23 @@
             {% endif %}
         </div>
         <div class="block">
-            <div id="selectStructure">Select Structure:</div>
+            <div id="setThresholds">Set Thresholds:</div>
+        </div>
+        <div class="block" style="display:flex;flex-direction: column; align-items: center;">
             {% for zone, structures in data.structures.items() %}
                 {% for structure in structures %}
                     <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
-                        <input type="range" style="margin-top: 20px;" class="boneSlider" id="boneSlider{{ loop.index }}" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
-                        <label for="boneSlider{{ loop.index }}" class="boneSliderLabel" id="boneSliderLabel{{ loop.index }}" style="margin-bottom: 10px; text-align: center;" class="hidden">Threshold: 150</label> 
+                        <input type="range" style="margin-top: 10px;" class="boneSlider" id="boneSlider{{ loop.index }}" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
+                        <label for="boneSlider{{ loop.index }}" class="boneSliderLabel" id="boneSliderLabel{{ loop.index }}" style="margin-bottom: 10px; text-align: center; font-size: 1.1vw;" class="hidden">Threshold: 150</label> 
                     </div>
+                {% endfor %}
+            {% endfor %}
+            <button id="acceptThresholdBtn" style="margin-top: 10px;" class="hidden" disabled>Accept threshold</button>
+        </div>
+        <div class="block hidden" id="structureControls">
+            <div id="selectStructure">Select Structure:</div>
+            {% for zone, structures in data.structures.items() %}
+                {% for structure in structures %}
                     <div class="structure-item {{ zone }}-structure-item hidden transparent" data-color="{{structure.color}}">
                         <div class = "rectangulo">
                             <span class="structure-name" style="color: #1A1A1A">{{ structure.name }}</span>

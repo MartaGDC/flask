@@ -45,6 +45,8 @@ let objectJSQuality = null;
 const boneSliders = document.querySelectorAll(".boneSlider");
 const boneSliderLabels = document.querySelectorAll(".boneSliderLabel");
 let thresholds = [];
+const acceptThresholdBtn = document.getElementById("acceptThresholdBtn");
+const structureControls = document.getElementById("structureControls");
 let objectJSBone = null;
 
 const sidebar = document.getElementById("sidebar");
@@ -339,14 +341,18 @@ scaleSave.addEventListener('click', () => {
         }
         scaleSave.disabled = true;
         scaleSave.classList.add("hidden");
-        const firstIndex = selectedStructure.querySelector('.brush-slider');
-        currentIndex = Array.from(sliders).indexOf(firstIndex);
-        thresholds[currentIndex] = parseInt(boneSliders[currentIndex].value, 10);
-        boneSliders[currentIndex].classList.remove("hidden");
-        boneSliders[currentIndex].disabled = false;
-        boneSliderLabels[currentIndex].classList.remove("hidden");
-        boneSliderLabels[currentIndex].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[currentIndex];
-        applyThreshold(savedFrame, thresholds[currentIndex]);
+        boneSliders.forEach((boneSlider, index) => {
+            thresholds[index] = parseInt(boneSliders[index].value, 10);
+            boneSlider.classList.remove("hidden");
+            boneSlider.disabled = false;
+        });
+        boneSliderLabels.forEach((boneSliderLabel, index) => {
+            boneSliderLabel.classList.remove("hidden");
+            boneSliderLabel.textContent = "Threshold for " + structures[index].querySelector('.structure-name').textContent.trim() +": " + thresholds[index];
+        });
+        acceptThresholdBtn.classList.remove("hidden");
+        acceptThresholdBtn.disabled = false;
+        applyThreshold(savedFrame, thresholds[0]);
         dibujoHecho=false;
         ctxOverlay.clearRect(0,0, overlay.width, overlay.height);
         activarListeners(false);

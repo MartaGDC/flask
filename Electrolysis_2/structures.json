@@ -1047,15 +1047,20 @@
     },
 
     "electrolysis2": {
-        "zones":[
-            {"value":"none", "label":""}
+        "zones": [
+            {"value": "coronal", "label": "Coronal"},
+            {"value": "sagital", "label": "Sagital"}
         ],
         "structures": {
-            "none": [
-                {"name": "Diafragma", "color":"rgba(240, 70, 0)"},
-                {"name": "Epimisio superficial", "color":"rgba(245, 255, 200)"},
-                {"name": "Epimisio profundo", "color":"rgba(245, 255, 190)"},
-                {"name": "Costilla", "color":"rgba(225, 255, 200)"}
+            "coronal": [
+                {"name": "Cartílago Femoral Medial", "color": "rgb(150, 255, 200)"},
+                {"name": "Cartílago Femoral Lateral", "color": "rgb(150, 255, 180)"},
+                {"name": "Cartílago Tibial Medial", "color": "rgb(150, 255, 160)"},
+                {"name": "Cartílago Tibial Lateral", "color": "rgb(150, 255, 140)"}
+            ],
+            "sagital": [
+                {"name": "Cartílago Femoral", "color": "rgb(150, 255, 200)"},
+                {"name": "Cartílago Tibial", "color": "rgb(150, 255, 180)"}
             ]
         }
     }
