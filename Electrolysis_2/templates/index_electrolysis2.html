@@ -60,7 +60,7 @@
         </div>
     </div>
     <aside class="sidebar hidden" id="sidebar">
-        <div class="block">
+        <div class="block" id="zoneControls">
             {% if data.zones|length > 1 %}
                 <div id="selectZone">Select Zone:</div>
                 <div class="zones">
@@ -87,7 +87,8 @@
         <div class="block" style="display:flex;flex-direction: column; align-items: center;">
             {% for zone, structures in data.structures.items() %}
                 {% for structure in structures %}
-                    <div class="boneSlider-bar" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="boneSlider-bar hidden {{zone}}-item" >
+                        <span style="color: #1A1A1A; font-size: 1.1vw; text-align: start; width:100%">{{ structure.name }}</span>
                         <input type="range" style="margin-top: 10px;" class="boneSlider" id="boneSlider{{ loop.index }}" min="1" max="256" value="150" step="1" class="hidden" disabled></input>
                         <label for="boneSlider{{ loop.index }}" class="boneSliderLabel" id="boneSliderLabel{{ loop.index }}" style="margin-bottom: 10px; text-align: center; font-size: 1.1vw;" class="hidden">Threshold: 150</label> 
                     </div>

@@ -36,29 +36,36 @@ let numFramesEval = null;
 const acceptFrameBtn = document.getElementById("acceptFrameBtn");
 const submitBtn = document.getElementById("submitBtn");
 let aceptado = false;
-let dibujoHecho = false;
+let dibujoHecho = false; //dibujo de escala
+let submitted = false; //trazos de colores
 
 const scaleSave = document.getElementById("scaleSave");
 let scaleInfo = null;
 let objectJSQuality = null;
 
+const setThresholds = document.getElementById("setThresholds");
+const boneSlidersContainer = document.querySelectorAll(".boneSlider-bar");
 const boneSliders = document.querySelectorAll(".boneSlider");
 const boneSliderLabels = document.querySelectorAll(".boneSliderLabel");
 let thresholds = [];
 const acceptThresholdBtn = document.getElementById("acceptThresholdBtn");
+let thresholdAceptado = false;
 const structureControls = document.getElementById("structureControls");
 let objectJSBone = null;
 
 const sidebar = document.getElementById("sidebar");
 const blocks = document.querySelectorAll(".block");
+const zoneControls = document.getElementById("zoneControls");
 const zones = document.querySelectorAll('input[name="zone"]');
 let selectedZone = zones[0].value;
 const structures = document.querySelectorAll(".structure-item");
 let selectedStructure = null;
 let currentIndex = null;
+let indexUsados = [];
 const sliders = Array.from(document.querySelectorAll('.brush-slider'));
 const  widths = Array.from(document.querySelectorAll(".brush-slider")).map(slider => parseInt(slider.value));
 const colors = Array.from(structures).map(div => div.dataset.color);
+let mask = [{color: null, width: null, puntos: []}];
 const deleteDrawings = document.querySelectorAll(".delete");
 let trazos = [];
 let trazoActual = null;
@@ -341,14 +348,27 @@ scaleSave.addEventListener('click', () => {
         }
         scaleSave.disabled = true;
         scaleSave.classList.add("hidden");
-        boneSliders.forEach((boneSlider, index) => {
-            thresholds[index] = parseInt(boneSliders[index].value, 10);
-            boneSlider.classList.remove("hidden");
-            boneSlider.disabled = false;
-        });
-        boneSliderLabels.forEach((boneSliderLabel, index) => {
-            boneSliderLabel.classList.remove("hidden");
-            boneSliderLabel.textContent = "Threshold for " + structures[index].querySelector('.structure-name').textContent.trim() +": " + thresholds[index];
+        boneSlidersContainer.forEach(boneSliderContainer => {
+            if (boneSliderContainer.classList.contains(`${selectedZone}-item`)) {
+                boneSliderContainer.classList.remove("hidden");
+                boneSliderContainer.style.display = "flex";
+                boneSliderContainer.style.flexDirection = "column";
+                boneSliderContainer.style.alignItems = "center";
+                activeStructures = document.querySelectorAll(`.${selectedZone}-item`);
+                selectedStructure = activeStructures[0];
+                boneSliders.forEach((boneSlider, index) => {
+                    thresholds[index] = parseInt(boneSliders[index].value, 10);
+                    boneSlider.disabled = false;
+                    boneSlider.classList.remove("hidden");
+                });
+                boneSliderLabels.forEach((boneSliderLabel, index) => {
+                    boneSliderLabel.classList.remove("hidden");
+                    boneSliderLabel.textContent = "Threshold: " + thresholds[index];
+                });
+            } else {
+                boneSliderContainer.classList.add("hidden");
+                boneSliderContainer.style.display = "none";
+            }
         });
         acceptThresholdBtn.classList.remove("hidden");
         acceptThresholdBtn.disabled = false;
@@ -416,90 +436,69 @@ function calculateScale() {
 }
 
 
-/*Sidebar:
+/*Sidebar Thresholds:
 - Al seleccionar una zona, se muestran las estructuras correspondientes.
-- Al seleccionar una estructura, se activa el brush correspondiente, permitiendo dibujar.
 - El threshold de analisis bone se puede ajustar con un slider.
-- El tamaño del brush se puede ajustar con un slider.
-- Cada estructura tiene un botón para borrar el trazo correspondiente.
-- Cuando se ha completado el formulario, se puede enviar.
+- Slider para marcar el umbral de tejido de interés (no creo que sirva para tejidos sin un gran contraste)
+- Modificar los blancos y negros del frame de acuerdo al threshold
+- Al aceptar los thresholds, se deshabilita la seleccion de zona y se activa el sidebar de brush.
 */
-/*-------------------------SIDEBAR-------------------------*/
+/*-------------------------SIDEBAR THRESHOLDS-------------------------*/
 //Al seleccionar una zona, se muestran las estructuras correspondientes. Si no hay una zona seleccionada, se selecciona la primera por defecto.
 function showStructures(selectedZone){
-    activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
-    activeStructures.forEach(structure => {
-        structure.classList.remove("hidden");
-        structure.classList.add("transparent");
-    });
-    selectedStructure = activeStructures[0];
-    const firstIndex = selectedStructure.querySelector('.brush-slider');
-    currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
-    selectedStructure.classList.remove("transparent");
-    activeStructures.forEach(structure => {
-        structure.addEventListener('click', (event) => {
-            structures.forEach(structure => {
-                structure.classList.add("transparent");
-            });
-            selectedStructure = event.currentTarget;
-            selectedStructure.classList.remove("transparent");
+    if (!thresholdAceptado){
+        // Mostrar los sliders de threshold correspondientes a la zona seleccionada
+        boneSlidersContainer.forEach(boneSliderContainer => {
+            if (boneSliderContainer.classList.contains(`${selectedZone}-item`)) {
+                boneSliderContainer.classList.remove("hidden");
+                boneSliderContainer.style.display = "flex";
+                boneSliderContainer.style.flexDirection = "column";
+                boneSliderContainer.style.alignItems = "center";
+                activeStructures = document.querySelectorAll(`.${selectedZone}-item`);
+                selectedStructure = activeStructures[0];
+                boneSliders.forEach((boneSlider, index) => {
+                    thresholds[index] = parseInt(boneSliders[index].value, 10);
+                    boneSlider.disabled = false;
+                    boneSlider.classList.remove("hidden");
+                });
+                boneSliderLabels.forEach((boneSliderLabel, index) => {
+                    boneSliderLabel.classList.remove("hidden");
+                    boneSliderLabel.textContent = "Threshold: " + thresholds[index];
+                });
+            } else {
+                boneSliderContainer.classList.add("hidden");
+                boneSliderContainer.style.display = "none";
+            }
         });
-    });
-    boneSliders.forEach((boneSlider, _) => {
-        boneSlider.disabled = true;
-        boneSlider.classList.add("hidden");
-    });
-    boneSliderLabels.forEach((boneSliderLabel, _) => {
-        boneSliderLabel.disabled = true;
-        boneSliderLabel.classList.add("hidden");
-    });
-    boneSliders[currentIndex].classList.remove("hidden");
-    boneSliders[currentIndex].disabled = false;
-    boneSliderLabels[currentIndex].classList.remove("hidden");
-    thresholds[currentIndex] = parseInt(boneSliders[currentIndex].value, 10);
-    boneSliderLabels[currentIndex].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[currentIndex];
-
+    }
+    else {
+        //Mostrar las estructuras correspondientes a la zona seleccionada para seleccion de brush
+        activeStructures = document.querySelectorAll(`.${selectedZone}-structure-item`);
+        activeStructures.forEach(structure => {
+            structure.classList.remove("hidden");
+            structure.classList.add("transparent");
+        });
+        selectedStructure = activeStructures[0];
+        const firstIndex = selectedStructure.querySelector('.brush-slider');
+        currentIndex = Array.from(sliders).indexOf(firstIndex); //Actualizar el color cuando se cambia la zona
+        selectedStructure.classList.remove("transparent");
+        activeStructures.forEach(structure => {
+            structure.addEventListener('click', (event) => {
+                structures.forEach(structure => {
+                    structure.classList.add("transparent");
+                });
+                selectedStructure = event.currentTarget;
+                selectedStructure.classList.remove("transparent");
+            });
+        });
+    }
 }
 showStructures(selectedZone);
-zones.forEach(zone => {
-    zone.addEventListener('change', (event) => {
-        structures.forEach((structure) => {
-            structure.classList.add("hidden");
-            clearDrawing();
-        });
-        selectedZone = event.target.value;
-        showStructures(selectedZone);
-    });
-});
-structures.forEach((structure, index) => {
-    structure.addEventListener('click', () => {
-        widths[index] = parseInt(sliders[index].value);
-        currentIndex = index;
-        boneSliders.forEach((boneSlider, _) => {
-            boneSlider.disabled = true;
-            boneSlider.classList.add("hidden");
-        });
-        boneSliderLabels.forEach((boneSliderLabel, _) => {
-            boneSliderLabel.disabled = true;
-            boneSliderLabel.classList.add("hidden");
-        });
-        boneSliders[currentIndex].classList.remove("hidden");
-        boneSliders[currentIndex].disabled = false;
-        boneSliderLabels[currentIndex].classList.remove("hidden");
-        thresholds[currentIndex] = parseInt(boneSliders[currentIndex].value, 10);
-        boneSliderLabels[currentIndex].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[currentIndex];
-    });
-});
 
-/*"Bone" threshold:
-- Slider para marcar el umbral de tejido de interés (no creo que sirva para tejidos sin un gran contraste)
-- Modificar los colores del frame de acuerdo al threshold
-*/
-/*-------------------------MARCAR UMBRAL DE TEJIDO QUEMADO-------------------------*/
 boneSliders.forEach((boneSlider, index) => {
     boneSlider.addEventListener('input', () => {
         thresholds[index] = parseInt(boneSlider.value, 10);
-        boneSliderLabels[index].textContent = "Threshold for " + selectedStructure.querySelector('.structure-name').textContent.trim() +": " + thresholds[index];
+        boneSliderLabels[index].textContent = "Threshold: " + thresholds[index];
         applyThreshold(savedFrame, thresholds[index]);
     });
 });
@@ -528,13 +527,23 @@ function applyThreshold(image, threshold) {
         ctx.drawImage(imgElement, 0, 0);
     };
 }
-/*boneSliderLabel.addEventListener('click', () => {
-    boneSlider.disabled = true;
-    boneSlider.classList.add("hidden");
-    boneSliderLabel.disabled = true;
-    boneSliderLabel.classList.add("hidden");
-    submitBtn.disabled = false;
-    submitBtn.classList.remove("hidden");
+
+acceptThresholdBtn.addEventListener('click', () => {
+    thresholdAceptado = true;
+    acceptThresholdBtn.disabled = true;
+    acceptThresholdBtn.classList.add("hidden");
+    boneSlidersContainer.forEach(boneSliderContainer => {
+        boneSliderContainer.classList.add("hidden");
+        boneSliderContainer.style.display = "none";
+    });
+    structureControls.classList.remove("hidden");
+    setThresholds.classList.add("hidden");
+    showStructures(selectedZone);
+    zones.forEach(zone => {
+        zone.disabled = true;
+    });
+    zoneControls.classList.add("disabled");
+
     ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
     ctx.putImageData(savedFrame, 0, 0);
     //Dibujos con los brush
@@ -547,8 +556,42 @@ function applyThreshold(image, threshold) {
     overlay["addEventListener"]("touchmove", drawBrush);
     overlay["addEventListener"]("touchend", stopDrawingBrush);
     overlay["addEventListener"]("touchcancel", stopDrawingBrush);
-});*/
 
+    submitBtn.classList.remove("hidden");
+    submitBtn.classList.add("disabled");
+    validar();
+});
+
+/*Sidebar Brush:
+- El tamaño del brush se puede ajustar con un slider.
+- Al seleccionar una estructura, se activa el brush correspondiente, permitiendo dibujar.
+- Cada estructura tiene un botón para borrar el trazo correspondiente.
+- Cuando se ha completado el formulario, se puede enviar.
+*/
+/*-------------------------SIDEBAR BRUSH-------------------------*/
+zones.forEach(zone => {
+    if (!thresholdAceptado) {
+        zone.addEventListener('change', (event) => {
+            selectedZone = event.target.value;
+            showStructures(selectedZone);
+        });
+    } else {
+        zone.addEventListener('change', (event) => {
+            structures.forEach((structure) => {
+                structure.classList.add("hidden");
+                clearDrawing();
+            });
+            selectedZone = event.target.value;
+            showStructures(selectedZone);
+        });
+    }
+});
+structures.forEach((structure, index) => {
+    structure.addEventListener('click', () => {
+        widths[index] = parseInt(sliders[index].value);
+        currentIndex = index;
+    });
+});
 
 sliders.forEach((slider, index) => {
     slider.addEventListener('input', async e => {
@@ -578,6 +621,9 @@ function startDrawingBrush(e) {
     if(aceptado){
         drawing = true;
         trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
+        if (indexUsados.find(uso => uso === currentIndex) == null) {
+            indexUsados.push(currentIndex); //aunque se elimine el trazo, sirve para evitar que los colores se repitan con diferentes indices (incialmente, todas las zonas están en colors, no solo la seleccionada)
+        }
         drawBrush(e);
     }
 }
@@ -585,8 +631,19 @@ function stopDrawingBrush() {
     if (aceptado){
         if(trazoActual) {
             trazos.push(trazoActual);
+            indexUsados.forEach((uso, index) => {
+                if (colors[uso] === trazoActual.color) {
+                    if (!mask[index]) {
+                        mask[index] = {color: null, width: null, puntos: []};
+                    }
+                    mask[index].puntos.push(...trazoActual.puntos);
+                    mask[index].color = colors[uso];
+                    mask[index].width = widths[uso];
+                }
+            });
             trazoActual = null;
         }
+        validar();
         drawing = false;
         ctx.beginPath();
     }
@@ -599,7 +656,6 @@ function drawBrush(e) {
         const color = colors[currentIndex];
         const width = widths[currentIndex];
         let pos;
-        console.log(e.type);
         if (e.type.includes('mouse')) {
             pos = getMousePos(framePlaceholder, e);
         } else {
@@ -635,6 +691,7 @@ function getTouchPos(canvas, touch) {
 //Borrar el trazo correspondiente
 function clearColorDrawing(colorDelete) {
     trazos = trazos.filter(trazo => trazo.color !== colorDelete);
+    mask = mask.filter(trazo => trazo.color !== colorDelete)
     redrawRest(colorDelete);
 }
 function redrawRest(colorDelete=null) {
@@ -656,27 +713,49 @@ function redrawRest(colorDelete=null) {
             ctx.beginPath();
         }
     });
+    validar();
 }
 //Borrar todos los trazos si se selecciona otra zona.
 function clearDrawing() {
     ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
     ctx.putImageData(savedFrame, 0, 0);
     trazos = [];
+    validar();
+}
+
+function validar() {
+    /*const activeColors = Array.from(structures).map(s => s.querySelector('.brush-slider').style.accentColor);
+    const allColorsDrawn = activeColors.every(color =>
+        trazos.some(trazo => trazo.color === color && trazo.puntos.length > 0)
+    );*/
+    allColorsDrawn=true; //Se han definido muchas estructuras, dejar por ahora sin esta validación que obliga a dibujarlo todo
+    if (allColorsDrawn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("disabled");
+        submitted = true;
+    }
+    else{
+        submitBtn.disabled = true;
+        submitBtn.classList.add("disabled");
+        submitted = false;
+    }
 }
 
 
 
-
 /*Parametros de calidad de tejido y region quemada:
-- Dibujar rectángulo para marcar la zona de interés
 - fetch calculos tissue-quality
 - fetch calculos region quemada
 */
 /*-------------------------PARÁMETROS-------------------------*/
 submitBtn.addEventListener('click', () => {
-    if(dibujoHecho){
+    if (aceptado && submitted) {
         submitBtn.disabled = true;
+        
 
+
+
+        
         objectJSQuality = saveQualityData();
         objectJSBone = saveBoneData();
         saveData(objectJSQuality, objectJSBone);
