@@ -256,25 +256,51 @@ def update_brush_width():
 def save_parametres():
     data = request.json
     try:
-        quality = tissue_quality(data["qualityData"])
-        bone = bone_region(data["boneData"])
-        db.session.commit()
-        return jsonify({"status": "success", "newQuality": quality, "newBone": bone}), 200
+        #Guardado mascaras
+        frames_dir = os.path.join(app.root_path, "static", "frames")
+        data_dir = os.path.join(app.root_path, "static", "DATA")
+        os.makedirs(frames_dir, exist_ok=True)
+        os.makedirs(data_dir, exist_ok=True)
+        original_imgQ = base64.b64decode(data["qualityData"]['originalImage'].split(",")[1])
+        edited_imgQ = base64.b64decode(data["qualityData"]['maskImage'].split(",")[1])
+        with open(os.path.join(frames_dir, data["qualityData"]["frameoriginal"]), 'wb') as f:
+            f.write(original_imgQ)
+        with open(os.path.join(data_dir, data["qualityData"]["frameMask"]), 'wb') as f:
+            f.write(edited_imgQ)
+        #Guardado imagenes en thresholds
+        image = skimage.io.imread(io.BytesIO(base64.b64decode(data["boneData"]['originalImage'].split(",")[1])), as_gray=True)
+        image = (image * 255).astype(np.uint8)
+        threshold = data["boneData"]['threshold']
+        binary_img = (image > threshold).astype(bool)
+        erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
+        dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
+        hueso = image * dilation
+        skimage.io.imsave(os.path.join(data_dir, data["boneData"]['frameMask']), hueso)
+
+        #quality = tissue_quality(data["qualityData"])
+        #bone = bone_region(data["boneData"])
+        #db.session.commit()
+        #return jsonify({"status": "success", "newQuality": quality, "newBone": bone}), 200
+        return jsonify({"status": "success"}), 200
     except Exception as e:
-        db.session.rollback()
-        import traceback
-        traceback.print_exc()
+        #db.session.rollback()
+        #import traceback
+        #traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
 def tissue_quality(data):
-    timestamp  = data['timestamp']
+    timestamp = data['timestamp']
     video = data['video']
+    zona = data['zona'] 
+    estructura = data['estructura'],
     frameoriginal = data['frameoriginal']
+    frameMask = data['frameMask']
     originalImage = data['originalImage']
+    maskImage = data['maskImage']
     evaluator = data['evaluator']
-    startPoint = data['startPoint']
-    endPoint = data['endPoint']
     dimensions = data['dimensions']
+    
 
     _x1 = int(startPoint['x'])
     _y1 = int(startPoint['y'])
@@ -344,15 +370,17 @@ def bone_region(data):
 
     timestamp  = data['timestamp']
     video = data['video']
+    zona = data['zona']
+    estructura = data['estructura']
     frameoriginal = data['frameoriginal']
+    frameMask = data['fameMask']
     originalImage = data['originalImage']
+    maskImage = data['maskImage']
     evaluator = data['evaluator']
-    startPoint = data['startPoint']
-    endPoint = data['endPoint']
     dimensions = data['dimensions']
     threshold = data['threshold']
-    
     _scale = float(data['scale'])
+
     _x1 = int(startPoint['x'])
     _y1 = int(startPoint['y'])
     _x2 = int(endPoint['x'])

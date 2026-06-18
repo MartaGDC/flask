@@ -21,10 +21,10 @@ const prevFrameBtn = document.getElementById("prev-frame");
 const nextFrameBtn = document.getElementById("next-frame");
 const playBtn = document.getElementById("play");
 const pauseBtn = document.getElementById("pause");
-const framePlaceholder = document.getElementById("frame-placeholder");
-const overlay = document.getElementById("canvas-overlay");
-const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true });
-const ctxOverlay = overlay.getContext("2d");
+const framePlaceholder = document.getElementById("frame-placeholder"); //imagen
+const overlay = document.getElementById("canvas-overlay"); //imagen para escala
+const ctx = framePlaceholder.getContext("2d", { willReadFrequently: true }); // ctx de imgen
+const ctxOverlay = overlay.getContext("2d"); //ctx para escala
 
 let frame = null;
 let savedFrame = null;
@@ -547,15 +547,16 @@ acceptThresholdBtn.addEventListener('click', () => {
     ctx.clearRect(0, 0, framePlaceholder.width, framePlaceholder.height);
     ctx.putImageData(savedFrame, 0, 0);
     //Dibujos con los brush
-    overlay.style.touchAction = "none";
-    overlay["addEventListener"]("mousedown", startDrawingBrush); //overlay["addEventListener"]("mousedown", startDrawing) es lo mismo que overlay.addEventListener("mousedown", startDrawing)
-    overlay["addEventListener"]("mousemove", drawBrush);
-    overlay["addEventListener"]("mouseup", stopDrawingBrush);
-    overlay["addEventListener"]("mouseleave", stopDrawingBrush);
-    overlay["addEventListener"]("touchstart", startDrawingBrush);
-    overlay["addEventListener"]("touchmove", drawBrush);
-    overlay["addEventListener"]("touchend", stopDrawingBrush);
-    overlay["addEventListener"]("touchcancel", stopDrawingBrush);
+    overlay.style.display = "none";
+    framePlaceholder.style.touchAction = "none";
+    framePlaceholder["addEventListener"]("mousedown", startDrawingBrush); //framePlaceholder["addEventListener"]("mousedown", startDrawing) es lo mismo que framePlaceholder.addEventListener("mousedown", startDrawing)
+    framePlaceholder["addEventListener"]("mousemove", drawBrush);
+    framePlaceholder["addEventListener"]("mouseup", stopDrawingBrush);
+    framePlaceholder["addEventListener"]("mouseleave", stopDrawingBrush);
+    framePlaceholder["addEventListener"]("touchstart", startDrawingBrush);
+    framePlaceholder["addEventListener"]("touchmove", drawBrush);
+    framePlaceholder["addEventListener"]("touchend", stopDrawingBrush);
+    framePlaceholder["addEventListener"]("touchcancel", stopDrawingBrush);
 
     submitBtn.classList.remove("hidden");
     submitBtn.classList.add("disabled");
@@ -622,7 +623,7 @@ function startDrawingBrush(e) {
         drawing = true;
         trazoActual = {color: colors[currentIndex], width: widths[currentIndex], puntos: []};
         if (indexUsados.find(uso => uso === currentIndex) == null) {
-            indexUsados.push(currentIndex); //aunque se elimine el trazo, sirve para evitar que los colores se repitan con diferentes indices (incialmente, todas las zonas están en colors, no solo la seleccionada)
+            indexUsados.push(currentIndex);
         }
         drawBrush(e);
     }
@@ -692,6 +693,7 @@ function getTouchPos(canvas, touch) {
 function clearColorDrawing(colorDelete) {
     trazos = trazos.filter(trazo => trazo.color !== colorDelete);
     mask = mask.filter(trazo => trazo.color !== colorDelete)
+    indexUsados = indexUsados.filter(indice =>  colors[indice] !== colorDelete)
     redrawRest(colorDelete);
 }
 function redrawRest(colorDelete=null) {
@@ -751,57 +753,90 @@ function validar() {
 submitBtn.addEventListener('click', () => {
     if (aceptado && submitted) {
         submitBtn.disabled = true;
+
+        const maskOriginalCanvas = document.createElement("canvas");
+        const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
+        maskOriginalCanvas.width = savedFrame.width;
+        maskOriginalCanvas.height = savedFrame.height;
+        maskOriginalCtx.putImageData(savedFrame, 0, 0);
+        const imageURL = maskOriginalCanvas.toDataURL();
         
+        let maskEdited = [{zona: null, estructura: null, mask: null}];
+        indexUsados.forEach((indiceUsado, indice) => {
+            const maskEditedCanvas = document.createElement('canvas');
+            const maskEditedCtx = maskEditedCanvas.getContext('2d');
+            maskEditedCanvas.width = savedFrame.width;
+            maskEditedCanvas.height = savedFrame.height;
+            maskEditedCtx.putImageData(savedFrame, 0, 0);
+            trazos.forEach(trazo => {
+                if (trazo.color === colors[indiceUsado]) {
+                    maskEditedCtx.lineWidth = widths[indiceUsado];
+                    maskEditedCtx.lineCap = 'round';
+                    maskEditedCtx.strokeStyle = colors[indiceUsado];
+                    for (let i = 1; i < trazo.puntos.length; i++) {
+                        const punto1 = trazo.puntos[i-1];
+                        const punto2 = trazo.puntos[i];
+                        maskEditedCtx.beginPath();
+                        maskEditedCtx.moveTo(punto1.x, punto1.y);
+                        maskEditedCtx.lineTo(punto2.x, punto2.y);
+                        maskEditedCtx.stroke();
+                    }
+                    maskEditedCtx.beginPath();                    
+                    if (!maskEdited[indice]) {
+                        maskEdited[indice] = {zona: null, estructura: null, mask: null, threshold: null};
+                    }
+                    maskEdited[indice].zona = selectedZone;
+                    maskEdited[indice].estructura = activeStructures[indiceUsado].querySelector('.structure-name').textContent;
+                    maskEdited[indice].mask = maskEditedCanvas;
+                    maskEdited[indice].threshold = thresholds[indiceUsado];
+                }
+            })
+        });
 
-
-
-        
-        objectJSQuality = saveQualityData();
-        objectJSBone = saveBoneData();
-        saveData(objectJSQuality, objectJSBone);
+        maskEdited.forEach(mascara => {
+            objectJSQuality = saveQualityData(maskOriginalCanvas, mascara.mask, mascara.zona, mascara.estructura)
+            objectJSBone = saveBoneData(maskOriginalCanvas, mascara.mask, mascara.zona, mascara.estructura, mascara.threshold)
+            saveData(objectJSQuality, objectJSBone);
+        });
     } else{
         alert('Draw something on canvas before saving.');
     }
 });
 
-function saveQualityData() {
-    const maskOriginalCanvas = document.createElement("canvas");
-    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
-    maskOriginalCanvas.width = savedFrame.width;
-    maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(savedFrame, 0, 0);
-    const imageURL = maskOriginalCanvas.toDataURL();
+function saveQualityData(originalCanvas, maskCanvas, zona, estructura) {
+    const originalURL = originalCanvas.toDataURL();
+    const maskURL = maskCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
     const quality = {
         timestamp: timestamp,
         video: fileName.textContent, 
+        zona: zona, 
+        estructura: estructura,
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
-        originalImage: imageURL,
+        frameMask: `${timestamp}.png`,
+        originalImage: originalURL,
+        maskImage: maskURL,
         evaluator: evaluatorName,
-        startPoint: { x: startX, y: startY },
-        endPoint: { x: endX, y: endY },
-        dimensions:{width: maskOriginalCanvas.width, height: maskOriginalCanvas.height}
+        dimensions:{width: originalCanvas.width, height: originalCanvas.height}
     };
     return quality;
 };
 
-function saveBoneData() {
-    const maskOriginalCanvas = document.createElement("canvas");
-    const maskOriginalCtx = maskOriginalCanvas.getContext("2d");
-    maskOriginalCanvas.width = savedFrame.width;
-    maskOriginalCanvas.height = savedFrame.height;
-    maskOriginalCtx.putImageData(savedFrame, 0, 0);
-    const imageURL = maskOriginalCanvas.toDataURL();
+function saveBoneData(originalCanvas, maskCanvas, zona, estructura, threshold) {
+    const originalURL = originalCanvas.toDataURL();
+    const maskURL = maskCanvas.toDataURL();
     const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
     const bone = {
         timestamp: timestamp,
-        video: fileName.textContent, 
+        video: fileName.textContent,
+        zona: zona, 
+        estructura: estructura,
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
-        originalImage: imageURL,
+        frameMask: `${timestamp}_bone.png`,
+        originalImage: originalURL,
+        maskImage: maskURL,
         evaluator: evaluatorName,
-        startPoint: { x: startX, y: startY },
-        endPoint: { x: endX, y: endY },
-        dimensions:{width: maskOriginalCanvas.width, height: maskOriginalCanvas.height},
+        dimensions:{width: originalCanvas.width, height: originalCanvas.height},
         threshold: threshold,
         scale: scaleInfo
     };
@@ -827,7 +862,7 @@ function saveData(objectJSQuality, objectJSBone) {
     })
     .then(data => {
         console.log('Success:', data);
-        recargarVideo(appName, fileName.textContent);
+        //recargarVideo(appName, fileName.textContent);
     })
     .catch((error) => {
         console.error('Error:', error);
