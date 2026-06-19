@@ -34,9 +34,8 @@ class ElectrolysisQuality2(db.Model):
     glds_asm = db.Column(db.Float, nullable=True)
     glds_entropy = db.Column(db.Float, nullable=True)
     glds_mean = db.Column(db.Float, nullable=True)
-    haar_mean = db.Column(db.Float, nullable=False)
-    haar_variance = db.Column(db.Float, nullable=False)
-    point = db.Column(JSONB, nullable=True)
+    haar_mean = db.Column(db.Float, nullable=True)
+    haar_variance = db.Column(db.Float, nullable=True)
 
 class ElectrolysisBone2(db.Model):
     __tablename__ = "electrolysis_bone2"
@@ -57,7 +56,6 @@ class ElectrolysisBone2(db.Model):
     homogeneity = db.Column(db.Float, nullable=True)
     contrast = db.Column(db.Float, nullable=True)
     correlation = db.Column(db.Float, nullable=True)
-    point = db.Column(JSONB, nullable=True)
 
 class BrushSetting(db.Model):
     __tablename__ = "brush_settings"

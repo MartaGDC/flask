@@ -1,4 +1,5 @@
 
+import cv2
 from flask import Flask, render_template, redirect, request, jsonify, session, send_file, send_from_directory
 from functools import wraps
 import jwt
@@ -166,7 +167,6 @@ def count_frames_electrolysis(username, video):
 def upload_file():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
-    print('subir')
     file = request.files["file"]
     if file.filename == "":
         return jsonify({"error": "Empty filename"}), 400
@@ -275,9 +275,9 @@ def save_parametres():
         erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
         dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
         hueso = image * dilation
-        skimage.io.imsave(os.path.join(data_dir, data["boneData"]['frameMask']), hueso)
+        skimage.io.imsave(os.path.join(data_dir, data["boneData"]['frameMask']), hueso)        
 
-        #quality = tissue_quality(data["qualityData"])
+        quality = tissue_quality(data["qualityData"])
         #bone = bone_region(data["boneData"])
         #db.session.commit()
         #return jsonify({"status": "success", "newQuality": quality, "newBone": bone}), 200
@@ -293,51 +293,35 @@ def tissue_quality(data):
     timestamp = data['timestamp']
     video = data['video']
     zona = data['zona'] 
-    estructura = data['estructura'],
+    estructura = data['estructura']
     frameoriginal = data['frameoriginal']
     frameMask = data['frameMask']
     originalImage = data['originalImage']
     maskImage = data['maskImage']
     evaluator = data['evaluator']
     dimensions = data['dimensions']
-    
 
-    _x1 = int(startPoint['x'])
-    _y1 = int(startPoint['y'])
-    _x2 = int(endPoint['x'])
-    _y2 = int(endPoint['y'])
-    _width = int(dimensions['width'])
-    _height = int(dimensions['height'])
+    edited_img = skimage.io.imread(io.BytesIO(base64.b64decode(maskImage.split(",")[1])), as_gray=True)
+    edited_img = (edited_img * 255).astype(np.uint8)
+    mask = edited_img > 0
 
-    image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
-    image = (image * 255).astype(np.uint8)
-    height, width = image.shape
-    
-    x1 = int(_x1 * width / _width)
-    x2 = int(_x2 * width / _width)
-    y1 = int(_y1 * height / _height)
-    y2 = int(_y2 * height / _height)
-    x_min = min(x1, x2)
-    x_max = max(x1, x2)
-    y_min = min(y1, y2)
-    y_max = max(y1, y2)
-    ROI = image[y_min:y_max, x_min:x_max]
-    features_GLCM, _, labels_GLCM, _ = pf.glcm_features(ROI, ignore_zeros=True)
-    glcm_ind = [1,5,3,9,2,4]
-    glcm = [features_GLCM[i] for i in glcm_ind]
-    labels_glcm = [labels_GLCM[i] for i in glcm_ind]
+    original_img = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
+    original_img = (original_img * 255).astype(np.uint8)
 
-    aux = ROI.astype(np.float32)
-    cA, (_, _, _) = pw.dwt2(aux, 'haar')
-    haar_mean = float(np.mean(cA))
-    haar_variance = float(np.var(cA))
+    ys, xs = np.where(mask)
+    ymin = ys.min()
+    ymax = ys.max()+1
+    xmin = xs.min()
+    xmax = xs.max()+1
+    img_roi = original_img[ymin:ymax, xmin:xmax]
+    mask_roi = mask[ymin:ymax, xmin:xmax]
 
-    mask = np.ones(ROI.shape)
-    features_GLDS, labels_GLDS = pf.glds_features(ROI, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
+    glcm = get_glcm(img_roi, mask_roi)
+    contrast = glcm_contrast(glcm)
+    homogeneity = glcm_homogeneity(glcm)
 
-    Point = [[x_min, y_min], [x_max, y_max]]
 
-    new_quality = ElectrolysisQuality2(
+    '''new_quality = ElectrolysisQuality2(
         timestamp = timestamp,
         video = video,
         frameoriginal = frameoriginal,
@@ -355,19 +339,115 @@ def tissue_quality(data):
         glds_mean = float(features_GLDS[4]),
         haar_mean=haar_mean,
         haar_variance=haar_variance,
-        point=Point
     )
-    db.session.add(new_quality)
+    db.session.add(new_quality)'''
     return {"glcm": glcm, "glcm_label": labels_glcm, "features_GLDS": list(features_GLDS), "labels_GLDS": labels_GLDS, "haar_mean": haar_mean, "haar_variance": haar_variance}
+
+
+def get_glcm(image, mask, distance=1, dx=1, dy=0, symmetric=True):
+    h, w = image.shape
+    levels = 256
+    glcm = np.zeros((levels, levels), dtype=np.float64)
+    for y in range(h):
+        for x in range(w):
+            y2 = y + dy * distance
+            x2 = x + dx * distance
+            # comprobar que el pixel vecino existe
+            if y2 < 0 or y2 >= h:
+                continue
+            if x2 < 0 or x2 >= w:
+                continue
+            # Asegurar que pixeles en ROI
+            if not mask[y, x]:
+                continue
+            if not mask[y2, x2]:
+                continue
+            i = image[y, x]
+            j = image[y2, x2]
+            glcm[i, j] += 1
+            if symmetric:
+                glcm[j, i] += 1
+    #Normalizacion
+    total = glcm.sum()
+    if total > 0:
+        glcm /= total
+    return glcm
+
+
+def glcm_contrast(glcm):
+    i, j = np.indices(glcm.shape)
+    return np.sum((i - j) ** 2 * glcm)
+
+def glcm_homogeneity(glcm):
+    i, j = np.indices(glcm.shape)
+    return np.sum(glcm / (1 + (i-j)**2))
+
+def glcm_sumAvg(glcm):
+    summ = np.zeros(2 * glcm.shape[0], dtype=np.float64)
+    i, j = np.indices(glcm.shape)
+    s = i + j
+    x = np.arange(len(np.add.at(summ, s, glcm)))
+    return np.sum(x * np.add.at(summ, s, glcm))
+
+def glcm_sumOfVar2(glcm):
+    summ = np.zeros(2 * glcm.shape[0], dtype=np.float64)
+    i, j = np.indices(glcm.shape)
+    s = i + j
+    x = np.arange(len(np.add.at(summ, s, glcm)))
+    mean = np.sum(x * np.add.at(summ, s, glcm))
+    return np.sum(((x - mean) ** 2) * np.add.at(summ, s, glcm))
+
+def glcm_diffVar(glcm):
+    i, j = np.indices(glcm.shape)
+    diff = np.zeros(glcm.shape[0], dtype=np.float64)
+    d = np.abs(i - j)
+    p = np.add.at(diff, d, glcm)
+    x = np.arange(len(p))
+    mean = np.sum(x * p)
+    return np.sum(((x - mean) ** 2) * p)
+
+def glcm_correlation(glcm):
+    i, j = np.indices(glcm.shape)
+    px = glcm.sum(axis=1)
+    py = glcm.sum(axis=0)
+    mux = np.sum(np.arange(256) * px)
+    muy = np.sum(np.arange(256) * py)
+    sigx = np.sqrt(np.sum(((np.arange(256)-mux)**2) * px))
+    sigy = np.sqrt(np.sum(((np.arange(256)-muy)**2) * py))
+    if sigx == 0 or sigy == 0:
+        return 0
+    corr = np.sum(((i-mux)*(j-muy)*glcm))/(sigx*sigy)
+    return corr
+
+
+def glcm_invDiffMoment():
+    return
+
+def glds_homogeneity():
+    return
+
+def glds_contrast():
+    return
+
+def glds_asm():
+    return
+
+def glds_entropy():
+    return
+
+def glds_mean():
+    return
+
+def haar_mean():
+    return
+
+def haar_variance():
+    return
+
 
 
 #Calculos zona de hueso (electrolysis)
 def bone_region(data):
-    frames_dir = os.path.join(app.root_path, "static", "frames")
-    data_dir = os.path.join(app.root_path, "static", "DATA")
-    os.makedirs(data_dir, exist_ok=True)
-    os.makedirs(frames_dir, exist_ok=True)
-
     timestamp  = data['timestamp']
     video = data['video']
     zona = data['zona']
@@ -381,16 +461,33 @@ def bone_region(data):
     threshold = data['threshold']
     _scale = float(data['scale'])
 
-    _x1 = int(startPoint['x'])
-    _y1 = int(startPoint['y'])
-    _x2 = int(endPoint['x'])
-    _y2 = int(endPoint['y'])
-    _width = int(dimensions['width'])
-    _height = int(dimensions['height'])
 
-    image = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
-    image = (image * 255).astype(np.uint8)
-    height, width = image.shape
+    #Modificarlo cuando termine quality, que las imagenes de interes sera otros
+    edited_img = skimage.io.imread(io.BytesIO(base64.b64decode(maskImage.split(",")[1])), as_gray=True)
+    edited_img = (edited_img * 255).astype(np.uint8)
+    mask = edited_img > 0
+
+    original_img = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
+    original_img = (original_img * 255).astype(np.uint8)
+    ys, xs = np.where(mask)
+    ymin = ys.min()
+    ymax = ys.max()+1
+    xmin = xs.min()
+    xmax = xs.max()+1
+    img_roi = original_img[ymin:ymax, xmin:xmax]
+    mask_roi = mask[ymin:ymax, xmin:xmax]
+    mask_uint8 = (mask_roi*255).astype(np.uint8)
+
+    contours, _ = cv2.findContours(
+        mask_uint8,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+    cnt = max(contours, key=cv2.contourArea)
+    area = cv2.contourArea(cnt)
+    perimeter = cv2.arcLength(cnt, True)
+    convex = cv2.isContourConvex(cnt)
+
 
     scale = _scale * height
     x1 = int(_x1 * width / _width)

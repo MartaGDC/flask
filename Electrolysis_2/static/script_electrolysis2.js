@@ -208,7 +208,7 @@ async function selectVideo(filename, frame){
             else{
                 videoPlayer.currentTime = 0; // Reset to the start of the video
             }
-            await countFramesPerEval(evaluatorName);
+            //await countFramesPerEval(evaluatorName);
             researcherInfo.textContent = `Evaluator ${evaluatorName} studied ${numFramesEval} frames from this video.`;
             pausado = true;
             drawFrame();
@@ -767,12 +767,11 @@ submitBtn.addEventListener('click', () => {
             const maskEditedCtx = maskEditedCanvas.getContext('2d');
             maskEditedCanvas.width = savedFrame.width;
             maskEditedCanvas.height = savedFrame.height;
-            maskEditedCtx.putImageData(savedFrame, 0, 0);
             trazos.forEach(trazo => {
                 if (trazo.color === colors[indiceUsado]) {
                     maskEditedCtx.lineWidth = widths[indiceUsado];
                     maskEditedCtx.lineCap = 'round';
-                    maskEditedCtx.strokeStyle = colors[indiceUsado];
+                    maskEditedCtx.strokeStyle = "rgba(255,255,255,1)";
                     for (let i = 1; i < trazo.puntos.length; i++) {
                         const punto1 = trazo.puntos[i-1];
                         const punto2 = trazo.puntos[i];
