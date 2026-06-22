@@ -767,11 +767,13 @@ submitBtn.addEventListener('click', () => {
             const maskEditedCtx = maskEditedCanvas.getContext('2d');
             maskEditedCanvas.width = savedFrame.width;
             maskEditedCanvas.height = savedFrame.height;
+            maskEditedCtx.fillStyle = "black"
+            maskEditedCtx.fillRect(0,0,maskEditedCanvas.width, maskEditedCanvas.height);
+            maskEditedCtx.lineCap = 'round';
+            maskEditedCtx.strokeStyle = "rgba(255,255,255,1)";
             trazos.forEach(trazo => {
                 if (trazo.color === colors[indiceUsado]) {
                     maskEditedCtx.lineWidth = widths[indiceUsado];
-                    maskEditedCtx.lineCap = 'round';
-                    maskEditedCtx.strokeStyle = "rgba(255,255,255,1)";
                     for (let i = 1; i < trazo.puntos.length; i++) {
                         const punto1 = trazo.puntos[i-1];
                         const punto2 = trazo.puntos[i];

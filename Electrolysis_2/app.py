@@ -302,24 +302,15 @@ def tissue_quality(data):
     dimensions = data['dimensions']
 
     edited_img = skimage.io.imread(io.BytesIO(base64.b64decode(maskImage.split(",")[1])), as_gray=True)
-    edited_img = (edited_img * 255).astype(np.uint8)
-    mask = edited_img > 0
-
     original_img = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
-    original_img = (original_img * 255).astype(np.uint8)
-
-    ys, xs = np.where(mask)
-    ymin = ys.min()
-    ymax = ys.max()+1
-    xmin = xs.min()
-    xmax = xs.max()+1
-    img_roi = original_img[ymin:ymax, xmin:xmax]
-    mask_roi = mask[ymin:ymax, xmin:xmax]
-
+    img_roi = (original_img * 255).astype(np.uint8)
+    mask_roi = edited_img > 0
     glcm = get_glcm(img_roi, mask_roi)
-    contrast = glcm_contrast(glcm)
-    homogeneity = glcm_homogeneity(glcm)
-
+    
+    print("pyfeats", get_quality_parametersPyfeats(glcm, img_roi))
+    print("teorico", qualityFormulasTeoricas(img_roi, mask_roi))
+     
+    return get_quality_parametersPyfeats(glcm, img_roi), qualityFormulasTeoricas(img_roi, mask_roi)
 
     '''new_quality = ElectrolysisQuality2(
         timestamp = timestamp,
@@ -340,8 +331,8 @@ def tissue_quality(data):
         haar_mean=haar_mean,
         haar_variance=haar_variance,
     )
-    db.session.add(new_quality)'''
-    return {"glcm": glcm, "glcm_label": labels_glcm, "features_GLDS": list(features_GLDS), "labels_GLDS": labels_GLDS, "haar_mean": haar_mean, "haar_variance": haar_variance}
+    db.session.add(new_quality)
+    return {"glcm": glcm, "glcm_label": labels_glcm, "features_GLDS": list(features_GLDS), "labels_GLDS": labels_GLDS, "haar_mean": haar_mean, "haar_variance": haar_variance}'''
 
 
 def get_glcm(image, mask, distance=1, dx=1, dy=0, symmetric=True):
@@ -365,7 +356,7 @@ def get_glcm(image, mask, distance=1, dx=1, dy=0, symmetric=True):
             i = image[y, x]
             j = image[y2, x2]
             glcm[i, j] += 1
-            if symmetric:
+            if symmetric and i != j:
                 glcm[j, i] += 1
     #Normalizacion
     total = glcm.sum()
@@ -374,75 +365,146 @@ def get_glcm(image, mask, distance=1, dx=1, dy=0, symmetric=True):
     return glcm
 
 
-def glcm_contrast(glcm):
-    i, j = np.indices(glcm.shape)
-    return np.sum((i - j) ** 2 * glcm)
 
-def glcm_homogeneity(glcm):
+def get_quality_parametersPyfeats(glcm, img_roi):
     i, j = np.indices(glcm.shape)
-    return np.sum(glcm / (1 + (i-j)**2))
+    glcm_contrast = np.sum((i - j) ** 2 * glcm)
 
-def glcm_sumAvg(glcm):
-    summ = np.zeros(2 * glcm.shape[0], dtype=np.float64)
-    i, j = np.indices(glcm.shape)
-    s = i + j
-    x = np.arange(len(np.add.at(summ, s, glcm)))
-    return np.sum(x * np.add.at(summ, s, glcm))
+    p_sum = np.zeros(2*glcm.shape[0]-1)
+    for r in range(glcm.shape[0]):
+        for c in range(glcm.shape[0]):
+            p_sum[r+c] += glcm[r,c]
+    sum_avg = np.sum(np.arange(len(p_sum))*p_sum)
 
-def glcm_sumOfVar2(glcm):
-    summ = np.zeros(2 * glcm.shape[0], dtype=np.float64)
-    i, j = np.indices(glcm.shape)
-    s = i + j
-    x = np.arange(len(np.add.at(summ, s, glcm)))
-    mean = np.sum(x * np.add.at(summ, s, glcm))
-    return np.sum(((x - mean) ** 2) * np.add.at(summ, s, glcm))
+    px = glcm.sum(axis=1)
+    k = np.arange(glcm.shape[0])
+    mu = np.sum(k * px)
+    glcm_sumOfVar2 = np.sum(((i-mu)**2) * glcm)
 
-def glcm_diffVar(glcm):
-    i, j = np.indices(glcm.shape)
-    diff = np.zeros(glcm.shape[0], dtype=np.float64)
-    d = np.abs(i - j)
-    p = np.add.at(diff, d, glcm)
-    x = np.arange(len(p))
-    mean = np.sum(x * p)
-    return np.sum(((x - mean) ** 2) * p)
+    p_diff = np.zeros(glcm.shape[0])
+    for r in range(glcm.shape[0]):
+        for c in range(glcm.shape[0]):
+            p_diff[abs(r-c)] += glcm[r,c]
+    mu = np.sum(k * p_diff)
+    glcm_diffVar = np.sum(((k-mu)**2) * p_diff)
 
-def glcm_correlation(glcm):
-    i, j = np.indices(glcm.shape)
     px = glcm.sum(axis=1)
     py = glcm.sum(axis=0)
-    mux = np.sum(np.arange(256) * px)
-    muy = np.sum(np.arange(256) * py)
-    sigx = np.sqrt(np.sum(((np.arange(256)-mux)**2) * px))
-    sigy = np.sqrt(np.sum(((np.arange(256)-muy)**2) * py))
-    if sigx == 0 or sigy == 0:
-        return 0
-    corr = np.sum(((i-mux)*(j-muy)*glcm))/(sigx*sigy)
-    return corr
+    mu_x = np.sum(k * px)
+    mu_y = np.sum(k * py)
+    sigma_x = np.sqrt(np.sum(((k-mu_x)**2) * px))
+    sigma_y = np.sqrt(np.sum(((k-mu_y)**2) * py))
+    glcm_correlation = np.sum(((i-mu_x)*(j-mu_y)*glcm))/(sigma_x*sigma_y + 1e-12) #1e-12 para evitar que el denominador pueda ser 0
+
+    glcm_invDiffMoment = np.sum(glcm / (1 + (i-j)**2))
+
+    p_diff = np.zeros(glcm.shape[0])
+    for r in range(glcm.shape[0]):
+        for c in range(glcm.shape[0]):
+            p_diff[abs(r-c)] += glcm[r,c]
+    glds_homogeneity =  np.sum(p_diff / (1 + k**2))
+    p_diff = np.zeros(glcm.shape[0])
+    for r in range(glcm.shape[0]):
+        for c in range(glcm.shape[0]):
+            p_diff[abs(r-c)] += glcm[r,c]
+    glds_contrast = np.sum((k**2) * p_diff)
+    glds_asm = np.sum(p_diff**2)
+    glds_entropy = -np.sum(p_diff * np.log2(p_diff + 1e-12))
+    glds_mean = np.sum(k * p_diff)
+
+    cA, (_, _, _) = pw.dwt2(img_roi.astype(np.float32), 'haar')
+    cA = cA.astype(np.float64)
+    haar_mean = float(np.mean(cA))
+    haar_variance = float(np.var(cA))
+
+    return {"glcm_contrast": glcm_contrast,
+            "glcm_sumAvg": sum_avg,
+            "glcm_sumOfVar2": glcm_sumOfVar2, 
+            "glcm_diffVar": glcm_diffVar,
+            "glcm_correlation": glcm_correlation,
+            "glcm_invDiffMoment": glcm_invDiffMoment,
+            "glds_homogeneity": glds_homogeneity,
+            "glds_contrast": glds_contrast,
+            "glds_asm": glds_asm,
+            "glds_entropy": glds_entropy,
+            "glds_mean": glds_mean,
+            "haar_mean": haar_mean,
+            "haar_variance": haar_variance}
 
 
-def glcm_invDiffMoment():
-    return
+def qualityFormulasTeoricas(img_roi, mask_roi):
+    P = get_glcm(img_roi, mask_roi)
+    Ng = P.shape[0]
+    i, j = np.indices(P.shape)
+    #distribuciones marginales
+    px = P.sum(axis=1)
+    py = P.sum(axis=0)
+    g = np.arange(Ng)
+    #Distribucion suma
+    p_sum = np.zeros(2*Ng - 1) # o np.zeros(2*(Ng-1))??
+    for r in range(Ng):
+        for c in range(Ng):
+            p_sum[r + c] += P[r, c]
+    p_sum = p_sum / (p_sum.sum() + 1e-12)
+    k_sum = np.arange(len(p_sum))
+    #Distribucion diferencia
+    p_diff = np.zeros(Ng)
+    for r in range(Ng):
+        for c in range(Ng):
+            p_diff[abs(r - c)] += P[r, c]
+    p_diff = p_diff / (p_diff.sum() + 1e-12)
+    k_diff = np.arange(Ng)
+    
+    #GLCM Haralick:
+        #Contrast
+    contrast = np.sum((i - j)**2 * P)
+        #Correlation
+    mu_x = np.sum(g * px)
+    mu_y = np.sum(g * py)
+    sigma_x = np.sqrt(np.sum((g - mu_x)**2 * px))
+    sigma_y = np.sqrt(np.sum((g - mu_y)**2 * py))
+    correlation = np.sum((i - mu_x)*(j - mu_y)*P) / (sigma_x*sigma_y + 1e-12)
+        #InvDiffMoment
+    invDiffMoment = np.sum(P / (1 + (i - j)**2))
+        #SumofSquares
+    variance = np.sum(((i - mu_x)**2) * P)
+        #Sum Average
+    sum_average = np.sum(k_sum * p_sum)
+        #Difference Variance
+    diff_mean = np.sum(k_diff * p_diff)
+    difference_variance = np.sum(((k_diff - diff_mean)**2) * p_diff)
 
-def glds_homogeneity():
-    return
+    #GLDS Soh & Tsatsoulis
+        #Mean
+    glds_mean = np.sum(k_diff * p_diff)
+        #Contrast
+    glds_contrast = np.sum((k_diff**2) * p_diff)
+        #ASM
+    glds_asm = np.sum(p_diff**2)
+        #Entropy
+    glds_entropy = -np.sum(p_diff * np.log2(p_diff + 1e-12))
+        #homogeneity
+    glds_homogeneity = np.sum(p_diff / (1 + k_diff**2))
 
-def glds_contrast():
-    return
+    #Haar
+    cA, (_, _, _) = pw.dwt2(img_roi.astype(np.float32), 'haar')
+    cA = cA.astype(np.float64)
+    haar_mean = float(np.mean(cA))
+    haar_variance = float(np.var(cA))
 
-def glds_asm():
-    return
-
-def glds_entropy():
-    return
-
-def glds_mean():
-    return
-
-def haar_mean():
-    return
-
-def haar_variance():
-    return
+    return {"glcm_contrast": contrast,
+            "glcm_sumAvg": sum_average,
+            "glcm_sumOfVar2": variance,
+            "glcm_diffVar": difference_variance,
+            "glcm_correlation": correlation,
+            "glcm_invDiffMoment": invDiffMoment,
+            "glds_homogeneity": glds_homogeneity,
+            "glds_contrast": glds_contrast,
+            "glds_asm": glds_asm,
+            "glds_entropy": glds_entropy,
+            "glds_mean": glds_mean,
+            "haar_mean": haar_mean,
+            "haar_variance": haar_variance}
 
 
 
@@ -469,13 +531,8 @@ def bone_region(data):
 
     original_img = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
     original_img = (original_img * 255).astype(np.uint8)
-    ys, xs = np.where(mask)
-    ymin = ys.min()
-    ymax = ys.max()+1
-    xmin = xs.min()
-    xmax = xs.max()+1
-    img_roi = original_img[ymin:ymax, xmin:xmax]
-    mask_roi = mask[ymin:ymax, xmin:xmax]
+    img_roi = original_img
+    mask_roi = mask
     mask_uint8 = (mask_roi*255).astype(np.uint8)
 
     contours, _ = cv2.findContours(
