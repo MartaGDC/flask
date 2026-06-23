@@ -773,7 +773,7 @@ submitBtn.addEventListener('click', () => {
             maskEditedCtx.strokeStyle = "rgba(255,255,255,1)";
             trazos.forEach(trazo => {
                 if (trazo.color === colors[indiceUsado]) {
-                    maskEditedCtx.lineWidth = widths[indiceUsado];
+                    maskEditedCtx.lineWidth = trazo.width;
                     for (let i = 1; i < trazo.puntos.length; i++) {
                         const punto1 = trazo.puntos[i-1];
                         const punto2 = trazo.puntos[i];
@@ -787,7 +787,7 @@ submitBtn.addEventListener('click', () => {
                         maskEdited[indice] = {zona: null, estructura: null, mask: null, threshold: null};
                     }
                     maskEdited[indice].zona = selectedZone;
-                    maskEdited[indice].estructura = activeStructures[indiceUsado].querySelector('.structure-name').textContent;
+                    maskEdited[indice].estructura = structures[indiceUsado].querySelector('.structure-name').textContent;
                     maskEdited[indice].mask = maskEditedCanvas;
                     maskEdited[indice].threshold = thresholds[indiceUsado];
                 }

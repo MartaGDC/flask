@@ -303,67 +303,111 @@ def tissue_quality(data):
 
     edited_img = skimage.io.imread(io.BytesIO(base64.b64decode(maskImage.split(",")[1])), as_gray=True)
     original_img = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
-    img_roi = (original_img * 255).astype(np.uint8)
-    mask_roi = edited_img > 0
-    glcm = get_glcm(img_roi, mask_roi)
+    original_img = (original_img * 255).astype(np.uint8)
+    edited_img = edited_img > 0
+
+    img_roi, mask_roi = crop_bbox(original_img, edited_img)
+
+    glcm = get_glcm(img_roi)
+    g1 = glcm_features(glcm)
+    cA, _ = pw.dwt2(img_roi.astype(np.float32), "haar")
+    haar_mean = float(np.mean(cA)),
+    haar_variance = float(np.var(cA))
     
-    print("pyfeats", get_quality_parametersPyfeats(glcm, img_roi))
-    print("teorico", qualityFormulasTeoricas(img_roi, mask_roi))
-     
+    print("manual", g1, haar_mean, haar_variance)
+    print("pyfeats real", get_pyfeats(edited_img, original_img))
     return get_quality_parametersPyfeats(glcm, img_roi), qualityFormulasTeoricas(img_roi, mask_roi)
 
-    '''new_quality = ElectrolysisQuality2(
-        timestamp = timestamp,
-        video = video,
-        frameoriginal = frameoriginal,
-        evaluator = evaluator,
-        glcm_contrast = float(glcm[0]),
-        glcm_sumAvg = float(glcm[1]),
-        glcm_sumOfVar2 = float(glcm[2]),
-        glcm_diffVar = float(glcm[3]),
-        glcm_correlation = float(glcm[4]),
-        glcm_invDiffMoment = float(glcm[5]),
-        glds_homogeneity = float(features_GLDS[0]),
-        glds_contrast = float(features_GLDS[1]),
-        glds_asm = float(features_GLDS[2]),
-        glds_entropy = float(features_GLDS[3]),
-        glds_mean = float(features_GLDS[4]),
-        haar_mean=haar_mean,
-        haar_variance=haar_variance,
-    )
-    db.session.add(new_quality)
-    return {"glcm": glcm, "glcm_label": labels_glcm, "features_GLDS": list(features_GLDS), "labels_GLDS": labels_GLDS, "haar_mean": haar_mean, "haar_variance": haar_variance}'''
+    
+def get_pyfeats(edited_img, original_img):
+    ys, xs = np.where(edited_img)
+    y_min = ys.min()
+    y_max = ys.max()+1
+    x_min = xs.min()
+    x_max = xs.max()+1
+    img_roi = (original_img * 255).astype(np.uint8)
+    img_roi = img_roi[y_min:y_max, x_min:x_max]
+    features_GLCM, _, labels_GLCM, _ = pf.glcm_features(img_roi, ignore_zeros=True)
+    glcm_ind = [1,5,3,9,2,4]
+    glcm = [features_GLCM[i] for i in glcm_ind]
+    labels_glcm = [labels_GLCM[i] for i in glcm_ind]
+    aux = img_roi.astype(np.float32)
+    cA, (_, _, _) = pw.dwt2(aux, 'haar')
+    haar_mean = float(np.mean(cA))
+    haar_variance = float(np.var(cA))
+    mask = np.ones(img_roi.shape)
+    features_GLDS, labels_GLDS = pf.glds_features(img_roi, mask, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
+    return {"glcm": glcm, "glcm_label": labels_glcm, "features_GLDS": list(features_GLDS), "labels_GLDS": labels_GLDS, "haar_mean": haar_mean, "haar_variance": haar_variance}
+ 
 
-
-def get_glcm(image, mask, distance=1, dx=1, dy=0, symmetric=True):
+def get_glcm(image, dxs=(0,1,1,1), dys=(1,1,0,-1)):
     h, w = image.shape
     levels = 256
-    glcm = np.zeros((levels, levels), dtype=np.float64)
-    for y in range(h):
-        for x in range(w):
-            y2 = y + dy * distance
-            x2 = x + dx * distance
-            # comprobar que el pixel vecino existe
-            if y2 < 0 or y2 >= h:
-                continue
-            if x2 < 0 or x2 >= w:
-                continue
-            # Asegurar que pixeles en ROI
-            if not mask[y, x]:
-                continue
-            if not mask[y2, x2]:
-                continue
-            i = image[y, x]
-            j = image[y2, x2]
-            glcm[i, j] += 1
-            if symmetric and i != j:
-                glcm[j, i] += 1
-    #Normalizacion
-    total = glcm.sum()
-    if total > 0:
-        glcm /= total
-    return glcm
-
+    glcm_total = np.zeros((levels, levels), dtype=np.float64)
+    for dx, dy in [(0,1),(1,1),(1,0),(1,-1)]:
+        glcm = np.zeros((levels, levels), dtype=np.float64)
+        for y in range(h):
+            for x in range(w):
+                y2 = y + dy
+                x2 = x + dx
+                # comprobar que el pixel vecino existe
+                if 0 <= y2 < h and 0 <= x2 < w:
+                    i = image[y, x]
+                    j = image[y2, x2]
+                    glcm[i, j] += 1
+                    glcm[j, i] += 1
+        #Normalizacion
+        glcm /= (glcm.sum() + 1e-12)
+        glcm_total += glcm
+    glcm_total /= 4.0
+    return glcm_total
+def crop_bbox(img, mask):
+    ys, xs = np.where(mask)
+    y0, y1 = ys.min(), ys.max() + 1
+    x0, x1 = xs.min(), xs.max() + 1
+    return img[y0:y1, x0:x1], mask[y0:y1, x0:x1]
+def glcm_features(glcm):
+    Ng = glcm.shape[0]
+    i, j = np.indices(glcm.shape)
+    k = np.arange(Ng)
+    px = glcm.sum(axis=1)
+    py = glcm.sum(axis=0)
+    mu_x = np.sum(k * px)
+    mu_y = np.sum(k * py)
+    sigma_x = np.sqrt(np.sum(((k - mu_x)**2) * px))
+    sigma_y = np.sqrt(np.sum(((k - mu_y)**2) * py))
+    contrast = np.sum((i - j)**2 * glcm)
+    correlation = np.sum(
+        (i - mu_x) * (j - mu_y) * glcm
+    ) / (sigma_x * sigma_y + 1e-12)
+    idm = np.sum(glcm / (1 + (i - j)**2))
+    # SUM
+    p_sum = np.zeros(2 * Ng)
+    for r in range(Ng):
+        for c in range(Ng):
+            p_sum[r + c] += glcm[r, c]
+    p_sum /= (p_sum.sum() + 1e-12)
+    k_sum = np.arange(len(p_sum))
+    sum_avg = np.sum(k_sum * p_sum)
+    sum_entropy = -np.sum(p_sum * np.log2(p_sum + 1e-12))
+    sum_var = np.sum(((i - mu_x)**2) * glcm)
+    # DIFF
+    p_diff = np.zeros(Ng)
+    for r in range(Ng):
+        for c in range(Ng):
+            p_diff[abs(r - c)] += glcm[r, c]
+    p_diff /= (p_diff.sum() + 1e-12)
+    k_diff = np.arange(Ng)
+    diff_mean = np.sum(k * p_diff)
+    diff_var = np.sum(((k - diff_mean)**2) * p_diff)
+    return {
+        "glcm_contrast": contrast,
+        "glcm_sumAvg": sum_avg,
+        "glcm_sumOfVar2": sum_var,
+        "glcm_diffVar": diff_var,
+        "glcm_correlation": correlation,
+        "glcm_invDiffMoment": idm
+    }
 
 
 def get_quality_parametersPyfeats(glcm, img_roi):

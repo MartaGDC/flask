@@ -1048,19 +1048,45 @@
 
     "electrolysis2": {
         "zones": [
-            {"value": "coronal", "label": "Coronal"},
-            {"value": "sagital", "label": "Sagital"}
+            {"value": "suprarrotuliana", "label": "Supra-rotuliana"},
+            {"value": "rotuliana", "label": "Rotuliana"},
+            {"value": "infrarrotuliana", "label": "Infra-rotuliana"}
         ],
         "structures": {
-            "coronal": [
-                {"name": "Cartílago Femoral Medial", "color": "rgb(150, 255, 200)"},
-                {"name": "Cartílago Femoral Lateral", "color": "rgb(150, 255, 180)"},
-                {"name": "Cartílago Tibial Medial", "color": "rgb(150, 255, 160)"},
-                {"name": "Cartílago Tibial Lateral", "color": "rgb(150, 255, 140)"}
+            "suprarrotuliana": [
+                {"name": "Recto femoral", "color": "rgb(240, 70, 0)"},
+                {"name": "Vasto", "color": "rgb(240, 60, 0)"},
+                {"name": "Músculo articular", "color": "rgb(240, 50, 0)"},
+                {"name": "Cuadricipital superf", "color": "rgb(140, 190, 200)"},
+                {"name": "Cuadricipital interm", "color": "rgb(140, 180, 200)"},
+                {"name": "Cuadricipital prof", "color": "rgb(140, 170, 200)"},
+                {"name": "Grasa prefemoral", "color": "rgb(252, 255, 170)"},
+                {"name": "Grasa suprapatelar", "color": "rgb(252, 255, 150)"},
+                {"name": "Paquete adiposo pre-cuadricipital", "color": "rgb(252, 255, 140)"},
+                {"name": "Cartílago hialino", "color": "rgb(125, 250, 255)"},
+                {"name": "Receso articular", "color": "rgb(235, 175, 255)"},
+                {"name": "Líquido sinovial articular", "color": "rgb(250, 255, 90)"},
+                {"name": "Fémur", "color": "rgb(225, 255, 200)"},
+                {"name": "Rótula base", "color": "rgb(225, 255, 190)"}
             ],
-            "sagital": [
-                {"name": "Cartílago Femoral", "color": "rgb(150, 255, 200)"},
-                {"name": "Cartílago Tibial", "color": "rgb(150, 255, 180)"}
+            "rotuliana": [
+                {"name": "Cuadricipital superf", "color": "rgb(140, 190, 200)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgb(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa", "color": "rgb(250, 255, 90)"},
+                {"name": "Rótula centro", "color": "rgb(225, 255, 180)"}
+            ],
+            "infrarrotuliana": [
+                {"name": "Rotuliano superf", "color": "rgb(140, 160, 200)"},
+                {"name": "Rotuliano prof", "color": "rgb(140, 150, 200)"},
+                {"name": "Grasa retrorrotuliana", "color": "rgb(252, 255, 150)"},
+                {"name": "Bursa infrarrotuliana prof", "color": "rgb(235, 175, 255)"},
+                {"name": "Líquido sinovial bursa prof", "color": "rgb(250, 255, 90)"},
+                {"name": "Bursa infrarrotuliana superf", "color": "rgb(235, 185, 255)"},
+                {"name": "Líquido sinovial bursa superf", "color": "rgb(250, 255, 80)"},
+                {"name": "Cartílago hialino: tróclea", "color": "rgb(125, 250, 255)"},
+                {"name": "Fémur cóndilo", "color": "rgb(225, 255, 200)"},
+                {"name": "Rótula ápex", "color": "rgb(225, 255, 170)"},
+                {"name": "Tibia", "color": "rgb(225, 255, 160)"}
             ]
         }
     }
