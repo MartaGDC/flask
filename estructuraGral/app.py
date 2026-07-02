@@ -8,6 +8,9 @@ import SimpleITK as sitk
 import numpy as np
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 from models import db, User, Metadata, MetadataRM, BrushSetting
+from sqlalchemy import func
+
+from tools.descargar_proyectos.descarga import proyectos_dict
 
 #from flask_cors import CORS
 
@@ -161,12 +164,12 @@ def update_brush_width():
 
 
 #Conteo de frames 
-@app.route("/count_frames/<username>/<video>")
-def count_frames(username, video):
-    count = Metadata.query.filter_by(
-        evaluator=username
-    ).filter(
-        Metadata.video.startswith(video)
+@app.route("/count_frames/<username>/<video>/<app_name>")
+def count_frames(username, video, app_name):
+    count = Metadata.query.filter(
+        Metadata.evaluator == username,
+        Metadata.video.startswith(video),
+        Metadata.frameoriginal.startswith(proyectos_dict[app_name])
     ).count()
     return jsonify({"count": count})
 
@@ -184,8 +187,8 @@ def get_unanalysed_images(app_name, evaluator):
 
 
 #Acceso a carpetas de videos según la app_name
-@app.route("/select/<app_name>", methods=["GET"])
-def list_files(app_name):
+@app.route("/select/<app_name>/<evaluator>", methods=["GET"])
+def list_files(app_name, evaluator):
     app_num = APP_VIDEOS[app_name]
     dir_path = BASE_DIR
     if(app_name.startswith("base")):
@@ -202,7 +205,32 @@ def list_files(app_name):
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".wmv"))])
     
     videos = [video.replace('_proxy', '') for video in videos]
-    return jsonify(sorted(videos))
+    videos = sorted(videos)
+    print(videos)
+
+
+    videos_repetidos = (
+        db.session.query(
+            Metadata.video,
+            func.count(Metadata.id)
+        )
+        .filter(
+            Metadata.video.in_(videos),
+            Metadata.frameoriginal.startswith(proyectos_dict[app_name]),
+            Metadata.evaluator == evaluator
+        )
+        .group_by(Metadata.video)
+        .all()
+    )
+    dict_repes = dict(videos_repetidos)
+
+    videos_ordenados = sorted(
+        videos,
+        key=lambda video: dict_repes.get(video, 0)
+    )
+    
+    print(videos_repetidos)
+    return jsonify(videos_ordenados)
 
 
 #Acceso al video de la carpeta

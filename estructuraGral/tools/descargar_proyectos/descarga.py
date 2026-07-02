@@ -5,22 +5,6 @@ import os
 import shutil
 
 
-proyecto = input("Identificador del proyecto, por ejemplo 1_3_: ").strip()
-if proyecto=="":
-    rutaActual=f'proyecto_{proyecto}rm_actual/'
-    rutaActual_csv = f'{rutaActual}{proyecto}rm_actual.csv'
-else:
-    rutaActual=f'proyecto_{proyecto}actual/'
-    rutaRecuperada=f'proyecto_{proyecto}recuperado/'
-    rutaActual_csv = f'{rutaActual}{proyecto}actual.csv'
-    rutaRecuperada_csv = f'{rutaRecuperada}{proyecto}recuperado.csv'
-    os.makedirs(f"{rutaRecuperada}originales", exist_ok=True)
-    os.makedirs(f"{rutaRecuperada}mascaras", exist_ok=True)
-
-os.makedirs(f"{rutaActual}originales", exist_ok=True)
-os.makedirs(f"{rutaActual}mascaras", exist_ok=True)
-
-
 
 #-----COLORES-----
 '''No se corresponde directamente con el dicionario de app.py,
@@ -90,96 +74,116 @@ proyectos_dict = {
     'proDiafragma': '13_'
 }
 app_nombre=''
-def load_json(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-for key, value in proyectos_dict.items():
-    if value == proyecto:
-        app_nombre= key
-        break
-structures = load_json("../../structures.json").get(app_nombre, {})
-if proyecto !="":
-    with open(f'proyecto_{proyecto}_colores.json', "w", encoding="utf-8") as f:
-        json.dump(structures, f, indent=4, ensure_ascii=False)
-else:
-    with open(f'proyecto_{proyecto}rm_colores.json', "w", encoding="utf-8") as f:
-        json.dump(structures, f, indent=4, ensure_ascii=False)
-
-
-#-----Imagenes y metadatos-----
-engine = create_engine("postgresql://php_flask:SdeSindrome$@localhost/db_php_flask")
-
-if proyecto!="":
-    query_actual = text("""
-        SELECT *
-        FROM "metadata"
-        WHERE frameoriginal LIKE :proyecto
-    """)
-    query_recuperado = text("""
-        SELECT *
-        FROM "metadataRecuperado"
-        WHERE frameoriginal LIKE :proyecto
-    """)
-    df_actual = pd.read_sql(query_actual, engine, params={"proyecto": f"{proyecto}%"})
-    df_recuperado = pd.read_sql(query_recuperado, engine, params={"proyecto": f"{proyecto}%"})
-
-    #lista_videosActual = df_actual['video'].tolist()
-    lista_imgOriginalesActual = df_actual['frameoriginal'].tolist()
-    for img in lista_imgOriginalesActual:
-        src = f"../../static/frames/{img}"
-        dst = f"{rutaActual}originales/{img}"
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
-
-    lista_imgMaskActual = df_actual['filesaved'].tolist()
-    for img in lista_imgMaskActual:
-        src = f"../../static/DATA/{img}"
-        dst = f"{rutaActual}mascaras/{img}"
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
-    #lista_videosRecuperado = df_recuperado['video'].tolist()
-    lista_imgOriginalesRecuperado = df_recuperado['frameoriginal'].tolist()
-    for img in lista_imgOriginalesRecuperado:
-        src = f"../../static/frames/{img}"
-        dst = f"{rutaRecuperada}originales/{img}"
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
-
-    lista_imgMaskRecuperado = df_recuperado['filesaved'].tolist()
-    for img in lista_imgMaskRecuperado:
-        src = f"../../static/DATA/{img}"
-        dst = f"{rutaRecuperada}mascaras/{img}"
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
-
-    df_recuperado.to_csv(rutaRecuperada_csv, index=False, encoding='utf-8-sig')
-
-else: #proyecto rm
-    query = text("""
-        SELECT *
-        FROM "metadataRM"
-    """)
-    df_actual = pd.read_sql(query, engine)
-
-    lista_imgOriginalesActual = df_actual['imageoriginal'].tolist()
-    for img in lista_imgOriginalesActual:
-        src = f"/srv/data/{img}"
-        dst = f"{rutaActual}originales/{img}"
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
-
-    lista_imgMaskActual = df_actual['filesaved'].tolist()
-    for img in lista_imgMaskActual:
-        src = f"../../static/DATA/{img}"
-        dst = f"{rutaActual}mascaras/{img}"
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
 
 
 
+def descargar_proyecto():
+    proyecto = input("Identificador del proyecto, por ejemplo 1_3_: ").strip()
+    if proyecto=="":
+        rutaActual=f'proyecto_{proyecto}rm_actual/'
+        rutaActual_csv = f'{rutaActual}{proyecto}rm_actual.csv'
+    else:
+        rutaActual=f'proyecto_{proyecto}actual/'
+        rutaRecuperada=f'proyecto_{proyecto}recuperado/'
+        rutaActual_csv = f'{rutaActual}{proyecto}actual.csv'
+        rutaRecuperada_csv = f'{rutaRecuperada}{proyecto}recuperado.csv'
+        os.makedirs(f"{rutaRecuperada}originales", exist_ok=True)
+        os.makedirs(f"{rutaRecuperada}mascaras", exist_ok=True)
 
-df_actual.to_csv(rutaActual_csv, index=False, encoding='utf-8-sig')
+    os.makedirs(f"{rutaActual}originales", exist_ok=True)
+    os.makedirs(f"{rutaActual}mascaras", exist_ok=True)
+
+    def load_json(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    for key, value in proyectos_dict.items():
+        if value == proyecto:
+            app_nombre= key
+            break
+    structures = load_json("../../structures.json").get(app_nombre, {})
+    if proyecto !="":
+        with open(f'proyecto_{proyecto}_colores.json', "w", encoding="utf-8") as f:
+            json.dump(structures, f, indent=4, ensure_ascii=False)
+    else:
+        with open(f'proyecto_{proyecto}rm_colores.json', "w", encoding="utf-8") as f:
+            json.dump(structures, f, indent=4, ensure_ascii=False)
+
+
+    #-----Imagenes y metadatos-----
+    engine = create_engine("postgresql://php_flask:SdeSindrome$@localhost/db_php_flask")
+
+    if proyecto!="":
+        query_actual = text("""
+            SELECT *
+            FROM "metadata"
+            WHERE frameoriginal LIKE :proyecto
+        """)
+        query_recuperado = text("""
+            SELECT *
+            FROM "metadataRecuperado"
+            WHERE frameoriginal LIKE :proyecto
+        """)
+        df_actual = pd.read_sql(query_actual, engine, params={"proyecto": f"{proyecto}%"})
+        df_recuperado = pd.read_sql(query_recuperado, engine, params={"proyecto": f"{proyecto}%"})
+
+        #lista_videosActual = df_actual['video'].tolist()
+        lista_imgOriginalesActual = df_actual['frameoriginal'].tolist()
+        for img in lista_imgOriginalesActual:
+            src = f"../../static/frames/{img}"
+            dst = f"{rutaActual}originales/{img}"
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
+
+        lista_imgMaskActual = df_actual['filesaved'].tolist()
+        for img in lista_imgMaskActual:
+            src = f"../../static/DATA/{img}"
+            dst = f"{rutaActual}mascaras/{img}"
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
+        #lista_videosRecuperado = df_recuperado['video'].tolist()
+        lista_imgOriginalesRecuperado = df_recuperado['frameoriginal'].tolist()
+        for img in lista_imgOriginalesRecuperado:
+            src = f"../../static/frames/{img}"
+            dst = f"{rutaRecuperada}originales/{img}"
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
+
+        lista_imgMaskRecuperado = df_recuperado['filesaved'].tolist()
+        for img in lista_imgMaskRecuperado:
+            src = f"../../static/DATA/{img}"
+            dst = f"{rutaRecuperada}mascaras/{img}"
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
+
+        df_recuperado.to_csv(rutaRecuperada_csv, index=False, encoding='utf-8-sig')
+
+    else: #proyecto rm
+        query = text("""
+            SELECT *
+            FROM "metadataRM"
+        """)
+        df_actual = pd.read_sql(query, engine)
+
+        lista_imgOriginalesActual = df_actual['imageoriginal'].tolist()
+        for img in lista_imgOriginalesActual:
+            src = f"/srv/data/{img}"
+            dst = f"{rutaActual}originales/{img}"
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
+
+        lista_imgMaskActual = df_actual['filesaved'].tolist()
+        for img in lista_imgMaskActual:
+            src = f"../../static/DATA/{img}"
+            dst = f"{rutaActual}mascaras/{img}"
+            if os.path.exists(src):
+                shutil.copy2(src, dst)
 
 
 
+
+    df_actual.to_csv(rutaActual_csv, index=False, encoding='utf-8-sig')
+
+
+if __name__ == "__main__":
+    descargar_proyecto()
 

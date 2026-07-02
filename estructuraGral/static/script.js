@@ -127,7 +127,7 @@ if(sessionStorage.getItem('reloadAfterSave') === 'true'){
 
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
 async function getVideos(){
-    const res = await fetch(`/select/${appName}`);
+    const res = await fetch(`/select/${appName}/${evaluatorName}`);
     if (!res.ok) {
         alert("Error loading list of videos");
         return;
@@ -201,7 +201,7 @@ async function selectVideo(filename, frame){
 async function countFramesPerEval(evaluatorName) {
     try {
         const video = fileName.textContent;
-        const response = await fetch(`/count_frames/${evaluatorName}/${video}`);
+        const response = await fetch(`/count_frames/${evaluatorName}/${video}/${appName}`);
         if (!response.ok) {
             numFramesEval = 0;
             return;
