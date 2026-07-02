@@ -81,6 +81,7 @@ APP_VIDEOS = {
     'stc_longitudinal': '010_2_',
 
     'polea_longitudinal': '3_1_',
+    
     'proDiafragma': '6_'
 }
 
