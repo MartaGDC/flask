@@ -8,7 +8,7 @@ import SimpleITK as sitk
 import numpy as np
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 from models import db, User, Metadata, MetadataRM, BrushSetting
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from tools.descargar_proyectos.descarga import proyectos_dict
 
@@ -167,9 +167,10 @@ def update_brush_width():
 #Conteo de frames 
 @app.route("/count_frames/<username>/<video>/<app_name>")
 def count_frames(username, video, app_name):
+    name, _ = os.path.splitext(video)
     count = Metadata.query.filter(
         Metadata.evaluator == username,
-        Metadata.video.startswith(video),
+        Metadata.video.startswith(name),
         Metadata.frameoriginal.startswith(proyectos_dict[app_name])
     ).count()
     return jsonify({"count": count})
@@ -206,17 +207,20 @@ def list_files(app_name, evaluator):
         videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and (file.lower().endswith(".mp4") or file.lower().endswith(".wmv"))])
     
     videos = [video.replace('_proxy', '') for video in videos]
-    videos = sorted(videos)
-    print(videos)
+    names = [os.path.splitext(video)[0] for video in videos]
 
-
+    names = sorted(names)
+    filtro = or_(*[
+        Metadata.video.like(f"{name}%")
+        for name in names
+    ])
     videos_repetidos = (
         db.session.query(
             Metadata.video,
             func.count(Metadata.id)
         )
         .filter(
-            Metadata.video.in_(videos),
+            filtro,
             Metadata.frameoriginal.startswith(proyectos_dict[app_name]),
             Metadata.evaluator == evaluator
         )
@@ -224,13 +228,11 @@ def list_files(app_name, evaluator):
         .all()
     )
     dict_repes = dict(videos_repetidos)
-
     videos_ordenados = sorted(
         videos,
         key=lambda video: dict_repes.get(video, 0)
     )
     
-    print(videos_repetidos)
     return jsonify(videos_ordenados)
 
 
