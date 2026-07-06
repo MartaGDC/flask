@@ -211,7 +211,7 @@ def list_files(app_name, evaluator):
 
     names = sorted(names)
     filtro = or_(*[
-        Metadata.video.like(f"{name}%")
+        Metadata.video.like(f"{name}.%")
         for name in names
     ])
     videos_repetidos = (
