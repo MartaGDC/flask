@@ -8,7 +8,7 @@ import SimpleITK as sitk
 import numpy as np
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 from models import db, User, Metadata, MetadataRM, BrushSetting
-from sqlalchemy import func, or_
+from sqlalchemy import func, _or
 
 from tools.descargar_proyectos.descarga import proyectos_dict
 
