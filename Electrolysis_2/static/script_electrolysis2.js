@@ -154,23 +154,6 @@ uploadedFile.addEventListener("change", async() => {
 
 
 // Al seleccionar un archivo de video, se muestra su nombre y se carga el video
-async function getVideos(){
-    const res = await fetch(`/select/${appName}`);
-    if (!res.ok) {
-        alert("Error loading list of videos");
-        return;
-    }
-    videoList.innerHTML = "";
-    const videos = await res.json();
-    videoWindow.classList.remove("hidden");
-    videos.forEach(video => {
-        const li = document.createElement("li");
-        li.textContent = video;
-        li.addEventListener("click", () => selectVideo(video, frame));
-        videoList.appendChild(li);
-    }); 
-}
-
 async function selectVideo(filename, frame){
     if (filename) {
         if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".mha")) {
