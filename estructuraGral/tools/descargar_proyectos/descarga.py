@@ -71,7 +71,12 @@ proyectos_dict = {
 
     'polea_longitudinal':'12_1_',
 
-    'proDiafragma': '13_'
+    'proDiafragma': '13_',
+
+    'rotuliano_longitudinal': '14_',
+    'rotuliano_transversal': '15_',
+
+    'fascia_plantar': '16_'
 }
 app_nombre=''
 

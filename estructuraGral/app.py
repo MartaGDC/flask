@@ -8,7 +8,7 @@ import SimpleITK as sitk
 import numpy as np
 from config import SECRET_KEY, DATABASE_URI, BASE_DIR
 from models import db, User, Metadata, MetadataRM, BrushSetting
-from sqlalchemy import func, _or
+from sqlalchemy import func, or_
 
 from tools.descargar_proyectos.descarga import proyectos_dict
 
@@ -82,13 +82,18 @@ APP_VIDEOS = {
 
     'polea_longitudinal': '3_1_',
     
-    'proDiafragma': '6_'
+    'proDiafragma': '6_',
+
+    'rotuliano_longitudinal': '14_',
+    'rotuliano_transversal': '15_',
+
+    'fascia_plantar': '16_'
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea", 'proDiaf'],
-    "foot_aquiles": ["foot", "aquiles"], #jpr
-    "aquiles": ["aquiles"], #iac
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea", 'proDiaf', 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar'],
+    "foot_aquiles": ["foot", "aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar'], #jpr
+    "aquiles": ["aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar'], #iac
     "knee_hand": ["knee", "hand", "polea"], #pfm
     "knee_menisco": ["knee", "menisco"], #jmp
     "nerves_stc": ["nerves", "stc"], #ebg
