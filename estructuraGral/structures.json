@@ -1058,5 +1058,53 @@
                 {"name": "Costilla", "color":"rgba(225, 255, 200)"}
             ]
         }
+    },
+
+    "rotuliano_longitudinal": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Tendón rotuliano superf", "color":"rgba(140, 190, 200)"},
+                {"name": "Tendón rotuliano prof", "color":"rgba(140, 170, 200)"},
+                {"name": "Peritendón", "color":"rgba(245, 255, 200)"},
+                {"name": "Paquete de Kager", "color":"rgba(252, 255, 170)"},
+                {"name": "Bursa infrarrotuliana prof", "color":"rgba(235, 175, 255)"},
+                {"name": "Rótula", "color":"rgba(225, 255, 200)"},
+                {"name": "Tibia", "color":"rgba(225, 255, 180)"}
+            ]
+        }
+    },
+
+    "rotuliano_transversal": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Tendón rotuliano", "color":"rgba(140, 190, 200)"},
+                {"name": "Peritendón", "color":"rgba(245, 255, 200)"},
+                {"name": "Paquete de Kager", "color":"rgba(252, 255, 170)"},
+                {"name": "Bursa infrarrotuliana prof", "color":"rgba(235, 175, 255)"},
+                {"name": "Rótula", "color":"rgba(225, 255, 200)"},
+                {"name": "Tibia", "color":"rgba(225, 255, 180)"}
+            ]
+        }
+    },
+
+    "fascia_plantar": {
+        "zones":[
+            {"value":"none", "label":""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Almohadilla", "color":"rgba(252, 255, 170)"},
+                {"name": "Fascia plantar superf", "color":"rgba(170, 230, 255)"},
+                {"name": "Fascia plantar prof", "color":"rgba(170, 210, 255)"},
+                {"name": "Epitendón", "color":"rgba(245, 255, 200)"},
+                {"name": "Calcáneo", "color":"rgba(225, 255, 200)"}
+            ]
+        }
     }
 }

@@ -1,3 +1,4 @@
+import subprocess
 
 import cv2
 from flask import Flask, render_template, redirect, request, jsonify, session, send_file, send_from_directory
@@ -278,8 +279,8 @@ def save_parametres():
         erosion = morphology.binary_erosion(binary_img,footprint=np.ones((7,7)))
         dilation = morphology.binary_dilation(erosion, footprint=morphology.ellipse(20,15))
         hueso = image * dilation
-        skimage.io.imsave(os.path.join(data_dir, data["boneData"]['frameMask']), hueso)        
-
+        skimage.io.imsave(os.path.join(data_dir, data["boneData"]['frameMask']), hueso)
+        
         quality = tissue_quality(data["qualityData"])
         bone = bone_region(data["boneData"])
         #db.session.commit()
@@ -307,9 +308,26 @@ def tissue_quality(data):
     edited_img = edited_img > 0 
 
     img_roi, mask_roi = crop_bbox(original_img, edited_img)
-    #...calcular parametros de calidad
+
+    params = {
+        "originalNb": data['frameoriginal'],
+        "maskNb": data['frameMask'],
+        "img_roi": img_roi.tolist(),
+        "mask_roi": mask_roi.tolist()
+    }
+    formulas = os.path.join(app.root_path, "tools", "formulas.R")
+    result = subprocess.run(
+        ["Rscript", formulas, json.dumps(params)],
+        capture_output = True,
+        text = True,
+        check = True
+    )
+    textures = json.loads(result.stdout)
+    textures["evaluator"] = data['evaluator']
+    textures["video"] = data['video']
+    print(textures)
     
-    return get_quality_parameters()
+    return textures
 
 def crop_bbox(img, mask):
     ys, xs = np.where(mask)
