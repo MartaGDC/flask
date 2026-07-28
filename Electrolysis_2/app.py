@@ -6,6 +6,8 @@ from functools import wraps
 import jwt
 import json
 import os, io, base64
+import docker
+import pandas as pd
 from PIL import Image
 import SimpleITK as sitk
 import skimage.io
@@ -305,35 +307,56 @@ def tissue_quality(data):
     original_img = skimage.io.imread(io.BytesIO(base64.b64decode(originalImage.split(",")[1])), as_gray=True)
     original_img = (original_img * 255).astype(np.uint8)
     edited_img = skimage.io.imread(io.BytesIO(base64.b64decode(maskImage.split(",")[1])), as_gray=True)
-    edited_img = edited_img > 0 
+    edited_img = (edited_img > 0).astype(np.uint8) #Los pixeles negros pasan a False y el resto a True (la mascara solo contiene pixeles negros y blancos)
 
-    img_roi, mask_roi = crop_bbox(original_img, edited_img)
+    caracteristicas = extraer_radiomics(original_img, edited_img, data["frameoriginal"], data["frameMask"])
+    print(caracteristicas)
+    return caracteristicas
 
-    params = {
-        "originalNb": data['frameoriginal'],
-        "maskNb": data['frameMask'],
-        "img_roi": img_roi.tolist(),
-        "mask_roi": mask_roi.tolist()
-    }
-    formulas = os.path.join(app.root_path, "tools", "formulas.R")
-    result = subprocess.run(
-        ["Rscript", formulas, json.dumps(params)],
-        capture_output = True,
-        text = True,
-        check = True
-    )
-    textures = json.loads(result.stdout)
-    textures["evaluator"] = data['evaluator']
-    textures["video"] = data['video']
-    print(textures)
-    
-    return textures
 
-def crop_bbox(img, mask):
-    ys, xs = np.where(mask)
-    y0, y1 = ys.min(), ys.max() + 1
-    x0, x1 = xs.min(), xs.max() + 1
-    return img[y0:y1, x0:x1], mask[y0:y1, x0:x1]
+def extraer_radiomics(original_img, edited_img, nb_original, nb_mask):
+    DIRECTORIO_TEMP = os.path.join(app.root_path, "temp")
+    os.makedirs(DIRECTORIO_TEMP, exist_ok=True)
+
+    client = docker.from_env()
+    nombre_img = nb_original
+    nombre_mask = nb_mask
+    nombre_csv = f"res_{nb_mask}.csv"
+    ruta_img_abs = os.path.join(DIRECTORIO_TEMP, nombre_img)
+    ruta_mask_abs = os.path.join(DIRECTORIO_TEMP, nombre_mask)
+    ruta_csv_abs = os.path.join(DIRECTORIO_TEMP, nombre_csv)
+    skimage.io.imsave(ruta_img_abs, original_img, check_contrast=False)
+    skimage.io.imsave(ruta_mask_abs, edited_img, check_contrast=False)
+    command=[
+        "/opt/conda/bin/pyradiomics",
+        f"/data/{nombre_img}",
+        f"/data/{nombre_mask}",
+        "-o",
+        f"/data/{nombre_csv}",
+        "-f",
+        "csv",
+    ]
+    try:
+        client.containers.run(
+            image="radiomics/pyradiomics:latest",
+            command = command,
+            volumes={
+                DIRECTORIO_TEMP: {
+                    'bind': '/data', 
+                    'mode': 'rw'
+                }
+            }
+        )
+        df = pd.read_csv(ruta_csv_abs)
+        caracteristicas_dict = df.to_dict(orient="records")[0]
+    finally:
+            if os.path.exists(ruta_img_abs):   os.remove(ruta_img_abs)
+            if os.path.exists(ruta_mask_abs):  os.remove(ruta_mask_abs)
+            if os.path.exists(ruta_csv_abs):   os.remove(ruta_csv_abs)
+
+    return {"caracteristicas": caracteristicas_dict}
+
+
 
 def get_quality_parameters():
     # TO DO
