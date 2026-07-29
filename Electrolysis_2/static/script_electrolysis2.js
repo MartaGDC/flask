@@ -797,10 +797,11 @@ function saveQualityData(originalCanvas, maskCanvas, zona, estructura) {
         zona: zona, 
         estructura: estructura,
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
-        frameMask: `${timestamp}.png`,
+        frameMask: `${timestamp}_${estructura}.png`,
         originalImage: originalURL,
         maskImage: maskURL,
         evaluator: evaluatorName,
+        scale: scaleInfo,
         dimensions:{width: originalCanvas.width, height: originalCanvas.height}
     };
     return quality;
@@ -816,7 +817,7 @@ function saveBoneData(originalCanvas, maskCanvas, zona, estructura, threshold) {
         zona: zona, 
         estructura: estructura,
         frameoriginal: `${fileName.textContent}_${frame}.png`, 
-        frameMask: `${timestamp}_bone.png`,
+        frameMask: `${timestamp}_${estructura}_bone.png`,
         originalImage: originalURL,
         maskImage: maskURL,
         evaluator: evaluatorName,

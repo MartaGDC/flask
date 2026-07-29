@@ -309,28 +309,49 @@ def tissue_quality(data):
     edited_img = skimage.io.imread(io.BytesIO(base64.b64decode(maskImage.split(",")[1])), as_gray=True)
     edited_img = (edited_img > 0).astype(np.uint8) #Los pixeles negros pasan a False y el resto a True (la mascara solo contiene pixeles negros y blancos)
 
-    caracteristicas = extraer_radiomics(original_img, edited_img, data["frameoriginal"], data["frameMask"])
-    print(caracteristicas)
-    return caracteristicas
+    # pf.glcm_features() no permite incluir mask, se hacía algo similar con ignore_zeros=True.
+    # Para la quemadura de electrolisis puede tener sentido eliminar así el fondo.
+    # En este caso de analizar cada tejido creo que puede haber pixeles con ese valor de relevancia para definir la textura de la roi:
+    caracteristicas_glcm = extraer_radiomics(original_img, edited_img, data["frameoriginal"], data["frameMask"], data['scale'])
+    # pf.glds_features() sí permite incluir mask:
+    features_GLDS, _ = pf.glds_features(original_img, edited_img, Dx=[0, 1, 1, 1], Dy=[1, 1, 0, -1])
+
+    quality = get_quality_parameters(caracteristicas_glcm, features_GLDS)
+    print(quality)
+    return quality
 
 
-def extraer_radiomics(original_img, edited_img, nb_original, nb_mask):
+def extraer_radiomics(original_img, edited_img, nb_original, nb_mask, scale):
+    '''Requiere docker arrancado:
+    Para pruebas en wsl2 -> Docker Desktop
+    Para el servidor, configurar su arranca desde sistema:
+        sudo systemctl enable docker
+        sudo systemctl start docker
+    Cambiar usuario si necesario para permisos
+    Obtener la imagen de pyradiomics
+        docker pull radiomics/pyradiomics:latest
+    Usamos versión de docker, porque el pip de la librería requiere de una versión antigua de python
+    que afecta a la mayoría de librerias de cálculos y de procesamiento de imagen.
+    '''
     DIRECTORIO_TEMP = os.path.join(app.root_path, "temp")
     os.makedirs(DIRECTORIO_TEMP, exist_ok=True)
 
     client = docker.from_env()
-    nombre_img = nb_original
-    nombre_mask = nb_mask
+    nombre_img = nb_original.replace(".png", ".nii.gz")
+    nombre_mask = nb_mask.replace(".png", ".nii.gz")
     nombre_csv = f"res_{nb_mask}.csv"
-    ruta_img_abs = os.path.join(DIRECTORIO_TEMP, nombre_img)
-    ruta_mask_abs = os.path.join(DIRECTORIO_TEMP, nombre_mask)
-    ruta_csv_abs = os.path.join(DIRECTORIO_TEMP, nombre_csv)
-    skimage.io.imsave(ruta_img_abs, original_img, check_contrast=False)
-    skimage.io.imsave(ruta_mask_abs, edited_img, check_contrast=False)
+    ruta_img = os.path.join(DIRECTORIO_TEMP, nombre_img)
+    ruta_mask = os.path.join(DIRECTORIO_TEMP, nombre_mask)
+    ruta_csv = os.path.join(DIRECTORIO_TEMP, nombre_csv)
+    mm_per_pixel = 10.0 / scale
+    crear_nifti(original_img, ruta_img, mm_per_pixel)
+    crear_nifti(edited_img, ruta_mask, mm_per_pixel)
     command=[
         "/opt/conda/bin/pyradiomics",
         f"/data/{nombre_img}",
         f"/data/{nombre_mask}",
+        "-p",
+        "/data/parametros.yaml",
         "-o",
         f"/data/{nombre_csv}",
         "-f",
@@ -347,34 +368,45 @@ def extraer_radiomics(original_img, edited_img, nb_original, nb_mask):
                 }
             }
         )
-        df = pd.read_csv(ruta_csv_abs)
+        df = pd.read_csv(ruta_csv)
         caracteristicas_dict = df.to_dict(orient="records")[0]
     finally:
-            if os.path.exists(ruta_img_abs):   os.remove(ruta_img_abs)
-            if os.path.exists(ruta_mask_abs):  os.remove(ruta_mask_abs)
-            if os.path.exists(ruta_csv_abs):   os.remove(ruta_csv_abs)
+            if os.path.exists(ruta_img):   os.remove(ruta_img)
+            if os.path.exists(ruta_mask):  os.remove(ruta_mask)
+            if os.path.exists(ruta_csv):   os.remove(ruta_csv)
 
-    return {"caracteristicas": caracteristicas_dict}
+    return caracteristicas_dict
+
+def crear_nifti(img, ruta, mm_per_pixel):
+    '''
+    Conversion a imagen NIfTI considerando la escala de la imagen para estadarizar todas las imagenes a un mismo espaciado
+    (por si se usaran diferentes ecografos o zooms)
+    '''
+    image = sitk.GetImageFromArray(img)
+    image.SetSpacing((mm_per_pixel, mm_per_pixel))
+    sitk.WriteImage(image, ruta)
 
 
-
-def get_quality_parameters():
-    # TO DO
+def get_quality_parameters(glcm, glds):
     return {
-        "glcm_contrast": 0.0,
-        "glcm_sumAvg": 0.0,
-        "glcm_sumOfVar2": 0.0,
-        "glcm_diffVar": 0.0,
-        "glcm_correlation": 0.0,
-        "glcm_invDiffMoment": 0.0,
-        "glds_homogeneity": 0.0,
-        "glds_contrast": 0.0,
-        "glds_asm": 0.0,
-        "glds_entropy": 0.0,
-        "glds_mean": 0.0,
-        "haar_mean": 0.0,
-        "haar_variance": 0.0
+        "frameoriginal": glcm['Image'].replace("nii.gz", "png").replace("/data/", ""),
+        "frameMask": glcm["Mask"].replace("nii.gz", "png").replace("/data/", ""),
+        "glcm_contrast": glcm['original_glcm_Contrast'],
+        "glcm_sumAvg": glcm['original_glcm_SumAverage'],
+        "glcm_sumOfVar2": glcm['original_glcm_SumSquares'],
+        "glcm_diffVar": glcm['original_glcm_DifferenceVariance'],
+        "glcm_correlation": glcm['original_glcm_Correlation'],
+        "glcm_invDiffMoment": glcm['original_glcm_Idm'],
+        "glds_homogeneity": float(glds[0]),
+        "glds_contrast": float(glds[1]),
+        "glds_asm": float(glds[2]),
+        "glds_entropy": float(glds[3]),
+        "glds_mean": float(glds[4]),
+        "haar_mean": glcm['wavelet-H_firstorder_Mean'],
+        "haar_variance": glcm['wavelet-H_firstorder_Variance']
     }
+
+
 
 def bone_region(data):
     '''

@@ -1,0 +1,21 @@
+imageType:
+  Original: {}
+  Wavelet:
+    wavelet: haar
+
+featureClass:
+  firstorder:
+    - Mean
+    - Variance
+
+  glcm:
+    - Contrast
+    - SumAverage
+    - SumSquares
+    - DifferenceVariance
+    - Correlation
+    - Idm
+
+setting:
+  binCount: 64
+  force2D: true
