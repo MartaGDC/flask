@@ -89,21 +89,22 @@ APP_VIDEOS = {
 
     'fascia_plantar': '16_',
 
-    'UNITA_cartilago': '17_'
+    'unita_cartilagoLong': '017_L_',
+    'unita_cartilagoTrans': '017_T_',
 
 }
 
 PERMISSIONS = {
-    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea", 'proDiaf', 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'UNITA_cartilago'],
-    "foot_aquiles": ["foot", "aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'UNITA_cartilago'], #jpr
-    "aquiles": ["aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'UNITA_cartilago'], #iac
-    "knee_hand": ["knee", "hand", "polea", 'UNITA_cartilago'], #pfm
-    "knee_menisco": ["knee", "menisco", 'UNITA_cartilago'], #jmp
-    "nerves_stc": ["nerves", "stc", 'UNITA_cartilago'], #ebg
+    "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea", 'proDiaf', 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'unita_cartilago'],
+    "foot_aquiles": ["foot", "aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'unita_cartilago'], #jpr
+    "aquiles": ["aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'unita_cartilago'], #iac
+    "knee_hand": ["knee", "hand", "polea", 'unita_cartilago'], #pfm
+    "knee_menisco": ["knee", "menisco", 'unita_cartilago'], #jmp
+    "nerves_stc": ["nerves", "stc", 'unita_cartilago'], #ebg
     "abd": ["abd"], #ppa
-    "stc": ["stc" 'UNITA_cartilago'], #gcf
+    "stc": ["stc" 'unita_cartilago'], #gcf
     'diaf': ['proDiaf'], #sjg
-    'unitaCart': ['UNITA_cartilago'] #acm, ira
+    'unitaCart': ['unita_cartilago'] #acm, ira
 }
 
 def token_required(f):

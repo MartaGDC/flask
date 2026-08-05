@@ -78,7 +78,8 @@ proyectos_dict = {
 
     'fascia_plantar': '16_',
 
-    'UNITA_cartilago': '17_'
+    'unita_cartilagoLong': '017_L_',
+    'unita_cartilagoTrans': '017_T_',
 }
 app_nombre=''
 
