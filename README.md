@@ -35,4 +35,4 @@ Primero se selecciona un rectángulo de alto 1 cm del tejido real, para disponer
 
 Los cálculos que se realizan son los mismos que los realizados en el respositorio de los proyectos en PHP.
 
-Las imagenes originales y las máscaras se encuentran en static/DATA. Incialmente la relación entre ambas y más metadatos se guardan en la base de datos de postgres.
+Las imagenes originales y las máscaras se encuentran en static/DATA. La relación entre ambas y más metadatos se guardan en la base de datos de postgres.
