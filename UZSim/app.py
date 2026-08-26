@@ -78,7 +78,7 @@ def createProyecto():
 def get_zonas():
     proyecto_name = request.args.get('proyecto')
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         zonas = (
             db.session.query(Zonas)
             .join(Ficha, Zonas.id == Ficha.zona_id)
@@ -117,7 +117,7 @@ def createZone():
         db.session.add(nueva_zona)
         db.session.flush()
 
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         nuevaFicha = Ficha(
             proyecto_id = proyecto.id,
             zona_id = nueva_zona.id,
@@ -176,7 +176,7 @@ def get_cortes():
     proyecto_name = request.args.get('proyecto')
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     zona_name = request.args.get('zona')
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         cortes = (
             db.session.query(Cortes)
             .join(Ficha, Cortes.id == Ficha.corte_id)
@@ -214,7 +214,7 @@ def createCorte():
         db.session.flush()
     zona = Zonas.query.filter_by(name=zona_name).first()
 
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         nuevaFicha = Ficha.query.filter_by(
             proyecto_id=proyecto.id,
             zona_id=zona.id,
@@ -395,6 +395,7 @@ def get_patologias():
 #Añadir patologia
 @app.route('/crearPatologia', methods=['POST'])
 def createPatologia():
+    proyecto_name = request.json["proyecto"]
     corte_name = request.json["corte"]
     zona_name = request.json["zona"]
     estructura_name = request.json["estructura"]
@@ -405,7 +406,10 @@ def createPatologia():
     if not corte_name:
         return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
-    proyecto = Proyecto.query.filter_by(name='SP').first()
+    if proyecto_name == 'CERP':
+        proyecto = Proyecto.query.filter_by(name='CERP').first()
+    else:
+        proyecto = Proyecto.query.filter_by(name='SP').first()
     if not estructura_name:
         return jsonify({"error": "Missing structure name"})
     estructura = Estructura.query.filter_by(
@@ -516,7 +520,7 @@ def createOrientacion():
         db.session.add(nuevaOrientacion)
         db.session.flush()
 
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         ficha = Ficha.query.filter_by(
             proyecto_id=proyecto.id,
             zona_id=zona.id,
@@ -616,6 +620,8 @@ def createOrientacion():
 #Obtener exploraciones
 @app.route('/api/exploraciones', methods=['GET'])
 def get_exploraciones():
+    proyecto_name = request.args.get('proyecto')
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
     estructura_name = request.args.get('estructura')
@@ -627,7 +633,7 @@ def get_exploraciones():
         .join(Estructura, Estructura.id == Patologia.estructura_id)
         .join(Cortes, Cortes.id == Estructura.corte_id)
         .join(Zonas, Zonas.id == Estructura.zona_id)
-        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Patologia.name == patologia_name)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Estructura.proyecto_id == proyecto.id, Patologia.name == patologia_name)
         .distinct()
         .all()
     )
@@ -636,6 +642,7 @@ def get_exploraciones():
 #Añadir exploraciones
 @app.route('/crearExploracion', methods=['POST'])
 def createExploracion():
+    proyecto_name = request.json["proyecto"]
     corte_name = request.json["corte"]
     zona_name = request.json["zona"]
     estructura_name = request.json["estructura"]
@@ -648,7 +655,7 @@ def createExploracion():
     if not corte_name:
         return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
-    proyecto = Proyecto.query.filter_by(name='SP').first()
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     estructura = Estructura.query.filter_by(
         name = estructura_name,
         zona_id = zona.id,
@@ -694,7 +701,7 @@ def get_images():
     orientacion_name = request.args.get('orientacion')
     patologia_name = request.args.get('patologia')
     exploracion_name = request.args.get('exploracion')
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         if corte_name:
             ficha = (
                 db.session.query(Ficha)
@@ -803,7 +810,7 @@ def save_images():
     corte_name = request.form.get("corte")
     orientacion_name = request.form.get("orientacion")
     estructura_name = request.form.get("estructura")
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         if not corte_name:
             ficha = Ficha.query.filter_by(
                 proyecto_id=proyecto.id,
@@ -949,7 +956,7 @@ def delete_image():
     svg_url = request.json["svg_url"]
     proyecto = request.json["proyecto"]
 
-    if proyecto != 'SF' and proyecto != 'SP':
+    if proyecto != 'SF' and proyecto != 'SP' and proyecto != 'CERP':
         if mapOrMask=="mapa":
             mapa = ConjuntoMapa.query.filter_by(
                 mapa_url=svg_url,
