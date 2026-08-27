@@ -102,7 +102,7 @@ PERMISSIONS = {
     "knee_menisco": ["knee", "menisco", 'unita_cartilago'], #jmp
     "nerves_stc": ["nerves", "stc", 'unita_cartilago'], #ebg
     "abd": ["abd"], #ppa
-    "stc": ["stc" 'unita_cartilago'], #gcf
+    "stc": ["stc", 'unita_cartilago'], #gcf
     'diaf': ['proDiaf'], #sjg
     'unitaCart': ['unita_cartilago'] #acm, ira
 }
