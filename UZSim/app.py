@@ -78,7 +78,7 @@ def createProyecto():
 def get_zonas():
     proyecto_name = request.args.get('proyecto')
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         zonas = (
             db.session.query(Zonas)
             .join(Ficha, Zonas.id == Ficha.zona_id)
@@ -95,7 +95,7 @@ def get_zonas():
             .all()
         )
     else:
-        proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+        proyecto = Proyecto.query.filter_by(name=proyecto_name).first() #SP o CERP
         zonas = (
             db.session.query(Zonas)
             .join(Estructura, Zonas.id == Estructura.zona_id)
@@ -117,7 +117,7 @@ def createZone():
         db.session.add(nueva_zona)
         db.session.flush()
 
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         nuevaFicha = Ficha(
             proyecto_id = proyecto.id,
             zona_id = nueva_zona.id,
@@ -150,7 +150,7 @@ def createZone():
             )
             db.session.add(nuevoMapa)
 
-        else:
+        else: #CERP o SP
             nuevaPatologia = Patologia(
                 name = None,
                 estructura_id = nuevaEstructura.id
@@ -176,7 +176,7 @@ def get_cortes():
     proyecto_name = request.args.get('proyecto')
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     zona_name = request.args.get('zona')
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         cortes = (
             db.session.query(Cortes)
             .join(Ficha, Cortes.id == Ficha.corte_id)
@@ -190,7 +190,7 @@ def get_cortes():
             db.session.query(Cortes)
             .join(Estructura, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name)
+            .filter(Zonas.name == zona_name, Estructura.proyecto_id == proyecto.id)
             .distinct()
             .all()
         )
@@ -202,8 +202,6 @@ def createCorte():
     proyecto_name = request.json["proyecto"]
     name = request.json["name"]
     zona_name = request.json["zona"]
-    if not proyecto_name:
-        return jsonify({"error": "Missing project"}), 400
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     if not name:
         return jsonify({"error": "Missing name"}), 400
@@ -214,7 +212,7 @@ def createCorte():
         db.session.flush()
     zona = Zonas.query.filter_by(name=zona_name).first()
 
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         nuevaFicha = Ficha.query.filter_by(
             proyecto_id=proyecto.id,
             zona_id=zona.id,
@@ -239,6 +237,7 @@ def createCorte():
         
     else:
         nuevaEstructura = Estructura.query.filter_by(
+            proyecto_id = proyecto.id,
             zona_id = zona.id,
             corte_id = None
         ).first()
@@ -254,7 +253,7 @@ def createCorte():
             db.session.add(nuevaEstructura)
             db.session.flush()
             if proyecto_name == 'SF':
-                nuevaFicha =FichaSF(
+                nuevaFicha = FichaSF(
                     estructura_id = nuevaEstructura.id
                 )
                 db.session.add(nuevaFicha)
@@ -307,11 +306,7 @@ def createEstructura():
     corte_name = request.json["corte"]
     zona_name = request.json["zona"]
     nombre = request.json["nombre"]
-    if not zona_name:
-        return jsonify({"error": "Missing zone"}), 400
     zona = Zonas.query.filter_by(name=zona_name).first()
-    if not corte_name:
-        return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     if not nombre:
@@ -356,19 +351,21 @@ def createEstructura():
                 db.session.add(nuevoMapa)
             else:
                 nuevaPatologia = Patologia(
+                    name = None,
                     estructura_id = nuevaEstructura.id
                 )
                 db.session.add(nuevaPatologia)
                 db.session.flush()
                 nuevaFicha = FichaSP(
-                    patologia_id= nuevaPatologia.id
+                    patologia_id= nuevaPatologia.id,
+                    exploracion_id = None
                 )
                 db.session.add(nuevaFicha)
                 db.session.flush()
                 nuevoMapa = ConjuntoMapaSP(
                     id_fichasp = nuevaFicha.id
                 )
-                db.session.add()
+                db.session.add(nuevoMapa)
     db.session.commit()
     return jsonify({"status": "success"}), 200
 
@@ -380,13 +377,15 @@ def get_patologias():
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
     estructura_name = request.args.get('estructura')
+    proyecto_name = request.args.get('proyecto')
     patologias = (
         db.session.query(Patologia)
         .join(FichaSP, Patologia.id == FichaSP.patologia_id)
         .join(Estructura, Estructura.id == Patologia.estructura_id)
         .join(Cortes, Cortes.id == Estructura.corte_id)
         .join(Zonas, Zonas.id == Estructura.zona_id)
-        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+        .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Proyecto.name == proyecto_name)
         .distinct()
         .all()
     )
@@ -395,27 +394,23 @@ def get_patologias():
 #Añadir patologia
 @app.route('/crearPatologia', methods=['POST'])
 def createPatologia():
+    proyecto_name = request.json["proyecto"]
     corte_name = request.json["corte"]
     zona_name = request.json["zona"]
     estructura_name = request.json["estructura"]
     patologia_name = request.json["patologia"]
-    if not zona_name:
-        return jsonify({"error": "Missing zone"}), 400
     zona = Zonas.query.filter_by(name=zona_name).first()
-    if not corte_name:
-        return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
-    proyecto = Proyecto.query.filter_by(name='SP').first()
-    if not estructura_name:
-        return jsonify({"error": "Missing structure name"})
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     estructura = Estructura.query.filter_by(
-        name=estructura_name,
+        name = estructura_name,
         zona_id = zona.id,
         corte_id = corte.id,
         proyecto_id = proyecto.id
     ).first()
     if not patologia_name:
         return jsonify({"error": "Missing pathology"})
+    
     nuevaPatologia = Patologia.query.filter_by(
         estructura_id=estructura.id,
         name = None
@@ -453,7 +448,7 @@ def get_orientaciones():
     patologia_name = request.args.get('patologia')
     exploracion_name = request.args.get('exploracion')
     proyecto_name = request.args.get('proyecto')
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP': #En estos la orientacion se rellan tras la exploracion.
         orientaciones = (
             db.session.query(Orientacion)
             .join(Ficha, Orientacion.id == Ficha.orientacion_id)
@@ -483,7 +478,8 @@ def get_orientaciones():
             .join(Estructura, Estructura.id == Patologia.estructura_id)
             .join(Cortes, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Exploracion.name == exploracion_name, Patologia.name == patologia_name)
+            .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+            .filter(Proyecto.name == proyecto_name, Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Exploracion.name == exploracion_name, Patologia.name == patologia_name)
             .distinct()
             .all()
         )
@@ -499,14 +495,8 @@ def createOrientacion():
     orientacion_name = request.json["orientacion"]
     patologia_name = request.json['patologia']
     exploracion_name = request.json['exploracion']
-    if not proyecto_name:
-        return jsonify({"error": "Missing project"}), 400
     proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
-    if not zona_name:
-        return jsonify({"error": "Missing zone"}), 400
     zona = Zonas.query.filter_by(name=zona_name).first()
-    if not corte_name:
-        return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
     if not orientacion_name:
         return jsonify({"error": "Missing orientation"})
@@ -516,7 +506,7 @@ def createOrientacion():
         db.session.add(nuevaOrientacion)
         db.session.flush()
 
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
         ficha = Ficha.query.filter_by(
             proyecto_id=proyecto.id,
             zona_id=zona.id,
@@ -616,6 +606,7 @@ def createOrientacion():
 #Obtener exploraciones
 @app.route('/api/exploraciones', methods=['GET'])
 def get_exploraciones():
+    proyecto_name = request.args.get('proyecto')
     zona_name = request.args.get('zona')
     corte_name = request.args.get('corte')
     estructura_name = request.args.get('estructura')
@@ -627,7 +618,8 @@ def get_exploraciones():
         .join(Estructura, Estructura.id == Patologia.estructura_id)
         .join(Cortes, Cortes.id == Estructura.corte_id)
         .join(Zonas, Zonas.id == Estructura.zona_id)
-        .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Patologia.name == patologia_name)
+        .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+        .filter(Proyecto.name == proyecto_name, Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name, Patologia.name == patologia_name)
         .distinct()
         .all()
     )
@@ -636,19 +628,15 @@ def get_exploraciones():
 #Añadir exploraciones
 @app.route('/crearExploracion', methods=['POST'])
 def createExploracion():
+    proyecto_name = request.json["proyecto"]
     corte_name = request.json["corte"]
     zona_name = request.json["zona"]
     estructura_name = request.json["estructura"]
     patologia_name = request.json['patologia']
     exploracion_name = request.json['exploracion']
-
-    if not zona_name:
-        return jsonify({"error": "Missing zone"}), 400
     zona = Zonas.query.filter_by(name=zona_name).first()
-    if not corte_name:
-        return jsonify({"error": "Missing cut"}), 400
     corte = Cortes.query.filter_by(name=corte_name).first()
-    proyecto = Proyecto.query.filter_by(name='SP').first()
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     estructura = Estructura.query.filter_by(
         name = estructura_name,
         zona_id = zona.id,
@@ -694,8 +682,8 @@ def get_images():
     orientacion_name = request.args.get('orientacion')
     patologia_name = request.args.get('patologia')
     exploracion_name = request.args.get('exploracion')
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
-        if corte_name:
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
+        if corte_name: #CERF
             ficha = (
                 db.session.query(Ficha)
                 .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
@@ -705,7 +693,7 @@ def get_images():
                 .filter(Zonas.name == zona_name, Cortes.name == corte_name, Orientacion.name == orientacion_name, Proyecto.name == proyecto_name)
                 .first()
             )
-        else:
+        else: #CAR
             ficha = (
                 db.session.query(Ficha)
                 .join(Proyecto, Proyecto.id == Ficha.proyecto_id)
@@ -730,7 +718,8 @@ def get_images():
             db.session.query(Estructura)
             .join(Cortes, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+            .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+            .filter(Proyecto.name == proyecto_name, Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
             .distinct()
             .first() 
         )
@@ -793,25 +782,22 @@ def save_images():
     os.makedirs(ecos_dir, exist_ok=True)
 
     proyecto_name = request.form.get("proyecto")
-    if not proyecto_name:
-        return jsonify({"error": "Missing project"}), 400
-    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
     zona_name = request.form.get("zona")
-    if not zona_name:
-        return jsonify({"error": "Missing zone"}), 400
-    zona = Zonas.query.filter_by(name=zona_name).first()
     corte_name = request.form.get("corte")
     orientacion_name = request.form.get("orientacion")
     estructura_name = request.form.get("estructura")
-    if proyecto_name != 'SF' and proyecto_name != 'SP':
-        if not corte_name:
+    proyecto = Proyecto.query.filter_by(name=proyecto_name).first()
+    zona = Zonas.query.filter_by(name=zona_name).first()
+    
+    if proyecto_name != 'SF' and proyecto_name != 'SP' and proyecto_name != 'CERP':
+        if not corte_name: #CAR
             ficha = Ficha.query.filter_by(
                 proyecto_id=proyecto.id,
                 zona_id=zona.id,
                 corte_id=None,
                 orientacion_id=None
             ).first()
-        else:
+        else: #CERF
             corte = Cortes.query.filter_by(name=corte_name).first()
             orientacion = Orientacion.query.filter_by(name=orientacion_name).first()
             ficha = Ficha.query.filter_by(
@@ -840,18 +826,13 @@ def save_images():
             i.save(os.path.join(ecos_dir, i.filename))
 
     else:
-        if not corte_name:
-            return jsonify({"error": "Missing cut"}), 400
-        if not estructura_name:
-            return jsonify({"error": "Missing estructure name"}), 400
-        if not orientacion_name:
-            return jsonify({"error": "Missing orientation"}), 400
         orientacion = Orientacion.query.filter_by(name=orientacion_name).first()
         estructura = (
             db.session.query(Estructura)
             .join(Cortes, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
+            .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
+            .filter(Proyecto.name == proyecto_name, Zonas.name == zona_name, Cortes.name == corte_name, Estructura.name == estructura_name)
             .distinct()
             .first()
         )
@@ -921,11 +902,6 @@ def save_images():
                 nuevoMapa.mapa_url = mapaData.filename
                 mapaData.save(os.path.join(mapa_dir, mapaData.filename))
 
-            videoData = request.files.get("video")
-            if videoData:
-                nuevoMapa.video_url = videoData.filename
-                videoData.save(os.path.join(video_dir, videoData.filename))
-            
             mascarasData = request.files.getlist("mascaras")
             for i in mascarasData:
                 nuevaMascara = MascarasSP(id_cmsp=nuevoMapa.id, mascara_url=i.filename)
@@ -933,6 +909,13 @@ def save_images():
                 db.session.flush()
             for i in mascarasData:
                 i.save(os.path.join(ecos_dir, i.filename))
+
+            if proyecto_name == "SP":
+                videoData = request.files.get("video")
+                if videoData:
+                    nuevoMapa.video_url = videoData.filename
+                    videoData.save(os.path.join(video_dir, videoData.filename))
+                        
 
     db.session.commit()
     return jsonify({"status": "success"})
@@ -949,7 +932,7 @@ def delete_image():
     svg_url = request.json["svg_url"]
     proyecto = request.json["proyecto"]
 
-    if proyecto != 'SF' and proyecto != 'SP':
+    if proyecto != 'SF' and proyecto != 'SP' and proyecto != 'CERP':
         if mapOrMask=="mapa":
             mapa = ConjuntoMapa.query.filter_by(
                 mapa_url=svg_url,
@@ -1053,23 +1036,8 @@ def download():
             zf.writestr(filename, output.getvalue().encode('utf-8-sig'))
             return rows
         
-        def add_files(rows, field_name, static_folder, zip_folder):
-            '''Añadir archivos svg y mp4'''
-            for row in rows:
-                try:
-                    file_url = getattr(row, field_name, None)
-                    if not file_url:
-                        continue
-                    filename = os.path.basename(file_url)
-                    filepath = os.path.join(app.root_path, "static", static_folder, filename)
-                    if os.path.exists(filepath):
-                        zf.write(filepath, arcname=f"{zip_folder}/{filename}")
-                        files.append(filepath)
-                except Exception as e:
-                    print(f"ERROR {field_name}:", e)
-        
         #CAR:
-        rows_car = create_csv(
+        create_csv(
             f"csv/CAR.csv",
             """
                 SELECT 
@@ -1093,7 +1061,7 @@ def download():
         )
 
         #CERF:
-        rows_cerf = create_csv(
+        create_csv(
             f"csv/CERF.csv",
             """
                 SELECT 
@@ -1121,8 +1089,47 @@ def download():
             """
         )
 
+        #CERP:
+        create_csv(
+            f"csv/CERP.csv",
+            """
+                SELECT 
+                    mascaras.id, 
+                    mascaras.mascara_url, 
+                    conjunto_mapa.mapa_url, 
+                    p.name AS proyecto, 
+                    z.name AS zonas,
+                    c.name AS cortes,
+                    e.name AS estructura,
+                    pa.name AS patologia, 
+                    o.name AS orientacion,
+                    ex.name AS exploracion 
+                FROM "mascarasSP" AS mascaras
+                JOIN "conjunto_mapaSP" AS conjunto_mapa
+                    ON mascaras.id_cmsp = conjunto_mapa.id 
+                JOIN "fichaSP" f 
+                    ON conjunto_mapa.id_fichasp = f.id 
+                JOIN patologia pa 
+                    ON f.patologia_id = pa.id 
+                JOIN exploracion ex 
+                    ON f.exploracion_id = ex.id 
+                JOIN orientacion o
+                    ON ex.orientacion_id = o.id
+                JOIN estructura e
+                    ON pa.estructura_id = e.id
+                JOIN proyecto p 
+                    ON e.proyecto_id = p.id 
+                JOIN zonas z 
+                    ON e.zona_id = z.id 
+                JOIN cortes c
+                    ON e.corte_id = c.id
+                WHERE p.name = 'CERP'
+                ORDER BY mascaras.id
+            """
+        )
+
         #SF:
-        rows_sf = create_csv(
+        create_csv(
             f"csv/SF.csv",
             """
                 SELECT 
@@ -1155,7 +1162,7 @@ def download():
         )
 
         #SP:
-        rows_sp = create_csv(
+        create_csv(
             f"csv/SP.csv",
             """
                 SELECT 
@@ -1194,10 +1201,7 @@ def download():
         )
 
 
-        all_rows = rows_car + rows_cerf + rows_sf + rows_sp
-        add_files(all_rows, "mascara_url", "ecos", "mascaras")
-        add_files(all_rows, "mapa_url", "mapa", "mapas")
-        add_files(all_rows, "video_url", "video", "videos")
+        
     zip_buffer.seek(0)
     return send_file(
         zip_buffer,
