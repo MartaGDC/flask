@@ -56,6 +56,7 @@ const btnCancelarNuevaOrientacion = document.getElementById("btnCancelarNuevaOri
 let orientacionSeleccionada="";
 
 const windowExploracion = document.getElementById("windowExploracion");
+const exploracionText = document.getElementById("exploracionText");
 const exploracionDisponibles = document.getElementById("exploracionDisponibles");
 const windowNewExploracion = document.getElementById("windowNewExploracion");
 const btnAddExploracion = document.getElementById("btnAddExploracion");
@@ -519,7 +520,7 @@ async function rellenarPatologia() {
     windowPatologia.classList.remove("hidden");
     rellenar({
         window: windowNewPatologia,
-        api: `/api/patologias?zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}`,
+        api: `/api/patologias?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}`,
         tablaHTML: patologiaDisponibles,
          onSelect: async(patologia) => {
             patologiaSeleccionada = patologia;
@@ -558,6 +559,12 @@ btnCancelarNuevaPatologia.addEventListener('click', (e) => {
 //-----------Exploracion-----------
 async function rellenarExploracion() {
     windowExploracion.classList.remove("hidden");
+    if (proyectoSeleccionado==="CERP"){
+        exploracionText.textContent = "Caso: ";
+    }
+    else {
+        exploracionText.textContent = "Exploración: ";
+    }
     rellenar({
         window: windowNewExploracion,
         api: `/api/exploraciones?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}&patologia=${patologiaSeleccionada}&exploracion=${exploracionSeleccionada}`,
