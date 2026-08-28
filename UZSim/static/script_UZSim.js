@@ -5,6 +5,7 @@ const cuerpo = document.getElementById("cuerpo");
 const buttonContainer = document.getElementById("buttonContainer");
 const btnEco = document.getElementById("btnEco");
 const btnFisio = document.getElementById("btnFisio");
+const btnPatol = document.getElementById("btnPatol");
 const btnSimFisio = document.getElementById("btnSimFisio");
 const btnSimPatol = document.getElementById("btnSimPatol");
 let proyectoSeleccionado = '';
@@ -55,6 +56,7 @@ const btnCancelarNuevaOrientacion = document.getElementById("btnCancelarNuevaOri
 let orientacionSeleccionada="";
 
 const windowExploracion = document.getElementById("windowExploracion");
+const exploracionText = document.getElementById("exploracionText");
 const exploracionDisponibles = document.getElementById("exploracionDisponibles");
 const windowNewExploracion = document.getElementById("windowNewExploracion");
 const btnAddExploracion = document.getElementById("btnAddExploracion");
@@ -98,6 +100,17 @@ async function selectOption(option) {
     }
 
     else if (option === 'CERF') {
+        proyectoSeleccionado = option;
+        await createProyecto(option);
+        buttonContainer.style.display = "none";
+        cuerpo.style.display = "flex";
+        cuerpo.style.flexDirection = "column";
+        cuerpo.style.justifyContent = "start";
+        cuerpo.style.alignItems = "start";
+        content.style.display = "block";
+    }
+
+    else if (option === 'CERP') {
         proyectoSeleccionado = option;
         await createProyecto(option);
         buttonContainer.style.display = "none";
@@ -269,6 +282,11 @@ btnFisio.onclick = async () => {
     rellenarZonas();
 }
 
+btnPatol.onclick = async () => {
+    await selectOption('CERP');
+    rellenarZonas();
+}
+
 btnSimFisio.onclick = async () => {
     await selectOption('SF');
     rellenarZonas();
@@ -371,7 +389,7 @@ async function rellenarCortes () {
         tablaHTML: cortesDisponibles,
          onSelect: async(corte) => {
             corteSeleccionado = corte;
-            if(proyectoSeleccionado == 'SF' || proyectoSeleccionado =='SP'){
+            if(proyectoSeleccionado == 'SF' || proyectoSeleccionado =='SP' || proyectoSeleccionado =='CERP'){
                 rellenarEstructura();
             }
             else if (proyectoSeleccionado == 'CERF') {
@@ -502,7 +520,7 @@ async function rellenarPatologia() {
     windowPatologia.classList.remove("hidden");
     rellenar({
         window: windowNewPatologia,
-        api: `/api/patologias?zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}`,
+        api: `/api/patologias?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}`,
         tablaHTML: patologiaDisponibles,
          onSelect: async(patologia) => {
             patologiaSeleccionada = patologia;
@@ -516,7 +534,7 @@ async function rellenarPatologia() {
 btnAceptarNuevaPatologia.addEventListener('click', async(e) => {
     e.stopPropagation();
     if (newPatologia.value == '') return;
-    await createPatologia(corteSeleccionado, zonaSeleccionada, estructuraSeleccionada, newPatologia.value);
+    await createPatologia(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, estructuraSeleccionada, newPatologia.value);
     newPatologia.value = '';
     windowNewPatologia.classList.add("hidden");
     await rellenarPatologia();
@@ -541,13 +559,23 @@ btnCancelarNuevaPatologia.addEventListener('click', (e) => {
 //-----------Exploracion-----------
 async function rellenarExploracion() {
     windowExploracion.classList.remove("hidden");
+    if (proyectoSeleccionado==="CERP"){
+        exploracionText.textContent = "Caso: ";
+    }
+    else {
+        exploracionText.textContent = "Exploración: ";
+    }
     rellenar({
         window: windowNewExploracion,
-        api: `/api/exploraciones?zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}&patologia=${patologiaSeleccionada}&exploracion=${exploracionSeleccionada}`,
+        api: `/api/exploraciones?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}&patologia=${patologiaSeleccionada}&exploracion=${exploracionSeleccionada}`,
         tablaHTML: exploracionDisponibles,
          onSelect: async(exploracion) => {
             exploracionSeleccionada = exploracion;
-            rellenarOrientacion();
+            if(proyectoSeleccionado == 'CERP'){
+                mostrarSelecciones();
+            } else {
+                rellenarOrientacion();
+            }
         },
         addButtonId: "btnAddExploracion",
         input: newExploracion
@@ -557,7 +585,7 @@ async function rellenarExploracion() {
 btnAceptarNuevaExploracion.addEventListener('click', async(e) => {
     e.stopPropagation();
     if (newExploracion.value == '') return;
-    await createExploracion(corteSeleccionado, zonaSeleccionada, estructuraSeleccionada, patologiaSeleccionada, newExploracion.value);
+    await createExploracion(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, estructuraSeleccionada, patologiaSeleccionada, newExploracion.value);
     newExploracion.value = '';
     windowNewExploracion.classList.add("hidden");
     await rellenarExploracion();
@@ -581,6 +609,13 @@ btnCancelarNuevaExploracion.addEventListener('click', (e) => {
 
 //-----------Archivos selecccionados-----------
 async function mostrarSelecciones() {
+    console.log(orientacionSeleccionada)
+    if (orientacionSeleccionada== '') {
+        orientacionSeleccionada = 'CERP';
+        try {
+            await createOrientacion(proyectoSeleccionado, corteSeleccionado, zonaSeleccionada, estructuraSeleccionada, orientacionSeleccionada, patologiaSeleccionada, exploracionSeleccionada);
+        } catch (err) {}
+    }
     const resImg = await fetch(`/api/images?proyecto=${proyectoSeleccionado}&zona=${zonaSeleccionada}&corte=${corteSeleccionado}&estructura=${estructuraSeleccionada}&orientacion=${orientacionSeleccionada}&patologia=${patologiaSeleccionada}&exploracion=${exploracionSeleccionada}`);
     if (!resImg.ok) {
         alert("Error loading list of images");
@@ -810,13 +845,13 @@ async function createEstructura(proyecto, corte, zona, nombre) {
     return await response.json();
 }
 
-async function createPatologia(corte, zona, estructura, patologia) {
+async function createPatologia(proyecto, corte, zona, estructura, patologia) {
     const response = await fetch('/crearPatologia', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({"corte": corte, "zona": zona, "estructura": estructura, "patologia": patologia})
+        body: JSON.stringify({"proyecto": proyecto, "corte": corte, "zona": zona, "estructura": estructura, "patologia": patologia})
     })
     if (!response.ok) {
         throw new Error(`Server error: ${response.status} ${response.statusText}`);
@@ -824,13 +859,13 @@ async function createPatologia(corte, zona, estructura, patologia) {
     return await response.json();
 }
 
-async function createExploracion(corte, zona, estructura, patologia, exploracion) {
+async function createExploracion(proyecto, corte, zona, estructura, patologia, exploracion) {
     const response = await fetch('/crearExploracion', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({"corte": corte, "zona": zona, "estructura": estructura, "patologia": patologia, "exploracion": exploracion})
+        body: JSON.stringify({"proyecto": proyecto,"corte": corte, "zona": zona, "estructura": estructura, "patologia": patologia, "exploracion": exploracion})
     })
     if (!response.ok) {
         throw new Error(`Server error: ${response.status} ${response.statusText}`);
