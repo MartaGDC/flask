@@ -15,6 +15,7 @@ class User(db.Model):
 class Proyectos(enum.Enum):
     CAR = "Aprendizaje Ecografía"
     CERF = "Aprendizaje Fisiología"
+    CERP = "Aprendizaje Patología"
     SF = "Simulación Fisiológica"
     SP = "Simulación Patológica"
 class Proyecto(db.Model):
