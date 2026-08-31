@@ -609,7 +609,6 @@ btnCancelarNuevaExploracion.addEventListener('click', (e) => {
 
 //-----------Archivos selecccionados-----------
 async function mostrarSelecciones() {
-    console.log(orientacionSeleccionada)
     if (orientacionSeleccionada== '') {
         orientacionSeleccionada = 'CERP';
         try {
@@ -630,13 +629,24 @@ async function mostrarSelecciones() {
     mapaFileInput.value= '';
     mapaText.replaceChildren();
     listaMascaras.innerHTML='';
-    if (proyectoSeleccionado != 'SF' && proyectoSeleccionado != 'SP'){
+    if (proyectoSeleccionado != 'SF' && proyectoSeleccionado != 'SP' && proyectoSeleccionado != 'CERP'){
         //Recuperacion de BBDD Mapa y Mascaras si existen:
         if(images[0]) { 
             mostrarMapa(images[0], true)
         }
         if(images[1]) {
             nombreMascaras = images[1] ;
+            nombreMascaras.forEach(mask => {
+                mostrarMascaras(mask, null, true);
+            });
+        }
+    }
+    else if (proyectoSeleccionado == "CERP") {
+        if(images[0]) { 
+            mostrarMapa(images[0], true)
+        }
+        if(images[2]) {
+            nombreMascaras = images[2] ;
             nombreMascaras.forEach(mask => {
                 mostrarMascaras(mask, null, true);
             });
