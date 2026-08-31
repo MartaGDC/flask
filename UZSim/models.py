@@ -72,7 +72,7 @@ class Estructura (db.Model): #Para SF y SP
 class Patologia (db.Model): #Para SP
     __tablename__ = "patologia"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=True)
     estructura_id = db.Column(db.Integer, db.ForeignKey('estructura.id'), nullable=False)
 
 class Exploracion (db.Model): #Para SP, detalles de la sonda

@@ -323,11 +323,11 @@ def createEstructura():
             .join(Cortes, Cortes.id == Estructura.corte_id)
             .join(Zonas, Zonas.id == Estructura.zona_id)
             .join(Proyecto, Proyecto.id == Estructura.proyecto_id)
-            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name)
+            .filter(Zonas.name == zona_name, Cortes.name == corte_name, Proyecto.name == proyecto_name, Estructura.name == None)
             .distinct()
             .first()
         )
-        if nuevaEstructura.name == None:
+        if nuevaEstructura:
             nuevaEstructura.name = nombre
         else:
             nuevaEstructura = Estructura(
