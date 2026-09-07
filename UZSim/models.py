@@ -64,7 +64,7 @@ class Mascaras (db.Model):
 class Estructura (db.Model): #Para SF y SP
     __tablename__ = "estructura"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=True)
+    name = db.Column(db.String(100), nullable=True)
     zona_id = db.Column(db.Integer, db.ForeignKey('zonas.id'), nullable=False)
     corte_id = db.Column(db.Integer, db.ForeignKey('cortes.id'), nullable=True)
     proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=False)

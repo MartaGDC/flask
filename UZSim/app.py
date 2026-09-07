@@ -649,6 +649,7 @@ def createExploracion():
     ).first()
     
     nuevaExploracion = Exploracion.query.filter_by(name=exploracion_name).first()
+
     if not nuevaExploracion:
         nuevaExploracion = Exploracion(
             name=exploracion_name,
@@ -667,6 +668,19 @@ def createExploracion():
             id_fichasp = fichaSP.id,
         )
         db.session.add(nuevoMapa)
+    else:
+        fichaSP = FichaSP.query.filter_by(patologia_id = patologia.id,  exploracion_id = nuevaExploracion.id).first()
+        if not fichaSP:
+            fichaSP = FichaSP(
+                patologia_id = patologia.id,
+                exploracion_id = nuevaExploracion.id
+            )
+            db.session.add(fichaSP)
+            db.session.flush()
+            nuevoMapa = ConjuntoMapaSP(
+                id_fichasp = fichaSP.id,
+            )
+            db.session.add(nuevoMapa)
 
     db.session.commit()
     return jsonify({"status": "success"}), 200
