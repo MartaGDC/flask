@@ -23,8 +23,8 @@ with app.app_context():
 
 
 APP_VIDEOS = {
-    "base_tejidos":"",
-    "base_artefactos" : "",
+    "base_tejidos":"017_",
+    "base_artefactos" : "017_",
     "base_ROIS":"",
     "base_marco":"",
     
@@ -205,7 +205,7 @@ def list_files(app_name, evaluator):
     dir_path = BASE_DIR
     if(app_name.startswith("base")):
         dir_path = os.path.join(BASE_DIR, "proxy")
-        videos = sorted([file for file in os.listdir(dir_path) if file.lower().endswith(".mp4")])
+        videos = sorted([file for file in os.listdir(dir_path) if file.startswith(app_num) and file.lower().endswith(".mp4")])
     elif(app_name.startswith("rm")):
         videos = sorted([file for file in os.listdir(BASE_DIR) if file.lower().endswith(".jpg") or file.lower().endswith(".png") or file.lower().endswith(".mha")])
     elif(app_name.startswith("hand")):
