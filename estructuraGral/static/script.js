@@ -720,7 +720,7 @@ function saveDrawing(){
                 });
                 objectJS.push(frameObject);
             }
-             else if(appName==="base_ROIS"){
+            else if(appName==="base_ROIS"){
                 const frameObject = {
                     video: fileName.textContent, 
                     frame: numframe,
@@ -732,6 +732,25 @@ function saveDrawing(){
                     zone: selectedZone,
                     evaluator: evaluatorName,
                     referencia: referencia.checked ? "ref" : "no ref"
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
+            else if(appName==="base_tejidosSuperf"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `0_5_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
                 }
                 Object.entries(invisibleStructures).forEach(([name, used]) => {
                     if (used) {

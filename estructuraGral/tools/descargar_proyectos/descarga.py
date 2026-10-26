@@ -16,6 +16,8 @@ proyectos_dict = {
     "base_artefactos" : "0_2_",
     "base_ROIS":"0_3_",
     "base_marco":"0_4_",
+    "base_tejidosSuperf":"0_5_",
+
     
     "foot_longitudinal_fascia": "1_1_",
     "foot_transversal_fascia": "1_2_",

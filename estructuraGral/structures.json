@@ -62,6 +62,20 @@
         }
     },
 
+    "base_tejidosSuperf": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Epidermis", "color": "rgb(215, 150, 240)"},
+                {"name": "Dermis", "color": "rgb(215, 150, 220)"},
+                {"name": "TCS", "color": " rgb(252, 255, 130)"},
+                {"name": "Fascia superf", "color": "rgb(245, 255, 200)"}
+            ]
+        }
+    },
+
     "base_marco" : {
         "zones": [
             {"value": "none", "label": ""}

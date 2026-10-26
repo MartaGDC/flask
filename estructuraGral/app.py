@@ -26,7 +26,8 @@ APP_VIDEOS = {
     "base_tejidos":"017_",
     "base_artefactos" : "017_",
     "base_ROIS":"",
-    "base_marco":"",
+    "base_marco":"017_",
+    "base_tejidosSuperf":"017_",
     
     "foot_longitudinal_fascia": "1_1_",
     "foot_transversal_fascia": "1_2_",
