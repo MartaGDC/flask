@@ -925,6 +925,24 @@ function saveDrawing(){
                 }
             });
         }
+        else if(appName==="base_tejidosSuperf"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `0_5_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
         else if (appName==="aquiles_longitudinal"){
             objectJS = {
                 video: fileName.textContent, 
