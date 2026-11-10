@@ -1144,5 +1144,49 @@
                 {"name": "Hueso subcondral", "color": "rgb(225, 255, 200)"}
             ]
         }
+    },
+    "abd_trans_lineaMedia": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Músculo recto abd dcho", "color": "rgb(240, 70, 0)"},
+                {"name": "Músculo recto abd izdo", "color": "rgb(240, 60, 0)"},
+                {"name": "Fascia superf", "color": "rgb(245, 255, 200)"},
+                {"name": "Línea alba", "color": "rgb(245, 255, 190)"},
+                {"name": "Fascia prof", "color": "rgb(245, 255, 180)"},
+                {"name": "Músuculo piramidal abd", "color": "rgb(240, 50, 0)"},
+                {"name": "Vísceras", "color": "rgb(160, 90, 200)"}
+            ]
+        }
+    },
+    "abd_trans_recto": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Músculo recto abd", "color": "rgb(240, 70, 0)"},
+                {"name": "Fascia superf", "color": "rgb(245, 255, 200)"},
+                {"name": "Fascia prof", "color": "rgb(245, 255, 190)"},
+                {"name": "Vísceras", "color": "rgb(160, 90, 200)"}
+            ]
+        }
+    },
+    "abd_trans_spiegel": {
+        "zones": [
+            {"value": "none", "label": ""}
+        ],
+        "structures": {
+            "none": [
+                {"name": "Músculo recto abd", "color": "rgb(240, 70, 0)"},
+                {"name": "Músculo oblicuo ext", "color": "rgb(240, 60, 0)"},
+                {"name": "Músculo oblicuo int", "color": "rgb(240, 50, 0)"},
+                {"name": "Músculo trasnverso", "color": "rgb(240, 40, 0)"},
+                {"name": "Tejido conectivo", "color": "rgb(245, 255, 200)"},
+                {"name": "Vísceras", "color": "rgb(160, 90, 200)"}
+            ]
+        }
     }
 }

@@ -835,6 +835,63 @@ function saveDrawing(){
                 });
                 objectJS.push(frameObject);
             }
+            else if(appName==="abd_trans_lineaMedia"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `18_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
+            else if(appName==="abd_trans_recto"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `18_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
+            else if(appName==="abd_trans_spiegel"){
+                const frameObject = {
+                    video: fileName.textContent, 
+                    frame: numframe,
+                    originalImage: imageURL,
+                    imageEdited: imageEditedURL,
+                    frameoriginal: `18_${fileName.textContent}_${numframe}.png`, 
+                    filesaved: `${timestamp}_${index}.png`,
+                    quality: selectedQuality,
+                    zone: selectedZone,
+                    evaluator: evaluatorName
+                }
+                Object.entries(invisibleStructures).forEach(([name, used]) => {
+                    if (used) {
+                        frameObject[name] = "invisible";
+                    }
+                });
+                objectJS.push(frameObject);
+            }
             else {
                 const frameObject = {
                     video: fileName.textContent, 
@@ -1004,6 +1061,60 @@ function saveDrawing(){
                 originalImage: imageURL,
                 imageEdited: imageEditedURL,
                 frameoriginal: `13_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName,
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+        else if (appName==="abd_trans_lineaMedia"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `18_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName,
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+        else if (appName==="abd_trans_recto"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `18_${fileName.textContent}_${frame}.png`, 
+                filesaved: `${timestamp}.png`,
+                quality: selectedQuality,
+                zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,
+                evaluator: evaluatorName,
+            };
+            Object.entries(invisibleStructures).forEach(([name, used]) => {
+                if(used){
+                    objectJS[name] = "invisible";
+                }
+            });
+        }
+        else if (appName==="abd_trans_spiegel"){
+            objectJS = {
+                video: fileName.textContent, 
+                frame: frame,
+                originalImage: imageURL,
+                imageEdited: imageEditedURL,
+                frameoriginal: `18_${fileName.textContent}_${frame}.png`, 
                 filesaved: `${timestamp}.png`,
                 quality: selectedQuality,
                 zone: (selectedQuality === "bad" || selectedQuality === "none") ? "none" : selectedZone,

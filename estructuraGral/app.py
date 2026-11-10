@@ -91,11 +91,16 @@ APP_VIDEOS = {
     'fascia_plantar': '16_',
 
     'unita_cartilagoLong': '017_L_',
-    'unita_cartilagoTrans': '017_T_'
+    'unita_cartilagoTrans': '017_T_',
+
+
+    'abd_trans_lineaMedia': '5_1_',
+    'abd_trans_recto': '5_2_',
+    'abd_trans_spiegel': '5_3_',
 
 }
 
-PERMISSIONS = {
+PERMISSIONS = { #incluir proyecto abdomen
     "admin": ["base", "foot", "knee", "hand", "nerves", "abd", "menisco", "aquiles", "stc", "polea", 'proDiaf', 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'unita_cartilago'],
     "foot_aquiles": ["foot", "aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'unita_cartilago'], #jpr
     "aquiles": ["aquiles", 'rotuliano_long', 'rotuliano_trans', 'fascia_plantar', 'unita_cartilago'], #iac
